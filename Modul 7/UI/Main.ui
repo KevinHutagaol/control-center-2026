@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">border-image: url(:/newPrefix/mainbg.png);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="runBtn">
+    <property name="geometry">
+     <rect>
+      <x>1093</x>
+      <y>550</y>
+      <width>181</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	border-image: url(:/newPrefix/runsim.png);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    border-image: url(:/newPrefix/runsim1.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="scopebtn">
+    <property name="geometry">
+     <rect>
+      <x>1195</x>
+      <y>190</y>
+      <width>67</width>
+      <height>82</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+ 	border-image: url(:/newPrefix/scope.png);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    border-image: url(:/newPrefix/scope1.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Cbtn">
+    <property name="geometry">
+     <rect>
+      <x>925</x>
+      <y>198</y>
+      <width>100</width>
+      <height>66</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>SF Pro Display</family>
+      <pointsize>40</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton { 
+	border-image: url(:/newPrefix/Cmatrix.png);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    border-image: url(:/newPrefix/Cmatrix1.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Abtn">
+    <property name="geometry">
+     <rect>
+      <x>734</x>
+      <y>304</y>
+      <width>100</width>
+      <height>66</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>SF Pro Display</family>
+      <pointsize>40</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton { 
+	border-image: url(:/newPrefix/Amatrix.png);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    border-image: url(:/newPrefix/Amatrix1.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Dbtn">
+    <property name="geometry">
+     <rect>
+      <x>734</x>
+      <y>411</y>
+      <width>100</width>
+      <height>66</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>SF Pro Display</family>
+      <pointsize>40</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton { 
+	border-image: url(:/newPrefix/Dmatrix.png);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+    border-image: url(:/newPrefix/Dmatrix1.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Rbtn">
+    <property name="geometry">
+     <rect>
+      <x>733</x>
+      <y>519</y>
+      <width>100</width>
+      <height>66</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>SF Pro Display</family>
+      <pointsize>40</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton { 
+	border-image: url(:/newPrefix/controller.png);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+	border-image: url(:/newPrefix/controller1.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Bbtn">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>198</y>
+      <width>100</width>
+      <height>66</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>SF Pro Display</family>
+      <pointsize>40</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton { 
+	border-image: url(:/newPrefix/Bmatrix.png);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+	border-image: url(:/newPrefix/Bmatrix1.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Nbtn">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>200</y>
+      <width>66</width>
+      <height>67</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>SF Pro Display</family>
+      <pointsize>40</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    border-image: url(:/newPrefix/pregain.png);
+    border-radius: 10px;
+}
+
+QPushButton:hover {
+  	border-image: url(:/newPrefix/pregain1.png);
+}
+</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>119</y>
+      <width>171</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-image : none;
+background-color: rgb(255, 255, 255);
+border-radius: 10px;
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>151</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+       <pointsize>6</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(0, 0, 0);
+border-image: none;</string>
+     </property>
+     <property name="text">
+      <string>Settling Time: </string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>5</y>
+       <width>161</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+       <pointsize>6</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(0, 0, 0);
+border-image: none;</string>
+     </property>
+     <property name="text">
+      <string>Overshoot:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>
