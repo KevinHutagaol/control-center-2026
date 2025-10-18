@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>220</width>
+    <height>220</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    border-image: url(:/newPrefix/Amatrix2.png);
+}
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <widget class="QLabel" name="a11">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>36</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background-color: transparent;
+    color: white;
+    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
+	border-image: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="a12">
+    <property name="geometry">
+     <rect>
+      <x>88</x>
+      <y>36</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background-color: transparent;
+    color: white;
+    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
+	border-image: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="a13">
+    <property name="geometry">
+     <rect>
+      <x>136</x>
+      <y>36</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background-color: transparent;
+    color: white;
+    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
+	border-image: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="a21">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>84</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background-color: transparent;
+    color: white;
+    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
+	border-image: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="a23">
+    <property name="geometry">
+     <rect>
+      <x>136</x>
+      <y>84</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background-color: transparent;
+    color: white;
+    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
+	border-image: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="a22">
+    <property name="geometry">
+     <rect>
+      <x>88</x>
+      <y>84</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background-color: transparent;
+    color: white;
+    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
+	border-image: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="a31">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>132</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background-color: transparent;
+    color: white;
+    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
+	border-image: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="a33">
+    <property name="geometry">
+     <rect>
+      <x>136</x>
+      <y>132</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background-color: transparent;
+    color: white;
+    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
+	border-image: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="a32">
+    <property name="geometry">
+     <rect>
+      <x>88</x>
+      <y>132</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    background-color: transparent;
+    color: white;
+    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
+	border-image: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

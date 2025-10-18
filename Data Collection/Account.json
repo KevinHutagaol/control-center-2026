@@ -1,0 +1,946 @@
+{
+    "Account": {
+        "2206062516": {
+            "Nama": "Auladi Sabiq B Z",
+            "Pass": "Auliadi516",
+            "Role": "Mahasiswa",
+            "Kelompok": "6"
+        },
+        "2206055870": {
+            "Nama": "Malik Al Hazazi Vanery",
+            "Pass": "Malik870",
+            "Role": "Mahasiswa",
+            "Kelompok": "1"
+        },
+        "2206055952": {
+            "Nama": "Sendy Wahyu Hutama",
+            "Pass": "Sendy952",
+            "Role": "Mahasiswa",
+            "Kelompok": "1"
+        },
+        "2206055826": {
+            "Nama": "Muhamad Nurofi Fathi Hasyimi",
+            "Pass": "Muhamad826",
+            "Role": "Mahasiswa",
+            "Kelompok": "2"
+        },
+        "2206056021": {
+            "Nama": "Jonathan Maruli Muara Sianturi",
+            "Pass": "Jonathan021",
+            "Role": "Mahasiswa",
+            "Kelompok": "2"
+        },
+        "2206055984": {
+            "Nama": "Muhammad Rizki Fadlan Riantono",
+            "Pass": "Muhammad984",
+            "Role": "Mahasiswa",
+            "Kelompok": "3"
+        },
+        "2206055901": {
+            "Nama": "Usamah Hafizh Ammar Za'im",
+            "Pass": "Usamah901",
+            "Role": "Mahasiswa",
+            "Kelompok": "3"
+        },
+        "2206062592": {
+            "Nama": "Andi Farhan Kuncoro",
+            "Pass": "Andi592",
+            "Role": "Mahasiswa",
+            "Kelompok": "4"
+        },
+        "2206031681": {
+            "Nama": "Ikhwan Labib Habiballaah",
+            "Pass": "Ikhwan681",
+            "Role": "Mahasiswa",
+            "Kelompok": "4"
+        },
+        "2206813006": {
+            "Nama": "Nabil Rashif Sayyidan",
+            "Pass": "Nabil006",
+            "Role": "Mahasiswa",
+            "Kelompok": "5"
+        },
+        "2206056122": {
+            "Nama": "Najmah Nur Nafiisah",
+            "Pass": "Najmah122",
+            "Role": "Mahasiswa",
+            "Kelompok": "5"
+        },
+        "2206062812": {
+            "Nama": "Thufail Ravino",
+            "Pass": "Thuilfail812",
+            "Role": "Mahasiswa",
+            "Kelompok": "6"
+        },
+        "2206828973": {
+            "Nama": "Rafid Ahmad Prasetya",
+            "Pass": "Rafid973",
+            "Role": "Mahasiswa",
+            "Kelompok": "6"
+        },
+        "2306216390": {
+            "Nama": "Rafandra Gifarrel Maritza A.",
+            "Pass": "Rafandra390",
+            "Role": "Mahasiswa",
+            "Kelompok": "7"
+        },
+        "2306215002": {
+            "Nama": "Muhammad Gavin Jericho",
+            "Pass": "Muhammad002",
+            "Role": "Mahasiswa",
+            "Kelompok": "7"
+        },
+        "2306207682": {
+            "Nama": "Alshandra Aurelia Walangadi",
+            "Pass": "Alshandra682",
+            "Role": "Mahasiswa",
+            "Kelompok": "8"
+        },
+        "2306156826": {
+            "Nama": "M. Fathoni",
+            "Pass": "Muhammad826",
+            "Role": "Mahasiswa",
+            "Kelompok": "8"
+        },
+        "2306156750": {
+            "Nama": "Adrian Idham alfarizi",
+            "Pass": "Adrian750",
+            "Role": "Mahasiswa",
+            "Kelompok": "9"
+        },
+        "2306224335": {
+            "Nama": "Fadlin Alwan Hanafi Hadibrata",
+            "Pass": "Fadlin335",
+            "Role": "Mahasiswa",
+            "Kelompok": "9"
+        },
+        "2306211686": {
+            "Nama": "Alfrid Dhaifullah",
+            "Pass": "Alfdrid686",
+            "Role": "Mahasiswa",
+            "Kelompok": "10"
+        },
+        "2306247490": {
+            "Nama": "Abdul Malik Hibrizi",
+            "Pass": "Abdul490",
+            "Role": "Mahasiswa",
+            "Kelompok": "10"
+        },
+        "2306226656": {
+            "Nama": "Ananda Lestari",
+            "Pass": "Anaanda656",
+            "Role": "Mahasiswa",
+            "Kelompok": "11"
+        },
+        "2306213110": {
+            "Nama": "Raji Irfan Fauzi",
+            "Pass": "Raji110",
+            "Role": "Mahasiswa",
+            "Kelompok": "11"
+        },
+        "2306217746": {
+            "Nama": "Afifah Thahirah",
+            "Pass": "Afifah746",
+            "Role": "Mahasiswa",
+            "Kelompok": "12"
+        },
+        "2306225552": {
+            "Nama": "Kautsar Faradika Faisal",
+            "Pass": "Kautsar552",
+            "Role": "Mahasiswa",
+            "Kelompok": "12"
+        },
+        "2306156795": {
+            "Nama": "Abbigail Supit",
+            "Pass": "Abbigail795",
+            "Role": "Mahasiswa",
+            "Kelompok": "13"
+        },
+        "2306218420": {
+            "Nama": "Raditya Danendra",
+            "Pass": "Raditya420",
+            "Role": "Mahasiswa",
+            "Kelompok": "13"
+        },
+        "2306156800": {
+            "Nama": "Wanda Kusumawardani",
+            "Pass": "Wanda800",
+            "Role": "Mahasiswa",
+            "Kelompok": "14"
+        },
+        "2306206742": {
+            "Nama": "Natano Juditya Sihan",
+            "Pass": "Natano742",
+            "Role": "Mahasiswa",
+            "Kelompok": "14"
+        },
+        "2306227034": {
+            "Nama": "Fikra Zeka Neilshona",
+            "Pass": "Fikra034",
+            "Role": "Mahasiswa",
+            "Kelompok": "15"
+        },
+        "2306202284": {
+            "Nama": "Raihanah Zakiyah Syukri",
+            "Pass": "Raihanah284",
+            "Role": "Mahasiswa",
+            "Kelompok": "15"
+        },
+        "2306211881": {
+            "Nama": "Muhammad Hafizh Nurian",
+            "Pass": "Muhammad881",
+            "Role": "Mahasiswa",
+            "Kelompok": "16"
+        },
+        "2306223616": {
+            "Nama": "Rafi Azhar Hanif",
+            "Pass": "Rafi616",
+            "Role": "Mahasiswa",
+            "Kelompok": "16"
+        },
+        "2306156593": {
+            "Nama": "Nafilah Azka Batubara",
+            "Pass": "Nafilah593",
+            "Role": "Mahasiswa",
+            "Kelompok": "17"
+        },
+        "2306156870": {
+            "Nama": "Muhammad Abdul Malik Asysyarofa",
+            "Pass": "Muhammad870",
+            "Role": "Mahasiswa",
+            "Kelompok": "17"
+        },
+        "2306156681": {
+            "Nama": "Rifky Alif Anggoro",
+            "Pass": "Rifky681",
+            "Role": "Mahasiswa",
+            "Kelompok": "18"
+        },
+        "2306226681": {
+            "Nama": "Muhammad Pirel Jenar Lubdhaka",
+            "Pass": "Muhammad681",
+            "Role": "Mahasiswa",
+            "Kelompok": "18"
+        },
+        "2306156813": {
+            "Nama": "Harsya Fahreza Dewanto",
+            "Pass": "Harsya813",
+            "Role": "Mahasiswa",
+            "Kelompok": "19"
+        },
+        "2306260113": {
+            "Nama": "Danish Rafi Akmadira",
+            "Pass": "Danish113",
+            "Role": "Mahasiswa",
+            "Kelompok": "19"
+        },
+        "2306217203": {
+            "Nama": "Carissa Tri Alma Putri",
+            "Pass": "Carissa203",
+            "Role": "Mahasiswa",
+            "Kelompok": "20"
+        },
+        "2306263651": {
+            "Nama": "Vincensius Arga Cristanto",
+            "Pass": "Vincensius651",
+            "Role": "Mahasiswa",
+            "Kelompok": "20"
+        },
+        "2306221176": {
+            "Nama": "Dimas Apriliawan Diandraputra",
+            "Pass": "Dimas176",
+            "Role": "Mahasiswa",
+            "Kelompok": "21"
+        },
+        "2306222033": {
+            "Nama": "Hanif Rizkiawan",
+            "Pass": "Hanif033",
+            "Role": "Mahasiswa",
+            "Kelompok": "21"
+        },
+        "2306238832": {
+            "Nama": "Siti Aisyah Surtikanti",
+            "Pass": "Siti832",
+            "Role": "Mahasiswa",
+            "Kelompok": "22"
+        },
+        "2306263696": {
+            "Nama": "Nawaf Dhia Alwafa Dipatama",
+            "Pass": "Nawaf696",
+            "Role": "Mahasiswa",
+            "Kelompok": "22"
+        },
+        "2306238845": {
+            "Nama": "Arya Rabbani Putra",
+            "Pass": "Arya845",
+            "Role": "Mahasiswa",
+            "Kelompok": "23"
+        },
+        "2306266754": {
+            "Nama": "Tri Putra Mahadika",
+            "Pass": "Tri754",
+            "Role": "Mahasiswa",
+            "Kelompok": "23"
+        },
+        "2306266716": {
+            "Nama": "Annisaa Sheryl Tabina",
+            "Pass": "Annisaa716",
+            "Role": "Mahasiswa",
+            "Kelompok": "24"
+        },
+        "2306210052": {
+            "Nama": "Rafsya Ghaizan Athari",
+            "Pass": "Rafsya052",
+            "Role": "Mahasiswa",
+            "Kelompok": "24"
+        },
+        "2306266735": {
+            "Nama": "Ilhan Rafidya Khalid",
+            "Pass": "Ilhan735",
+            "Role": "Mahasiswa",
+            "Kelompok": "25"
+        },
+        "2306266691": {
+            "Nama": "Feyza Hasna Shabrina",
+            "Pass": "Feyza691",
+            "Role": "Mahasiswa",
+            "Kelompok": "25"
+        },
+        "2306266804": {
+            "Nama": "Muhamad Femas Rifqi Dwi Nugroho",
+            "Pass": "Muhamad804",
+            "Role": "Mahasiswa",
+            "Kelompok": "26"
+        },
+        "2306220431": {
+            "Nama": "Raja Juan Ready",
+            "Pass": "Raja431",
+            "Role": "Mahasiswa",
+            "Kelompok": "26"
+        },
+        "2306266823": {
+            "Nama": "Sarfaraz Sultan Syaqil",
+            "Pass": "Sarfaraz823",
+            "Role": "Mahasiswa",
+            "Kelompok": "27"
+        },
+        "2306263714": {
+            "Nama": "Titania Latanza Shauvinna",
+            "Pass": "Titania714",
+            "Role": "Mahasiswa",
+            "Kelompok": "27"
+        },
+        "2306156706": {
+            "Nama": "Feby Andika Samudera",
+            "Pass": "Feby706",
+            "Role": "Mahasiswa",
+            "Kelompok": "28"
+        },
+        "2306263645": {
+            "Nama": "Cynthia Felita Pakpahan",
+            "Pass": "Cynthia645",
+            "Role": "Mahasiswa",
+            "Kelompok": "28"
+        },
+        "2306263664": {
+            "Nama": "Kholifah Zein Nuril Musthafa",
+            "Pass": "Kholifah664",
+            "Role": "Mahasiswa",
+            "Kelompok": "29"
+        },
+        "2306156694": {
+            "Nama": "M. Deffandio Rizqe Emeraldo",
+            "Pass": "Deffanfio694",
+            "Role": "Mahasiswa",
+            "Kelompok": "29"
+        },
+        "2306247446": {
+            "Nama": "Abdallah Raffael Omari",
+            "Pass": "Abdallah446",
+            "Role": "Mahasiswa",
+            "Kelompok": "30"
+        },
+        "2306266786": {
+            "Nama": "Muhammad Ilman Zuhriy",
+            "Pass": "Muhammad786",
+            "Role": "Mahasiswa",
+            "Kelompok": "30"
+        },
+        "2306247521": {
+            "Nama": "Eowyn Nerice Djumri",
+            "Pass": "Eowyn521",
+            "Role": "Mahasiswa",
+            "Kelompok": "31"
+        },
+        "2306156744": {
+            "Nama": "Muhamad Arshal Rizaldi",
+            "Pass": "Muhamad744",
+            "Role": "Mahasiswa",
+            "Kelompok": "31"
+        },
+        "2306206364": {
+            "Nama": "Kevin Abram Petra Hutabarat",
+            "Pass": "Kevin364",
+            "Role": "Mahasiswa",
+            "Kelompok": "32"
+        },
+        "2306228604": {
+            "Nama": "Keiko Aurelia Ahsan",
+            "Pass": "Keiko604",
+            "Role": "Mahasiswa",
+            "Kelompok": "32"
+        },
+        "2306229456": {
+            "Nama": "Giovany Sirait",
+            "Pass": "Giovany456",
+            "Role": "Mahasiswa",
+            "Kelompok": "33"
+        },
+        "2306203381": {
+            "Nama": "Nofrizza Hilal Raffa Kharisma",
+            "Pass": "Nofrizza381",
+            "Role": "Mahasiswa",
+            "Kelompok": "33"
+        },
+        "2306214712": {
+            "Nama": "Aqil Haras",
+            "Pass": "Aqil712",
+            "Role": "Mahasiswa",
+            "Kelompok": "34"
+        },
+        "2306266880": {
+            "Nama": "Yemima Christabel Hasianna Sirait",
+            "Pass": "Yemima880",
+            "Role": "Mahasiswa",
+            "Kelompok": "34"
+        },
+        "2306263626": {
+            "Nama": "Ahmad Farrij Dzulfikar",
+            "Pass": "Ahmad626",
+            "Role": "Mahasiswa",
+            "Kelompok": "35"
+        },
+        "2306156712": {
+            "Nama": "Ajeng Wanda Amany",
+            "Pass": "Ajeng712",
+            "Role": "Mahasiswa",
+            "Kelompok": "35"
+        },
+        "2306238864": {
+            "Nama": "Rizky Yusuf Al Hafiz",
+            "Pass": "Rizky864",
+            "Role": "Mahasiswa",
+            "Kelompok": "36"
+        },
+        "2306156851": {
+            "Nama": "Adi Saputra",
+            "Pass": "Adi851",
+            "Role": "Mahasiswa",
+            "Kelompok": "36"
+        },
+        "2306247534": {
+            "Nama": "Ikhlas Hanif Nitisara",
+            "Pass": "Ikhlas534",
+            "Role": "Mahasiswa",
+            "Kelompok": "37"
+        },
+        "2306247553": {
+            "Nama": "Muhammad Daffa Wibisono",
+            "Pass": "Muhammad553",
+            "Role": "Mahasiswa",
+            "Kelompok": "37"
+        },
+        "2306156896": {
+            "Nama": "Muhammad Radit Pratama",
+            "Pass": "Muhammad896",
+            "Role": "Mahasiswa",
+            "Kelompok": "38"
+        },
+        "2306156731": {
+            "Nama": "Fathan Ghani Akbar",
+            "Pass": "Fathan731",
+            "Role": "Mahasiswa",
+            "Kelompok": "38"
+        },
+        "2306211471": {
+            "Nama": "Ali Reza",
+            "Pass": "Ali471",
+            "Role": "Mahasiswa",
+            "Kelompok": "39"
+        },
+        "2306266836": {
+            "Nama": "Gangsar Satryajati Wiratmaja",
+            "Pass": "Gangsar836",
+            "Role": "Mahasiswa",
+            "Kelompok": "39"
+        },
+        "2306223686": {
+            "Nama": "Kemas Rasyad Subhan",
+            "Pass": "Kemas686",
+            "Role": "Mahasiswa",
+            "Kelompok": "40"
+        },
+        "2306220053": {
+            "Nama": "Shaquilla Arkhan Bravidya Aribowo",
+            "Pass": "Shaquilla053",
+            "Role": "Mahasiswa",
+            "Kelompok": "40"
+        },
+        "2306156763": {
+            "Nama": "Kevin Imanuel Hutagaol",
+            "Pass": "Kevin763",
+            "Role": "Mahasiswa",
+            "Kelompok": "41"
+        },
+        "2306247345": {
+            "Nama": "Livia Hanifa Thuraya",
+            "Pass": "Livia345",
+            "Role": "Mahasiswa",
+            "Kelompok": "41"
+        },
+        "2306156832": {
+            "Nama": "Akrim Dwi Anggoro",
+            "Pass": "Akrim832",
+            "Role": "Mahasiswa",
+            "Kelompok": "42"
+        },
+        "2306215873": {
+            "Nama": "Muhammad Satrio Nararya",
+            "Pass": "Muhammad873",
+            "Role": "Mahasiswa",
+            "Kelompok": "42"
+        },
+        "2306156555": {
+            "Nama": "Rafi Ikhsan Adimulya",
+            "Pass": "Rafi555",
+            "Role": "Mahasiswa",
+            "Kelompok": "43"
+        },
+        "2306266905": {
+            "Nama": "Muhammad Fadlan Athari Ginting",
+            "Pass": "Muhammad905",
+            "Role": "Mahasiswa",
+            "Kelompok": "43"
+        },
+        "2306266911": {
+            "Nama": "Andrea Ika Christi Santoso",
+            "Pass": "Andrea911",
+            "Role": "Mahasiswa",
+            "Kelompok": "44"
+        },
+        "2306156662": {
+            "Nama": "Euaggelion Abi Panjaitan",
+            "Pass": "Euaggelion662",
+            "Role": "Mahasiswa",
+            "Kelompok": "44"
+        },
+        "2306247484": {
+            "Nama": "Nathania Isabella Ulibasa Sihite",
+            "Pass": "Nathania484",
+            "Role": "Mahasiswa",
+            "Kelompok": "45"
+        },
+        "2306156605": {
+            "Nama": "Rafi Achmadsyah",
+            "Pass": "Rafi605",
+            "Role": "Mahasiswa",
+            "Kelompok": "45"
+        },
+        "2306266792": {
+            "Nama": "Muhammad Haidar Al Ghifari",
+            "Pass": "Muhammad792",
+            "Role": "Mahasiswa",
+            "Kelompok": "46"
+        },
+        "2306231473": {
+            "Nama": "Nigel Denaya Manuwu Nayar",
+            "Pass": "Nigel473",
+            "Role": "Mahasiswa",
+            "Kelompok": "46"
+        },
+        "2306205260": {
+            "Nama": "Fathih Rayyandra Firmansyah",
+            "Pass": "Fathih260",
+            "Role": "Mahasiswa",
+            "Kelompok": "47"
+        },
+        "2306204560": {
+            "Nama": "Dante Atharrahman",
+            "Pass": "Dante560",
+            "Role": "Mahasiswa",
+            "Kelompok": "47"
+        },
+        "2306156782": {
+            "Nama": "Ferda Nadia Sulistiyo",
+            "Pass": "Ferda782",
+            "Role": "Mahasiswa",
+            "Kelompok": "48"
+        },
+        "2306156901": {
+            "Nama": "Mirza Wisnu Armano",
+            "Pass": "Mirza901",
+            "Role": "Mahasiswa",
+            "Kelompok": "48"
+        },
+        "2306238826": {
+            "Nama": "Anindya Putri Defana",
+            "Pass": "Anindya826",
+            "Role": "Mahasiswa",
+            "Kelompok": "49"
+        },
+        "2306156776": {
+            "Nama": "Ichsan Kamil",
+            "Pass": "Ichnsan776",
+            "Role": "Mahasiswa",
+            "Kelompok": "49"
+        },
+        "2306156864": {
+            "Nama": "Rafi Naryama Dana",
+            "Pass": "Rafi864",
+            "Role": "Mahasiswa",
+            "Kelompok": "50"
+        },
+        "2306210986": {
+            "Nama": "Bilal",
+            "Pass": "Bilal986",
+            "Role": "Mahasiswa",
+            "Kelompok": "50"
+        },
+        "2306156630": {
+            "Nama": "Ida Bagus Ketut Satya Wira Dharma",
+            "Pass": "Ida630",
+            "Role": "Mahasiswa",
+            "Kelompok": "51"
+        },
+        "2306156643": {
+            "Nama": "M. Gibran Arya Avicena",
+            "Pass": "Gibran643",
+            "Role": "Mahasiswa",
+            "Kelompok": "51"
+        },
+        "2306238800": {
+            "Nama": "Naura Khansa Kamila",
+            "Pass": "Naura800",
+            "Role": "Mahasiswa",
+            "Kelompok": "52"
+        },
+        "2306266855": {
+            "Nama": "Bastian Ramy Ervandi",
+            "Pass": "Bastian855",
+            "Role": "Mahasiswa",
+            "Kelompok": "52"
+        },
+        "2306266685": {
+            "Nama": "Luthfi Abdillah Wahid",
+            "Pass": "Luthfi685",
+            "Role": "Mahasiswa",
+            "Kelompok": "53"
+        },
+        "2306247351": {
+            "Nama": "Fahmi Wahyu Dhinata",
+            "Pass": "Fahmi351",
+            "Role": "Mahasiswa",
+            "Kelompok": "53"
+        },
+        "2306247566": {
+            "Nama": "Muhammad Rafly Fadhilah Irsa",
+            "Pass": "Muhammad566",
+            "Role": "Mahasiswa",
+            "Kelompok": "54"
+        },
+        "2306213804": {
+            "Nama": "Nicholas Taruliasi Sinaga",
+            "Pass": "Nicholas804",
+            "Role": "Mahasiswa",
+            "Kelompok": "54"
+        },
+        "2306219026": {
+            "Nama": "Gregorius Petrus Leslie",
+            "Pass": "Gregorius026",
+            "Role": "Mahasiswa",
+            "Kelompok": "55"
+        },
+        "2306247515": {
+            "Nama": "Kayla Annisa",
+            "Pass": "Kayla515",
+            "Role": "Mahasiswa",
+            "Kelompok": "55"
+        },
+        "2306201786": {
+            "Nama": "Christian Zealot De Jonathan Tambunan",
+            "Pass": "Christian786",
+            "Role": "Mahasiswa",
+            "Kelompok": "56"
+        },
+        "2306247433": {
+            "Nama": "Dimas Rafi Nugroho",
+            "Pass": "Dimas433",
+            "Role": "Mahasiswa",
+            "Kelompok": "56"
+        },
+        "2306156675": {
+            "Nama": "Naira Raissa Hulaemi",
+            "Pass": "Naira675",
+            "Role": "Mahasiswa",
+            "Kelompok": "57"
+        },
+        "2306214984": {
+            "Nama": "Tsaqif Rizky Muhammad",
+            "Pass": "Tsaqif984",
+            "Role": "Mahasiswa",
+            "Kelompok": "57"
+        },
+        "2306238851": {
+            "Nama": "Muhammad Abunk Natajaya",
+            "Pass": "Muhammad851",
+            "Role": "Mahasiswa",
+            "Kelompok": "58"
+        },
+        "2306206654": {
+            "Nama": "Muhammad Alif Iqbal",
+            "Pass": "Muhammad654",
+            "Role": "Mahasiswa",
+            "Kelompok": "58"
+        },
+        "2306247471": {
+            "Nama": "Naufal Hani Zakwan",
+            "Pass": "Naufal471",
+            "Role": "Mahasiswa",
+            "Kelompok": "59"
+        },
+        "2306229140": {
+            "Nama": "Bambang Jatmiko",
+            "Pass": "Bambang140",
+            "Role": "Mahasiswa",
+            "Kelompok": "59"
+        },
+        "2306211295": {
+            "Nama": "Rania Maryam Muthmainnah",
+            "Pass": "Rania295",
+            "Role": "Mahasiswa",
+            "Kelompok": "60"
+        },
+        "2306156656": {
+            "Nama": "Rengganis Naurasyifa' Tresna Adji",
+            "Pass": "Rengganis656",
+            "Role": "Mahasiswa",
+            "Kelompok": "60"
+        },
+        "2306238813": {
+            "Nama": "Muhammad Teguh Surbakti",
+            "Pass": "Muhammad813",
+            "Role": "Mahasiswa",
+            "Kelompok": "61"
+        },
+        "2306156574": {
+            "Nama": "Naufal Danish Rabbani",
+            "Pass": "Naufal574",
+            "Role": "Mahasiswa",
+            "Kelompok": "61"
+        },
+        "2306231220": {
+            "Nama": "Faiqu Dzaky Eliananta Subkhan",
+            "Pass": "Faiqu220",
+            "Role": "Mahasiswa",
+            "Kelompok": "62"
+        },
+        "2306210304": {
+            "Nama": "Ignatius Cahyo Widhiasto",
+            "Pass": "Ignatius304",
+            "Role": "Mahasiswa",
+            "Kelompok": "62"
+        },
+        "2306156542": {
+            "Nama": "Ihza Fitriyansyah",
+            "Pass": "Ihza542",
+            "Role": "Mahasiswa",
+            "Kelompok": "63"
+        },
+        "2306266810": {
+            "Nama": "Darrell Alfath",
+            "Pass": "Darrell810",
+            "Role": "Mahasiswa",
+            "Kelompok": "63"
+        },
+        "2306247383": {
+            "Nama": "Drina Shahada Wibowo",
+            "Pass": "Drina383",
+            "Role": "Mahasiswa",
+            "Kelompok": "64"
+        },
+        "2306247396": {
+            "Nama": "Erzal Kusuma Shahreza",
+            "Pass": "Erzal396",
+            "Role": "Mahasiswa",
+            "Kelompok": "64"
+        },
+        "2306266773": {
+            "Nama": "Muhammad Faashil Abdau",
+            "Pass": "Muhammad773",
+            "Role": "Mahasiswa",
+            "Kelompok": "65"
+        },
+        "2306156845": {
+            "Nama": "Mochamad Danis Akbar",
+            "Pass": "Mochamad845",
+            "Role": "Mahasiswa",
+            "Kelompok": "65"
+        },
+        "2306156536": {
+            "Nama": "Qanitah Althaf",
+            "Pass": "Qanitah536",
+            "Role": "Mahasiswa",
+            "Kelompok": "66"
+        },
+        "2306217790": {
+            "Nama": "Keefe Razaan Hidayat",
+            "Pass": "Keefe790",
+            "Role": "Mahasiswa",
+            "Kelompok": "66"
+        },
+        "2306266760": {
+            "Nama": "Shidqi Faisal Hakim",
+            "Pass": "Shidqi760",
+            "Role": "Mahasiswa",
+            "Kelompok": "67"
+        },
+        "2306247465": {
+            "Nama": "Muhammad Risqi Dwi Ananto",
+            "Pass": "Muhammad465",
+            "Role": "Mahasiswa",
+            "Kelompok": "67"
+        },
+        "2306247420": {
+            "Nama": "Elfasha Auliandra Suwarna",
+            "Pass": "Elfasha420",
+            "Role": "Mahasiswa",
+            "Kelompok": "68"
+        },
+        "2306247502": {
+            "Nama": "Rangga Anandika Thymanta Sinulingga",
+            "Pass": "Rangga502",
+            "Role": "Mahasiswa",
+            "Kelompok": "68"
+        },
+        "2306222304": {
+            "Nama": "Satria Pakarti Siswantra",
+            "Pass": "Satria304",
+            "Role": "Mahasiswa",
+            "Kelompok": "69"
+        },
+        "2306156611": {
+            "Nama": "Juan Veron Rhamadan",
+            "Pass": "Juan611",
+            "Role": "Mahasiswa",
+            "Kelompok": "69"
+        },
+        "2306203066": {
+            "Nama": "Radithya Fawwaz Syahdi",
+            "Pass": "Radithya066",
+            "Role": "Mahasiswa",
+            "Kelompok": "70"
+        },
+        "2306213842": {
+            "Nama": "Muhammad Rais Aminurrahman",
+            "Pass": "Muhammad842",
+            "Role": "Mahasiswa",
+            "Kelompok": "70"
+        },
+        "2306210456": {
+            "Nama": "Mikhail Ayares",
+            "Pass": "Mikhail456",
+            "Role": "Mahasiswa",
+            "Kelompok": "71"
+        },
+        "2306266842": {
+            "Nama": "Haidar Fatih Abidin",
+            "Pass": "Haidar842",
+            "Role": "Mahasiswa",
+            "Kelompok": "71"
+        },
+        "2306202795": {
+            "Nama": "Muhammad Sabililhaq",
+            "Pass": "Muhammad795",
+            "Role": "Mahasiswa",
+            "Kelompok": "72"
+        },
+        "2306266741": {
+            "Nama": "Mikola Syabila",
+            "Pass": "Mikola741",
+            "Role": "Mahasiswa",
+            "Kelompok": "72"
+        },
+        "2306211345": {
+            "Nama": "Rasendriya Arsanta",
+            "Pass": "Rasendriya345",
+            "Role": "Mahasiswa",
+            "Kelompok": "73"
+        },
+        "2306247401": {
+            "Nama": "Hafizhah Azkah",
+            "Pass": "Hafizhah401",
+            "Role": "Mahasiswa",
+            "Kelompok": "73"
+        },
+        "2306156624": {
+            "Nama": "Kaisar Syaddad Dien Cahyono",
+            "Pass": "Kaisar624",
+            "Role": "Mahasiswa",
+            "Kelompok": "74"
+        },
+        "2306266924": {
+            "Nama": "Yemima Carrisa Kinanthi",
+            "Pass": "Yemima924",
+            "Role": "Mahasiswa",
+            "Kelompok": "74"
+        },
+        "2206055800": {
+            "Nama": "Stanislaus David Arelian Widodo",
+            "Pass": "Stanislaus800",
+            "Role": "Assisten",
+            "Kelompok": "0"
+        },
+        "2206055750": {
+            "Nama": "Jonathan Edward Charles De Fretes",
+            "Pass": "Jonathan750",
+            "Role": "Assisten",
+            "Kelompok": "0"
+        },
+        "2206817396": {
+            "Nama": "Fadhli Ammar Taqiyuddin Hakim",
+            "Pass": "Fadhli396",
+            "Role": "Assisten",
+            "Kelompok": "0"
+        },
+        "2206055643": {
+            "Nama": "Davin Nazhif Wilviadli",
+            "Pass": "Davin643",
+            "Role": "Assisten",
+            "Kelompok": "0"
+        },
+        "2206029891": {
+            "Nama": "Attafahqi Amirtha Dariswan",
+            "Pass": "Attafahqi891",
+            "Role": "Assisten",
+            "Kelompok": "0"
+        },
+        "2206026271": {
+            "Nama": "Dicky Osmond Sieliewangi",
+            "Pass": "Dicky271",
+            "Role": "Assisten",
+            "Kelompok": "0"
+        },
+        "2206028062": {
+            "Nama": "Muhammad Farhan Hanafi",
+            "Pass": "Muhammad062",
+            "Role": "Assisten",
+            "Kelompok": "0"
+        },
+        "2206815516": {
+            "Nama": "Puti Nabilah",
+            "Pass": "Puti516",
+            "Role": "Assisten",
+            "Kelompok": "0"
+        }
+    }
+}
