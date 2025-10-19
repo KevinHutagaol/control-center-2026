@@ -9,11 +9,11 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 import matplotlib.pyplot as plt
+from updater import ask_for_update
 
 import resources_rc
 
-FIREBASE_CRED_PATH = 'FirebaseDataPraktikan.json'
-
+FIREBASE_CRED_PATH = 'firebaseAuth.json'
 ACCOUNT_COLLECTION = 'Account' # Digunakan untuk login dan password
 NILAI_COLLECTION = 'Nilai'     # Digunakan untuk data nilai
 
