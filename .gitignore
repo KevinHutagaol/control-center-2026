@@ -11,4 +11,4 @@ venv/
 firebaseAuth.json
 
 # Others
-NOTES.*
+/*.txt
