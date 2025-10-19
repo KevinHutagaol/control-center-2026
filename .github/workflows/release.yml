@@ -1,0 +1,46 @@
+name: Auto Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger saat kamu push tag v1.0.0, v2.1.3, dll
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # agar tag bisa diambil
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Build app with PyInstaller
+      run: |
+        pyinstaller main.py --onefile --noconfirm --clean
+        mkdir release
+        cp dist/main release/
+        cp version.json release/
+
+    - name: Create ZIP
+      run: |
+        cd release
+        zip -r my_app.zip .
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release/my_app.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
