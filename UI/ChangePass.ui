@@ -241,7 +241,7 @@ font-family: &quot;SF Pro Display&quot;;
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgb(255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
