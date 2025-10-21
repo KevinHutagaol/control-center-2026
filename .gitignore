@@ -10,5 +10,10 @@ venv/
 .env
 firebaseAuth.json
 
+# Test Build
+/build
+/dist
+/*.spec
+
 # Others
 /*.txt
