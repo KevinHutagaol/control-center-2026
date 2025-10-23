@@ -25,6 +25,8 @@ import control as ctrl
 import math
 import pandas as pd
 from pathlib import Path
+from google.cloud import firestore
+
 
 import pages.Modul4.Asset.Resource
 
@@ -71,7 +73,6 @@ def resource_path(rel: str | Path) -> str:
 
 
 # === Firestore ===
-from google.cloud import firestore
 print(resource_path("firebaseAuth.json"))
 db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
 print("Firebase initialized successfully")
