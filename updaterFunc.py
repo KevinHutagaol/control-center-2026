@@ -46,9 +46,12 @@ def isOutdated():
     local = get_local_version()
     remote = get_remote_version()
 
+    print(local, "---",  remote)
+
     if not local or not remote:
         return False
-    return version.parse(local) < version.parse(remote)
+    
+    return version.parse(local) == version.parse(remote)
 
 def download_zip(url):
     print("🔽 Download update...")
@@ -85,7 +88,7 @@ def ask_for_update(parent=None):
     local = get_local_version()
     remote, url = get_remote_version()
 
-    if remote and remote > local:
+    if isOutdated():
         msg = QMessageBox(parent)
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Update Tersedia")
