@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
-    <height>843</height>
+    <width>538</width>
+    <height>802</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,55 +17,30 @@
    <string notr="true">background-color: rgb(255, 0, 0);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Minimum</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
+     <widget class="QFrame" name="frame">
+      <property name="minimumSize">
        <size>
-        <width>20</width>
-        <height>20</height>
+        <width>520</width>
+        <height>480</height>
        </size>
       </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QFrame" name="frame_2">
+      <property name="styleSheet">
+       <string notr="true">image: url(:/Asset/Asset/Logo.png);</string>
+      </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QFrame" name="frame">
-         <property name="minimumSize">
-          <size>
-           <width>520</width>
-           <height>480</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">image: url(:/Asset/Asset/Logo.png);</string>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="NPM">
-         <property name="styleSheet">
-          <string notr="true">background-color:rgba(0, 0, 0, 0);
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="NPM">
+      <property name="styleSheet">
+       <string notr="true">background-color:rgba(0, 0, 0, 0);
 border:none;
 color:rgb(255, 255, 255);
 border-bottom: 2px solid rgba(255, 255, 255, 100);
@@ -74,38 +49,38 @@ font-size: 15px;
 font-family: &quot;SF Pro Display&quot;; 
 	font-weight: bold; 
     font-style: normal;</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="placeholderText">
-          <string>Enter Your ID Number</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Fixed</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>17</width>
-           <height>17</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="Pass">
-         <property name="styleSheet">
-          <string notr="true">background-color:rgba(0, 0, 0, 0);
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="placeholderText">
+       <string>Enter Your ID Number</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Maximum</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>5</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="Pass">
+      <property name="styleSheet">
+       <string notr="true">background-color:rgba(0, 0, 0, 0);
 border:none;
 color:rgb(255, 255, 255);
 border-bottom: 2px solid rgba(255, 255, 255, 100);
@@ -114,41 +89,41 @@ font-size: 15px;
 font-family: &quot;SF Pro Display&quot;; 
 	font-weight: bold; 
     font-style: normal;</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="echoMode">
-          <enum>QLineEdit::Password</enum>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="placeholderText">
-          <string>Enter Your Password</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Fixed</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>17</width>
-           <height>17</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="NewPass">
-         <property name="styleSheet">
-          <string notr="true">background-color:rgba(0, 0, 0, 0);
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Password</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="placeholderText">
+       <string>Enter Your Password</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>17</width>
+        <height>17</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="NewPass">
+      <property name="styleSheet">
+       <string notr="true">background-color:rgba(0, 0, 0, 0);
 border:none;
 color:rgb(255, 255, 255);
 border-bottom: 2px solid rgba(255, 255, 255, 100);
@@ -157,38 +132,38 @@ font-size: 15px;
 font-family: &quot;SF Pro Display&quot;; 
 	font-weight: bold; 
     font-style: normal;</string>
-         </property>
-         <property name="echoMode">
-          <enum>QLineEdit::Password</enum>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="placeholderText">
-          <string>Enter Your New Password</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Fixed</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>17</width>
-           <height>17</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="ConfirmPass">
-         <property name="styleSheet">
-          <string notr="true">background-color:rgba(0, 0, 0, 0);
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Password</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="placeholderText">
+       <string>Enter Your New Password</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_4">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Maximum</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>5</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="ConfirmPass">
+      <property name="styleSheet">
+       <string notr="true">background-color:rgba(0, 0, 0, 0);
 border:none;
 color:rgb(255, 255, 255);
 border-bottom: 2px solid rgba(255, 255, 255, 100);
@@ -197,51 +172,51 @@ font-size: 15px;
 font-family: &quot;SF Pro Display&quot;; 
 	font-weight: bold; 
     font-style: normal;</string>
-         </property>
-         <property name="echoMode">
-          <enum>QLineEdit::Password</enum>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="placeholderText">
-          <string>Confirm Your New Password</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Minimum</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>10</width>
-           <height>10</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="ChangePass">
-         <property name="font">
-          <font>
-           <family>SF Pro Display</family>
-           <pointsize>-1</pointsize>
-           <weight>75</weight>
-           <italic>false</italic>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="cursor">
-          <cursorShape>PointingHandCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255);
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Password</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="placeholderText">
+       <string>Confirm Your New Password</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_5">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>17</width>
+        <height>17</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QPushButton" name="ChangePass">
+      <property name="font">
+       <font>
+        <family>SF Pro Display</family>
+        <pointsize>-1</pointsize>
+        <weight>75</weight>
+        <italic>false</italic>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -255,22 +230,22 @@ font-family: &quot;SF Pro Display&quot;;
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(255, 255, 255, 225);
 }</string>
-         </property>
-         <property name="text">
-          <string>Change Password</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="Back">
-         <property name="cursor">
-          <cursorShape>PointingHandCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255);
+      </property>
+      <property name="text">
+       <string>Change Password</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="Back">
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255,0);
 		border-color: rgb(255, 255, 255);
 		border-radius : 5px;
 		color: rgb(225, 225, 225);		
@@ -285,22 +260,19 @@ QPushButton:hover {
 QPushButton:hover {
     text-decoration: underline;
 }</string>
-         </property>
-         <property name="text">
-          <string>Back to login page</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      </property>
+      <property name="text">
+       <string>Back to login page</string>
+      </property>
      </widget>
     </item>
     <item>
-     <spacer name="horizontalSpacer_2">
+     <spacer name="verticalSpacer_3">
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Vertical</enum>
       </property>
       <property name="sizeType">
-       <enum>QSizePolicy::Minimum</enum>
+       <enum>QSizePolicy::Fixed</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
@@ -311,10 +283,22 @@ QPushButton:hover {
      </spacer>
     </item>
    </layout>
+   <zorder>frame</zorder>
+   <zorder>ChangePass</zorder>
+   <zorder>verticalSpacer_2</zorder>
+   <zorder>Pass</zorder>
+   <zorder>verticalSpacer_3</zorder>
+   <zorder>NPM</zorder>
+   <zorder>verticalSpacer</zorder>
+   <zorder>NewPass</zorder>
+   <zorder>ConfirmPass</zorder>
+   <zorder>verticalSpacer_4</zorder>
+   <zorder>verticalSpacer_5</zorder>
+   <zorder>Back</zorder>
   </widget>
  </widget>
  <resources>
-  <include location="../resource.qrc"/>
+  <include location="resource.qrc"/>
  </resources>
  <connections/>
 </ui>
