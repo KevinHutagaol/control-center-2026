@@ -4,32 +4,51 @@ import zipfile
 import shutil
 import requests
 import json
-from packaging import version
 from PyQt5.QtWidgets import QMessageBox
+import requests
+from dotenv import load_dotenv
+from requests.auth import HTTPBasicAuth
+from packaging import version
 
 # Konfigurasi
-REMOTE_JSON_URL = "https://raw.githubusercontent.com/<user>/<repo>/main/latest.json"
+REMOTE_JSON_URL = "https://raw.githubusercontent.com/AtlasCJr/ControlCenter/main/latest.json"
 LOCAL_VERSION_FILE = "version.json"
 UPDATE_ZIP_NAME = "update.zip"
 EXTRACT_DIR = "update_temp"
 APP_DIR = "."
 
 
-def get_local_version():
-    with open(LOCAL_VERSION_FILE, "r") as f:
-        return version.parse(json.load(f)["version"])
-
-
-def get_remote_version():
+def get_local_version() -> str:
     try:
-        r = requests.get(REMOTE_JSON_URL)
-        if r.status_code == 200:
-            data = r.json()
-            return version.parse(data["latest_version"]), data["download_url"]
-    except Exception as e:
-        print("Gagal cek versi:", e)
-    return None, None
+        with open(LOCAL_VERSION_FILE) as f:
+            data = json.load(f)
+            return data["version"]
+    except:
+        return None
 
+def get_remote_version() -> str:
+    load_dotenv()
+
+    GITHUB_USER = "AtlasCJr"
+    GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+
+    url = "https://raw.githubusercontent.com/AtlasCJr/ControlCenter/main/latest.json"
+
+    response = requests.get(url, auth=HTTPBasicAuth(GITHUB_USER, GITHUB_TOKEN))
+
+    if response.status_code == 200:
+        data = response.json()
+        return data["latest_version"]
+    else:
+        return None
+    
+def isOutdated():
+    local = get_local_version()
+    remote = get_remote_version()
+
+    if not local or not remote:
+        return False
+    return version.parse(local) < version.parse(remote)
 
 def download_zip(url):
     print("🔽 Download update...")
