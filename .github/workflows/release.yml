@@ -5,13 +5,16 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write  # needed to upload assets to the Release
+
 jobs:
   build-and-release:
     runs-on: windows-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -28,15 +31,26 @@ jobs:
 
       - name: Create app-config.json at repo root
         shell: bash
-        run: |
-          echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
+        run: echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
 
-      - name: Build with PyInstaller (ONEFILE.spec)
+      - name: Build (ONEFILE.spec)
         run: pyinstaller ONEFILE.spec
 
-      - name: Create GitHub Release
+      - name: Show dist
+        run: dir dist
+        shell: pwsh
+
+      # Optional: keep a copy as an artifact (helps debug)
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: dist/*.exe
+          if-no-files-found: error
+
+      - name: Create GitHub Release (attach .exe)
         uses: softprops/action-gh-release@v1
         with:
-          files: dist\*.exe
+          files: dist/*.exe   # <— glob must match the actual filename
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
