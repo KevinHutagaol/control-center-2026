@@ -26,12 +26,20 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
 
+    - name: Create version.json
+      run: |
+        mkdir -p release
+        echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > release/version.json
+
     - name: Build app with PyInstaller
       run: |
-        pyinstaller main.py --onefile --noconfirm --clean
+        pyinstaller ONEDIR.spec
+            
+    - name: Copy build outputs
+      run: |
         mkdir release
-        cp dist/main release/
-        cp version.json release/
+        cp -r dist/* release/
+        cp release/version.json release/
 
     - name: Create ZIP
       run: |
