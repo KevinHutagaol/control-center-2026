@@ -244,7 +244,7 @@ class Leaderboard(QMainWindow):
         ax.set_facecolor('none')
         plt.setp(wedges, linewidth=0)
         plt.tight_layout()
-        plt.savefig("Hasil/submission_donut.png", transparent=True)
+        # plt.savefig("Hasil/submission_donut.png", transparent=True)
 
         # update UI elements (as in original)
         try:
@@ -306,7 +306,7 @@ class Leaderboard(QMainWindow):
                      fontweight='bold')
 
         plt.tight_layout()
-        plt.savefig("Hasil/top10_grades.png", transparent=True)
+        # plt.savefig("Hasil/top10_grades.png", transparent=True)
 
         try:
             self.TopTen.setStyleSheet(f"border-image: url(Hasil/top10_grades.png);")
