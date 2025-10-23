@@ -5,7 +5,6 @@ import shutil
 import requests
 import json
 from PyQt5.QtWidgets import QMessageBox
-import requests
 from requests.auth import HTTPBasicAuth
 from packaging import version
 from pathlib import Path
