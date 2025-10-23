@@ -19,6 +19,7 @@ def add_tree(datas_list, src_dir, dest_prefix):
 
 datas = []
 datas.append((os.path.join(project_root, "firebaseAuth.json"), "."))
+datas.append((os.path.join(project_root, "app-config.json"), "."))
 
 home_ui     = os.path.join(project_root, "pages", "Home",    "UI_home")
 home_asset  = os.path.join(project_root, "pages", "Home",    "Asset_home")
@@ -61,18 +62,18 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,     # <-- include
-    a.zipfiles,     # <-- include (PyInstaller provides this)
-    a.datas,        # <-- include
-    name='ControlCenter',
+    a.binaries,
+    getattr(a, "zipfiles", []),  # safe for all versions
+    a.datas,
+    [],
+    name="ControlCenter",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=True,          # ok even if UPX isn’t installed; it’ll just skip
     upx_exclude=[],
     runtime_tmpdir=None,
     console=True,
-    # exclude_binaries=False,  # default is False; keep it that way for onefile
 )
 
 # NOTE: no COLLECT() for onefile
