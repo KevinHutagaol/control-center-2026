@@ -428,7 +428,10 @@ class Login(QMainWindow):
         self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.Login.clicked.connect(self.login)
-        self.ChangePass.clicked.connect(self.change_password)
+        self.ChangePass.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.ChangePassPage))
+
+        self.Change.clicked.connect(self.change_password)
+        self.Back.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.LoginPage))
 
         self.Pass.setValidator(self.NoSpaceValidator(self))
 
@@ -448,11 +451,6 @@ class Login(QMainWindow):
     
     def is_valid_npm(self, npm):
         return npm.isdigit() and len(npm) >= 10
-    
-    def change_password(self):
-        self.main_window = ChangePass()
-        self.main_window.show()
-        self.close()
 
     def login(self):
         npm = self.NPM.text().strip()
@@ -482,6 +480,7 @@ class Login(QMainWindow):
             kelompok = user_data.get('Kelompok')
 
             if stored_pass == password:
+                
                 if role == 'Mahasiswa':
                     self.main_window = MainWindow(npm, nama, role, kelompok) 
                     self.main_window.show()
@@ -496,42 +495,6 @@ class Login(QMainWindow):
 
         except Exception as e:
             print("Firebase error:", e)  # debug di console
-
-
-class ChangePass(QMainWindow):
-    def __init__(self):
-        super(ChangePass, self).__init__()
-        uic.loadUi(resource_path("pages/Home/UI_home/ChangePass.ui"), self)
-        self.setWindowTitle("Change Password")
-        self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
-
-        self.ChangePass.clicked.connect(self.change_password)
-        self.Back.clicked.connect(self.back_to_login)
-
-        self.Pass.setValidator(self.NoSpaceValidator())
-        self.NewPass.setValidator(self.NoSpaceValidator())
-        self.ConfirmPass.setValidator(self.NoSpaceValidator())
-        self.show()
-
-    class NoSpaceValidator(QValidator):
-        def __init__(self, parent=None):
-            super().__init__(parent)
-
-        def validate(self, input_text, pos):
-            if " " in input_text:
-                return (QValidator.Invalid, input_text, pos)
-            return (QValidator.Acceptable, input_text, pos)
-
-        def fixup(self, input_text):
-            return input_text.replace(" ", "")
-        
-    def is_valid_npm(self, npm):
-        return npm.isdigit() and len(npm) >= 10
-    
-    def back_to_login(self):
-        self.login_window = Login()
-        self.login_window.show()
-        self.close()
     
     def change_password(self):
         npm = self.NPM.text().strip()
@@ -584,7 +547,7 @@ class ChangePass(QMainWindow):
 
 
 def main():
-    os.system("cls" if os.name == "nt" else "clear")
+    # os.system("cls" if os.name == "nt" else "clear")
 
     print(updaterFunc.isOutdated())
 
