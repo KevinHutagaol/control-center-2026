@@ -58,6 +58,10 @@ a = Analysis(
 
 pyz = PYZ(a.pure)
 
+icon_file = "public/logo.ico"
+if not os.path.exists(icon_file):
+    icon_file = None
+
 # ONEFILE build: include binaries & datas here, and don't use COLLECT
 exe = EXE(
     pyz,
@@ -73,6 +77,7 @@ exe = EXE(
     upx=True,          # ok even if UPX isn’t installed; it’ll just skip
     upx_exclude=[],
     runtime_tmpdir=None,
+    icon=icon_file,
     console=True,
 )
 
