@@ -66,6 +66,8 @@ try:
         firebase_admin.initialize_app(cred)
         
     db = firestore.client() 
+
+    print("Firebase initialized successfully")
 except Exception as e:
     print("Firebase error:", e)  # tampilkan di console
     QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
