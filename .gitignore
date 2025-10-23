@@ -15,9 +15,17 @@ firebaseAuth.json
 /dist
 app-config.json
 
-# Others
-/*.txt
-
 # UI
 *.qrc
 pages/Home/resources_rc.py
+
+# npm Dependencies
+functions/node_modules/
+node_modules/
+*.local
+
+# Firebase functions 
+functions/
+
+# Others
+/*.txt
