@@ -8,7 +8,6 @@ venv/
 
 # Critical information
 .env
-firebaseAuth.json
 
 # Test Build
 /build
