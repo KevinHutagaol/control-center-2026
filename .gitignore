@@ -13,7 +13,7 @@ firebaseAuth.json
 # Test Build
 /build
 /dist
-/*.spec
+version.json
 
 # Others
 /*.txt
