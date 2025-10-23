@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pages.Home.resources_rc as resources_rc
 
+import updaterFunc 
+
 from pages.Modul4.mainCDRL import exec_CDRL
 from pages.Modul7.mainCOD import exec_COD
 from pages.Modul910.mainDMMCD import exec_DMMCD
@@ -55,8 +57,6 @@ def resource_path(rel: str | Path) -> str:
 
     # Fallback: return the first candidate even if missing (caller can handle)
     return str(candidates[0])
-
-os.system("cls" if os.name == "nt" else "clear")
 
 try:
     print(resource_path("firebaseAuth.json"))
@@ -584,6 +584,10 @@ class ChangePass(QMainWindow):
 
 
 def main():
+    os.system("cls" if os.name == "nt" else "clear")
+
+    print(updaterFunc.isOutdated())
+
     app = QApplication(sys.argv)
 
     window = Login()
