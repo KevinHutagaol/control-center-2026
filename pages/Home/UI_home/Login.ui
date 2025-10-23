@@ -6,28 +6,47 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>538</width>
-    <height>693</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(255, 0, 0);</string>
+   <string notr="true">background-color: rgb(255, 255, 255);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QFrame" name="frame">
+     <widget class="QFrame" name="frame_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
-        <width>520</width>
-        <height>470</height>
+        <width>380</width>
+        <height>0</height>
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">image: url(:/Asset/Asset/Logo.png);</string>
+       <string notr="true">border-image: url(:/Asset/Asset/LoginPage.png);
+</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -38,183 +57,745 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="NPM">
+     <widget class="QStackedWidget" name="stackedWidget">
       <property name="styleSheet">
-       <string notr="true">background-color:rgba(0, 0, 0, 0);
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="LoginPage">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QFrame" name="frame_7">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>100</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 81 30pt &quot;Poppins&quot;;
+font-weight: bold; 
+color: rgb(214, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Welcome</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_5">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QFrame" name="frame_6">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>70</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(214, 0, 0);
+border-top-left-radius: 5px;
+border-bottom-left-radius: 5px;
+padding : 2px;
+image: url(:/Asset/Asset/NPM.png);</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="NPM">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(214, 0, 0,100);
 border:none;
+border-radius: 5px;
+border-top-left-radius: 0px;
+border-bottom-left-radius: 0px;
 color:rgb(255, 255, 255);
-border-bottom: 2px solid rgba(255, 255, 255, 100);
-padding-bottom:7px;
-font-size: 15px;
-font-family: &quot;SF Pro Display&quot;; 
-	font-weight: bold; 
-    font-style: normal;</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="placeholderText">
-       <string>Enter Your ID Number</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Maximum</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>5</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="Pass">
-      <property name="styleSheet">
-       <string notr="true">background-color:rgba(0, 0, 0, 0);
+border-bottom: 2px solid rgb(214, 0, 0);
+border-right: 2px solid rgb(214, 0, 0);
+border-top: 2px solid rgb(214, 0, 0);
+padding-top:3px;
+padding-left:10px;
+font: 75 12pt &quot;Poppins&quot;;
+font-weight: bold;</string>
+             </property>
+             <property name="placeholderText">
+              <string>Enter Your Student ID</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QFrame" name="frame_3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>70</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(214, 0, 0);
+border-top-left-radius: 5px;
+border-bottom-left-radius: 5px;
+padding : 2px;
+image: url(:/Asset/Asset/Pass.png);</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="Pass">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(214, 0, 0,100);
 border:none;
+border-radius: 5px;
+border-top-left-radius: 0px;
+border-bottom-left-radius: 0px;
 color:rgb(255, 255, 255);
-border-bottom: 2px solid rgba(255, 255, 255, 100);
-padding-bottom:7px;
-font-size: 15px;
-font-family: &quot;SF Pro Display&quot;; 
-	font-weight: bold; 
-    font-style: normal;</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="echoMode">
-       <enum>QLineEdit::Password</enum>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="placeholderText">
-       <string>Enter Your Password</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <spacer name="verticalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Fixed</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>17</width>
-        <height>17</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QPushButton" name="Login">
-      <property name="font">
-       <font>
-        <family>SF Pro Display</family>
-        <pointsize>-1</pointsize>
-        <weight>75</weight>
-        <italic>false</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="cursor">
-       <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
- 		background-color: rgba(255, 255, 255, 255);
-		border-color: rgb(255, 255, 255);
-		border-radius : 2px;
-		color: rgb(214, 0, 0);
-		font-size: 30px;
-		padding:7px;
-		font-family: &quot;SF Pro Display&quot;; 
-			font-weight: bold; 
-    		font-style: normal;
+border-bottom: 2px solid rgb(214, 0, 0);
+border-right: 2px solid rgb(214, 0, 0);
+border-top: 2px solid rgb(214, 0, 0);
+padding-top:3px;
+padding-left:10px;
+font: 75 12pt &quot;Poppins&quot;;
+font-weight: bold;</string>
+             </property>
+             <property name="echoMode">
+              <enum>QLineEdit::Password</enum>
+             </property>
+             <property name="placeholderText">
+              <string>Enter Your Password</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_8">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <widget class="QPushButton" name="Login">
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+ 		
+		background-color: rgba(214, 0, 0,255);
+		border-radius : 5px;
+		color: rgb(255, 255, 255);
+		padding-top:5px;
+		font: 20pt &quot;Poppins&quot;;
+		font-weight: bold;
 
 }
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgba(255, 255, 255, 255);
+    background-color: rgba(214, 0, 0,225);
 }</string>
-      </property>
-      <property name="text">
-       <string>Login</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="ChangePass">
-      <property name="cursor">
-       <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
- 		background-color: rgba(255, 255, 255, 0);
+             </property>
+             <property name="text">
+              <string>Login</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="ChangePass">
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+ 		background-color: rgba(255, 255, 255,0);
 		border-color: rgb(255, 255, 255);
 		border-radius : 5px;
-		color: rgb(225, 225, 225);		
-		font-size: 10px;
-		padding:3px;
-		font-family: &quot;SF Pro Display&quot;; 	
-			font-weight: bold; 
-    		font-style: normal;
+		color: rgb(214, 0, 0);		
+		padding:0px;
+		font: 8pt &quot;Poppins&quot;;
 }
 
 /* Saat mouse hover */
 QPushButton:hover {
     text-decoration: underline;
 }</string>
-      </property>
-      <property name="text">
-       <string>Want to change password?</string>
-      </property>
+          </property>
+          <property name="text">
+           <string>Change Password</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>110</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="ChangePassPage">
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QFrame" name="frame_11">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>120</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 81 30pt &quot;Poppins&quot;;
+font-weight: bold; 
+color: rgb(214, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Change Pass</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_14">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QFrame" name="frame_15">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>70</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(214, 0, 0);
+border-top-left-radius: 5px;
+border-bottom-left-radius: 5px;
+padding : 2px;
+image: url(:/Asset/Asset/NPM.png);</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="EmailForgot">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(214, 0, 0,100);
+border:none;
+border-radius: 5px;
+border-top-left-radius: 0px;
+border-bottom-left-radius: 0px;
+color:rgb(255, 255, 255);
+border-bottom: 2px solid rgb(214, 0, 0);
+border-right: 2px solid rgb(214, 0, 0);
+border-top: 2px solid rgb(214, 0, 0);
+padding-top:3px;
+padding-left:10px;
+font: 75 12pt &quot;Poppins&quot;;
+font-weight: bold;</string>
+             </property>
+             <property name="placeholderText">
+              <string>Enter Your Student ID</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_13">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QFrame" name="frame_16">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>70</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(214, 0, 0);
+border-top-left-radius: 5px;
+border-bottom-left-radius: 5px;
+padding : 2px;
+image: url(:/Asset/Asset/Pass.png);</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="OldPass">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(214, 0, 0,100);
+border:none;
+border-radius: 5px;
+border-top-left-radius: 0px;
+border-bottom-left-radius: 0px;
+color:rgb(255, 255, 255);
+border-bottom: 2px solid rgb(214, 0, 0);
+border-right: 2px solid rgb(214, 0, 0);
+border-top: 2px solid rgb(214, 0, 0);
+padding-top:3px;
+padding-left:10px;
+font: 75 12pt &quot;Poppins&quot;;
+font-weight: bold;</string>
+             </property>
+             <property name="placeholderText">
+              <string>Enter Your Old Password</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_4">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QFrame" name="frame_17">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>70</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(214, 0, 0);
+border-top-left-radius: 5px;
+border-bottom-left-radius: 5px;
+padding : 2px;
+image: url(:/Asset/Asset/NewPass.png);</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="NewPass">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(214, 0, 0,100);
+border:none;
+border-radius: 5px;
+border-top-left-radius: 0px;
+border-bottom-left-radius: 0px;
+color:rgb(255, 255, 255);
+border-bottom: 2px solid rgb(214, 0, 0);
+border-right: 2px solid rgb(214, 0, 0);
+border-top: 2px solid rgb(214, 0, 0);
+padding-top:3px;
+padding-left:10px;
+font: 75 12pt &quot;Poppins&quot;;
+font-weight: bold;</string>
+             </property>
+             <property name="placeholderText">
+              <string>Enter Your New Password</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_9">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QFrame" name="frame_18">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>70</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(214, 0, 0);
+border-top-left-radius: 5px;
+border-bottom-left-radius: 5px;
+padding : 2px;
+image: url(:/Asset/Asset/ConfirmPass.png);</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="ConfirmPass">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(214, 0, 0,100);
+border:none;
+border-radius: 5px;
+border-top-left-radius: 0px;
+border-bottom-left-radius: 0px;
+color:rgb(255, 255, 255);
+border-bottom: 2px solid rgb(214, 0, 0);
+border-right: 2px solid rgb(214, 0, 0);
+border-top: 2px solid rgb(214, 0, 0);
+padding-top:3px;
+padding-left:10px;
+font: 75 12pt &quot;Poppins&quot;;
+font-weight: bold;</string>
+             </property>
+             <property name="placeholderText">
+              <string>Confirm Your New Password</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_12">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QPushButton" name="Change">
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+ 		
+		background-color: rgba(214, 0, 0,255);
+		border-radius : 5px;
+		color: rgb(255, 255, 255);
+		padding-top:5px;
+		font: 20pt &quot;Poppins&quot;;
+		font-weight: bold;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgba(214, 0, 0,225);
+}</string>
+             </property>
+             <property name="text">
+              <string>Change</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="Back">
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+ 		background-color: rgba(255, 255, 255,0);
+		border-color: rgb(255, 255, 255);
+		border-radius : 5px;
+		color: rgb(214, 0, 0);		
+		padding:0px;
+		font: 8pt &quot;Poppins&quot;;
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    text-decoration: underline;
+}</string>
+          </property>
+          <property name="text">
+           <string>Back to Login</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>50</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
-    <item>
-     <spacer name="verticalSpacer_3">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Fixed</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
    </layout>
-   <zorder>frame</zorder>
-   <zorder>Login</zorder>
-   <zorder>verticalSpacer_2</zorder>
-   <zorder>Pass</zorder>
-   <zorder>NPM</zorder>
-   <zorder>verticalSpacer</zorder>
-   <zorder>ChangePass</zorder>
-   <zorder>verticalSpacer_3</zorder>
   </widget>
  </widget>
  <resources>
-  <include location="resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
 </ui>
