@@ -234,7 +234,7 @@ class MainWindow(QMainWindow):
 
             safe_name = modul.replace(" ", "_").replace("&", "")
             plt.tight_layout()
-            fig.savefig(f"{out_dir}/{safe_name}.png", transparent=True)
+            # fig.savefig(f"{out_dir}/{safe_name}.png", transparent=True)
             plt.close(fig)
 
         # ====== Hitung skor modul & total ======
@@ -281,7 +281,7 @@ class MainWindow(QMainWindow):
         style_bar_chart(ax, bars, scores)
 
         plt.tight_layout()
-        fig.savefig(f"{out_dir}/DetailNilai.png", transparent=True)
+        # fig.savefig(f"{out_dir}/DetailNilai.png", transparent=True)
         plt.close(fig)
 
         # ====== Pie Chart Total Nilai ======
@@ -319,7 +319,7 @@ class MainWindow(QMainWindow):
         )
 
         plt.tight_layout()
-        fig.savefig(f"{out_dir}/TotalNilai.png", transparent=True)
+        # fig.savefig(f"{out_dir}/TotalNilai.png", transparent=True)
         plt.close(fig)
 
         # pastikan semua figure clear
