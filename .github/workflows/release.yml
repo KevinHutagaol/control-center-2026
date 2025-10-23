@@ -38,7 +38,7 @@ jobs:
           echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
 
       - name: Build (ONEFILE.spec)
-        run: pyinstaller ONEFILE.spec
+        run: pyinstaller ONEFILE_nt.spec
 
       - name: Show dist
         run: dir dist
