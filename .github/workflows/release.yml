@@ -37,7 +37,6 @@ jobs:
             
     - name: Copy build outputs
       run: |
-        mkdir release
         cp -r dist/* release/
         cp release/version.json release/
 
