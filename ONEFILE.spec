@@ -38,6 +38,8 @@ add_tree(datas, m4_ui,      os.path.join("pages", "Modul4",  "ui"))
 add_tree(datas, m7_ui,      os.path.join("pages", "Modul7",  "UI"))
 add_tree(datas, m910_asset, os.path.join("pages", "Modul910","asset"))
 add_tree(datas, m910_ui,    os.path.join("pages", "Modul910","ui_910"))
+add_tree(datas, os.path.join(project_root, "public"), "public")
+
 
 hidden = []
 hidden += collect_submodules('pages')
