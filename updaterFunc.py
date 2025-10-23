@@ -6,13 +6,12 @@ import requests
 import json
 from PyQt5.QtWidgets import QMessageBox
 import requests
-from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
 from packaging import version
 
 # Konfigurasi
 REMOTE_JSON_URL = "https://raw.githubusercontent.com/AtlasCJr/ControlCenter/main/latest.json"
-LOCAL_VERSION_FILE = "version.json"
+LOCAL_VERSION_FILE = "app-config.json"
 UPDATE_ZIP_NAME = "update.zip"
 EXTRACT_DIR = "update_temp"
 APP_DIR = "."
@@ -27,12 +26,10 @@ def get_local_version() -> str:
         return None
 
 def get_remote_version() -> str:
-    load_dotenv()
-
     GITHUB_USER = "AtlasCJr"
-    GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+    GITHUB_TOKEN = "***REMOVED***"
 
-    url = "https://raw.githubusercontent.com/AtlasCJr/ControlCenter/main/latest.json"
+    url = "https://raw.githubusercontent.com/AtlasCJr/ControlCenter/main/app-latest.json"
 
     response = requests.get(url, auth=HTTPBasicAuth(GITHUB_USER, GITHUB_TOKEN))
 
@@ -51,7 +48,7 @@ def isOutdated():
     if not local or not remote:
         return False
     
-    return version.parse(local) == version.parse(remote)
+    return version.parse(local) > version.parse(remote)
 
 def download_zip(url):
     print("🔽 Download update...")
