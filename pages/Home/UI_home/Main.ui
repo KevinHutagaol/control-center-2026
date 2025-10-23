@@ -180,7 +180,7 @@ QPushButton:hover {
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -194,7 +194,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                 </property>
                 <property name="text">
@@ -237,7 +237,7 @@ QPushButton:hover {
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -251,7 +251,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                 </property>
                 <property name="text">
@@ -294,7 +294,7 @@ QPushButton:hover {
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -308,7 +308,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                 </property>
                 <property name="text">
@@ -351,7 +351,7 @@ QPushButton:hover {
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -365,7 +365,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                 </property>
                 <property name="text">
@@ -408,7 +408,7 @@ QPushButton:hover {
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -422,7 +422,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                 </property>
                 <property name="text">
@@ -465,7 +465,7 @@ QPushButton:hover {
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -479,7 +479,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                 </property>
                 <property name="text">
@@ -528,7 +528,7 @@ QPushButton:hover {
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -542,7 +542,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                 </property>
                 <property name="text">
@@ -585,7 +585,7 @@ QPushButton:hover {
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -599,7 +599,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                 </property>
                 <property name="text">
@@ -777,7 +777,7 @@ padding:7px;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
- 		background-color: rgb(0, 255, 0, 255);
+ 		background-color: rgba(0, 255, 0, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -791,7 +791,7 @@ padding:7px;</string>
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(0, 255, 0, 225);
+    background-color: rgba(0, 255, 0, 225);
 }</string>
                     </property>
                     <property name="text">
@@ -873,7 +873,7 @@ padding:7px;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
- 		background-color: rgb(0, 255, 0, 255);
+ 		background-color: rgba(0, 255, 0, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -887,7 +887,7 @@ padding:7px;</string>
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(0, 255, 0, 225);
+    background-color: rgba(0, 255, 0, 225);
 }</string>
                     </property>
                     <property name="text">
@@ -969,7 +969,7 @@ padding:7px;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
- 		background-color: rgb(0, 255, 0, 255);
+ 		background-color: rgba(0, 255, 0, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -983,7 +983,7 @@ padding:7px;</string>
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(0, 255, 0, 225);
+    background-color: rgba(0, 255, 0, 225);
 }</string>
                     </property>
                     <property name="text">
@@ -1065,7 +1065,7 @@ padding:7px;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
- 		background-color: rgb(0, 255, 0, 255);
+ 		background-color: rgba(0, 255, 0, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -1079,7 +1079,7 @@ padding:7px;</string>
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(0, 255, 0, 225);
+    background-color: rgba(0, 255, 0, 225);
 }</string>
                     </property>
                     <property name="text">
@@ -1161,7 +1161,7 @@ padding:7px;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
- 		background-color: rgb(0, 255, 0, 255);
+ 		background-color: rgba(0, 255, 0, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -1175,7 +1175,7 @@ padding:7px;</string>
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(0, 255, 0, 225);
+    background-color: rgba(0, 255, 0, 225);
 }</string>
                     </property>
                     <property name="text">
@@ -1257,7 +1257,7 @@ padding:7px;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
- 		background-color: rgb(0, 255, 0, 255);
+ 		background-color: rgba(0, 255, 0, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -1271,7 +1271,7 @@ padding:7px;</string>
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(0, 255, 0, 225);
+    background-color: rgba(0, 255, 0, 225);
 }</string>
                     </property>
                     <property name="text">
@@ -1353,7 +1353,7 @@ padding:7px;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
- 		background-color: rgb(0, 255, 0, 255);
+ 		background-color: rgba(0, 255, 0, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -1367,7 +1367,7 @@ padding:7px;</string>
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(0, 255, 0, 225);
+    background-color: rgba(0, 255, 0, 225);
 }</string>
                     </property>
                     <property name="text">
@@ -1449,7 +1449,7 @@ padding:7px;</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
- 		background-color: rgb(0, 255, 0, 255);
+ 		background-color: rgba(0, 255, 0, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -1463,7 +1463,7 @@ padding:7px;</string>
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(0, 255, 0, 225);
+    background-color: rgba(0, 255, 0, 225);
 }</string>
                     </property>
                     <property name="text">
@@ -1567,7 +1567,7 @@ border-radius : 5px;</string>
              </property>
              <property name="styleSheet">
               <string notr="true">QPushButton {
- 		background-color: rgb(214, 0, 0, 255);
+ 		background-color: rgba(214, 0, 0, 255);
 		border-color: rgb(214, 0, 0);
 		border-radius : 5px;
 		color: rgb(255, 255, 255);
@@ -1580,7 +1580,7 @@ border-radius : 5px;</string>
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(214, 0, 0, 150);
+    background-color: rgba(214, 0, 0, 150);
 }</string>
              </property>
              <property name="text">
@@ -1683,7 +1683,7 @@ border-radius : 10px;</string>
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -1696,7 +1696,7 @@ border-radius : 10px;</string>
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                    </property>
                    <property name="text">
@@ -1717,7 +1717,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -1730,7 +1730,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                    </property>
                    <property name="text">
@@ -1751,7 +1751,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -1764,7 +1764,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                    </property>
                    <property name="text">
@@ -1785,7 +1785,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -1798,7 +1798,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                    </property>
                    <property name="text">
@@ -1819,7 +1819,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -1832,7 +1832,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                    </property>
                    <property name="text">
@@ -1853,7 +1853,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -1866,7 +1866,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                    </property>
                    <property name="text">
@@ -1887,7 +1887,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -1900,7 +1900,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                    </property>
                    <property name="text">
@@ -1921,7 +1921,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -1934,7 +1934,7 @@ QPushButton:hover {
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
                    </property>
                    <property name="text">
@@ -2135,7 +2135,7 @@ QPushButton:hover {
    
 	image: url(:/Asset/Asset/Refresh 2.png);
 	
-	background-color: rgb(255, 255, 255,255);
+	background-color: rgba(255, 255, 255, 255);
 	border-radius:10px;
 	
 }
@@ -2145,7 +2145,7 @@ QPushButton:hover {
     
 	
 	image: url(:/Asset/Asset/Refresh 1.png);
-	background-color: rgb(255, 255, 255,225);
+	background-color: rgba(255, 255, 255, 255);
 }</string>
                 </property>
                 <property name="text">

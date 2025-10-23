@@ -136,7 +136,7 @@ font-family: &quot;SF Pro Display&quot;;
       </property>
       <property name="styleSheet">
        <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255, 255);
+ 		background-color: rgba(255, 255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(214, 0, 0);
@@ -150,7 +150,7 @@ font-family: &quot;SF Pro Display&quot;;
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgba(255, 255, 255, 255);
 }</string>
       </property>
       <property name="text">
@@ -165,7 +165,7 @@ QPushButton:hover {
       </property>
       <property name="styleSheet">
        <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255,0);
+ 		background-color: rgba(255, 255, 255, 0);
 		border-color: rgb(255, 255, 255);
 		border-radius : 5px;
 		color: rgb(225, 225, 225);		
