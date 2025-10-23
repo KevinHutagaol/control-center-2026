@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QMessageBox
 import requests
 from requests.auth import HTTPBasicAuth
 from packaging import version
+from pathlib import Path
 
 # Konfigurasi
 REMOTE_JSON_URL = "https://raw.githubusercontent.com/AtlasCJr/ControlCenter/main/latest.json"
@@ -16,10 +17,50 @@ UPDATE_ZIP_NAME = "update.zip"
 EXTRACT_DIR = "update_temp"
 APP_DIR = "."
 
+def resource_path(rel: str | Path) -> str:
+    """
+    Resolve a data file path that works in:
+      - dev (walk up parents so files in project root are found),
+      - PyInstaller --onedir,
+      - PyInstaller --onefile (temp _MEIPASS),
+      - PyInstaller v6 layout (data under _internal).
+    Returns a string path. It does NOT create files.
+    """
+    rel_path = Path(rel)
+
+    # 0) Absolute path: just return it (don’t prepend bases)
+    if rel_path.is_absolute():
+        return str(rel_path)
+
+    candidates: list[Path] = []
+
+    # 1) PyInstaller onefile: temp unpack dir
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        base = Path(sys._MEIPASS)
+        candidates += [base / rel_path, base / "_internal" / rel_path]
+
+    # 2) PyInstaller onedir: beside the executable
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.executable).parent
+        candidates += [exe_dir / rel_path, exe_dir / "_internal" / rel_path]
+
+    # 3) Dev: walk upwards so root-level assets can be found from subpackages
+    here = Path(__file__).resolve().parent
+    for parent in [here, *here.parents]:
+        candidates.append(parent / rel_path)
+        candidates.append(parent / "_internal" / rel_path)
+
+    # Pick the first existing candidate
+    for c in candidates:
+        if c.exists():
+            return str(c)
+
+    # Fallback: return the first candidate even if missing (caller can handle)
+    return str(candidates[0])
 
 def get_local_version() -> str:
     try:
-        with open(LOCAL_VERSION_FILE) as f:
+        with open(resource_path(LOCAL_VERSION_FILE)) as f:
             data = json.load(f)
             return data["version"]
     except:
