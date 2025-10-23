@@ -41,6 +41,7 @@ add_tree(datas, os.path.join(project_root, "public"), "public")
 
 hidden = []
 hidden += collect_submodules('pages')
+hidden += collect_submodules('pages.Home.resources_rc')
 
 a = Analysis(
     ['pages/Home/main.py'],
