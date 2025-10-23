@@ -16,7 +16,6 @@ app-config.json
 
 # UI
 *.qrc
-pages/Home/resources_rc.py
 pages/Home/Asset_home/
 
 # npm Dependencies
