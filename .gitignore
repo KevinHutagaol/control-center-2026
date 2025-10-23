@@ -20,3 +20,4 @@ firebaseAuth.json
 
 # UI
 *.qrc
+pages/Home/resources_rc.py
