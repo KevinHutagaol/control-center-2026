@@ -1,24 +1,66 @@
 import sys
 import os
-import subprocess
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QWidget
 from PyQt5 import uic
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QValidator
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 import matplotlib.pyplot as plt
-from updater import ask_for_update
+from pathlib import Path
 
-import resources_rc
+import pages.Home.resources_rc as resources_rc
 
-FIREBASE_CRED_PATH = 'firebaseAuth.json'
-ACCOUNT_COLLECTION = 'Account' # Digunakan untuk login dan password
-NILAI_COLLECTION = 'Nilai'     # Digunakan untuk data nilai
+from pages.Modul4.mainCDRL import exec_CDRL
+from pages.Modul7.mainCOD import exec_COD
+from pages.Modul910.mainDMMCD import exec_DMMCD
+
+def resource_path(rel: str | Path) -> str:
+    """
+    Resolve a data file path that works in:
+      - dev (walk up parents so files in project root are found),
+      - PyInstaller --onedir,
+      - PyInstaller --onefile (temp _MEIPASS),
+      - PyInstaller v6 layout (data under _internal).
+    Returns a string path. It does NOT create files.
+    """
+    rel_path = Path(rel)
+
+    # 0) Absolute path: just return it (don’t prepend bases)
+    if rel_path.is_absolute():
+        return str(rel_path)
+
+    candidates: list[Path] = []
+
+    # 1) PyInstaller onefile: temp unpack dir
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        base = Path(sys._MEIPASS)
+        candidates += [base / rel_path, base / "_internal" / rel_path]
+
+    # 2) PyInstaller onedir: beside the executable
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.executable).parent
+        candidates += [exe_dir / rel_path, exe_dir / "_internal" / rel_path]
+
+    # 3) Dev: walk upwards so root-level assets can be found from subpackages
+    here = Path(__file__).resolve().parent
+    for parent in [here, *here.parents]:
+        candidates.append(parent / rel_path)
+        candidates.append(parent / "_internal" / rel_path)
+
+    # Pick the first existing candidate
+    for c in candidates:
+        if c.exists():
+            return str(c)
+
+    # Fallback: return the first candidate even if missing (caller can handle)
+    return str(candidates[0])
+
+os.system("cls" if os.name == "nt" else "clear")
 
 try:
-    cred = credentials.Certificate(FIREBASE_CRED_PATH)
+    print(resource_path("firebaseAuth.json"))
+    cred = credentials.Certificate(resource_path("firebaseAuth.json"))
     
     if not firebase_admin._apps:
         firebase_admin.initialize_app(cred)
@@ -32,9 +74,9 @@ except Exception as e:
 class MainWindow(QMainWindow):
     def __init__(self, npm, nama, role, kelompok):
         super().__init__()
-        uic.loadUi("UI/Main.ui", self)
+        uic.loadUi(resource_path("pages/Home/UI_home/Main.ui"), self)
         self.setWindowTitle("Control Practicum Center")
-        self.setWindowIcon(QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QIcon(resource_path("pages/Home/Asset_home/Logo Merah.png")))
 
         self.RootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.RootLocusPage))
         self.Frequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.FreqPage))
@@ -71,6 +113,8 @@ class MainWindow(QMainWindow):
 
         self.Refresh.clicked.connect(lambda checked, p=npm: self.refresh_nilai(p))
 
+        self._children = {}
+
         self.show()
 
     def run_root_locus(self,nama,npm):
@@ -83,10 +127,14 @@ class MainWindow(QMainWindow):
         os.environ['NPM'] = npm
         #subprocess.run([sys.executable, 'Modul23/FrequencyResponse.py'])
     
-    def run_cd_root_locus(self,nama,npm):
-        subprocess.Popen(["Modul 4/main.exe", nama, npm])
+    def run_cd_root_locus(self, nama, npm):
+        print("Running CDRL")
+        w = exec_CDRL(nama, npm)
+        key = f"Modul4-{npm}"
+        self._children[key] = w
+        
+        w.destroyed.connect(lambda: self._children.pop(key, None))
 
-    
     def run_cd_frequency_response(self,nama,npm):
         os.environ['NAMA'] = nama
         os.environ['NPM'] = npm
@@ -98,9 +146,12 @@ class MainWindow(QMainWindow):
         #subprocess.run([sys.executable, 'Modul6/main.py'])
     
     def run_cod(self,nama,npm):
-        os.environ['NAMA'] = nama
-        os.environ['NPM'] = npm
-        subprocess.run([sys.executable, 'Modul 7/main.py'])
+        print("Running COD")
+        w = exec_COD(nama, npm)
+        key = f"Modul7-{npm}"
+        self._children[key] = w
+        
+        w.destroyed.connect(lambda: self._children.pop(key, None))
     
     def run_dcod(self,nama,npm):
         os.environ['NAMA'] = nama
@@ -108,37 +159,27 @@ class MainWindow(QMainWindow):
         #subprocess.run([sys.executable, 'Modul8/DCOD.py'])
     
     def run_motor(self,nama,npm,kelompok):
-        os.environ['NAMA'] = nama
-        os.environ['NPM'] = npm
-        os.environ['KELOMPOK'] = kelompok
-        subprocess.run([sys.executable, 'Modul910/main.py'])
+        print("Running DMMCD")
+        w = exec_DMMCD(nama, npm)
+        key = f"Modul910-{npm}"
+        self._children[key] = w
+        
+        w.destroyed.connect(lambda: self._children.pop(key, None))
 
     def generate_charts(self, npm, doc_data, out_dir="Nilai"):
-        import numpy as np
-
         nama = doc_data.get("Nama", npm)
         os.makedirs(out_dir, exist_ok=True)
 
         # ====== Chart Per Modul ======
         modul_groups = {
-            "Modul 2&3": ["(Modul 2&3) Tugas Pendahuluan", "(Modul 2&3) Borang Simulasi",
-                        "(Modul 2&3) Borang Analisis", "(Modul 2&3) Tugas Tambahan"],
-            "Modul 4": ["(Modul 4) Tugas Pendahuluan", "(Modul 4) Borang Simulasi",
-                        "(Modul 4) Borang Analisis", "(Modul 4) Tugas Tambahan"],
-            "Modul 5": ["(Modul 5) Tugas Pendahuluan", "(Modul 5) Borang Simulasi",
-                        "(Modul 5) Borang Analisis", "(Modul 5) Tugas Tambahan"],
-            "Modul 6": ["(Modul 6) Tugas Pendahuluan", "(Modul 6) Borang Simulasi",
-                        "(Modul 6) Borang Analisis", "(Modul 6) Tugas Tambahan"],
-            "Modul 7": ["(Modul 7) Tugas Pendahuluan", "(Modul 7) Borang Simulasi",
-                        "(Modul 7) Borang Analisis", "(Modul 7) Tugas Tambahan"],
-            "Modul 8": ["(Modul 8) Tugas Pendahuluan", "(Modul 8) Borang Simulasi",
-                        "(Modul 8) Borang Analisis", "(Modul 8) Tugas Tambahan"],
-            "Modul 9&10": ["(Modul 9&10) Tugas Pendahuluan", "(Modul 9&10) Borang Simulasi",
-                        "(Modul 9&10) Borang Analisis", "(Modul 9&10) Tugas Tambahan"],
-            "Modul 11": ["(Modul 11) Project Concept", "(Modul 11) Project Complexity",
-                        "(Modul 11) Project Readability", "(Modul 11) Scene Arragement",
-                        "(Modul 11) Project Explanation", "(Modul 11) Program Explanation",
-                        "(Modul 11) Simulation"]
+            "Modul 2&3"     : ["(Modul 2&3) Tugas Pendahuluan", "(Modul 2&3) Borang Simulasi", "(Modul 2&3) Borang Analisis", "(Modul 2&3) Tugas Tambahan"],
+            "Modul 4"       : ["(Modul 4) Tugas Pendahuluan", "(Modul 4) Borang Simulasi", "(Modul 4) Borang Analisis", "(Modul 4) Tugas Tambahan"],
+            "Modul 5"       : ["(Modul 5) Tugas Pendahuluan", "(Modul 5) Borang Simulasi", "(Modul 5) Borang Analisis", "(Modul 5) Tugas Tambahan"],
+            "Modul 6"       : ["(Modul 6) Tugas Pendahuluan", "(Modul 6) Borang Simulasi", "(Modul 6) Borang Analisis", "(Modul 6) Tugas Tambahan"],
+            "Modul 7"       : ["(Modul 7) Tugas Pendahuluan", "(Modul 7) Borang Simulasi", "(Modul 7) Borang Analisis", "(Modul 7) Tugas Tambahan"],
+            "Modul 8"       : ["(Modul 8) Tugas Pendahuluan", "(Modul 8) Borang Simulasi", "(Modul 8) Borang Analisis", "(Modul 8) Tugas Tambahan"],
+            "Modul 9&10"    : ["(Modul 9&10) Tugas Pendahuluan", "(Modul 9&10) Borang Simulasi", "(Modul 9&10) Borang Analisis", "(Modul 9&10) Tugas Tambahan"],
+            "Modul 11"      : ["(Modul 11) Project Concept", "(Modul 11) Project Complexity", "(Modul 11) Project Readability", "(Modul 11) Scene Arragement", "(Modul 11) Project Explanation", "(Modul 11) Program Explanation", "(Modul 11) Simulation"]
         }
 
         def shorten_label(lbl):
@@ -288,13 +329,13 @@ class MainWindow(QMainWindow):
 
         self.DetailNilai.setStyleSheet("""
             QFrame {
-                image: url('Nilai/DetailNilai.png') 
+                image: url('pages/Home/Nilai_home/DetailNilai.png') 
             }
         """)
 
         self.TotalNilai.setStyleSheet("""
             QFrame {
-                image: url(Nilai/TotalNilai.png);
+                image: url(pages/Home/Nilai_home/TotalNilai.png);
                 background-color: rgb(255, 255, 255);
                 border-radius : 10px;
             }
@@ -302,49 +343,49 @@ class MainWindow(QMainWindow):
 
         self.Graph23.setStyleSheet("""
             QFrame {
-                image: url('Nilai/Modul_23.png') 
+                image: url('pages/Home/Nilai_home/Modul_23.png') 
             }
         """)
 
         self.Graph4.setStyleSheet("""
             QFrame {
-                image: url('Nilai/Modul_4.png')
+                image: url('pages/Home/Nilai_home/Modul_4.png')
             }
         """)
 
         self.Graph5.setStyleSheet("""
             QFrame {
-                image: url('Nilai/Modul_5.png')
+                image: url('pages/Home/Nilai_home/Modul_5.png')
             }
         """)
 
         self.Graph6.setStyleSheet("""
             QFrame {
-                image: url('Nilai/Modul_6.png')
+                image: url('pages/Home/Nilai_home/Modul_6.png')
             }
         """)
 
         self.Graph7.setStyleSheet("""
             QFrame {
-                image: url('Nilai/Modul_7.png')
+                image: url('pages/Home/Nilai_home/Modul_7.png')
             }
         """)
 
         self.Graph8.setStyleSheet("""
             QFrame {
-                image: url('Nilai/Modul_8.png')
+                image: url('pages/Home/Nilai_home/Modul_8.png')
             }
         """)
 
         self.Graph910.setStyleSheet("""
             QFrame {
-                image: url('Nilai/Modul_910.png')
+                image: url('pages/Home/Nilai_home/Modul_910.png')
             }
         """)
 
         self.Graph11.setStyleSheet("""
             QFrame {
-                image: url('Nilai/Modul_11.png')
+                image: url('pages/Home/Nilai_home/Modul_11.png')
             }
         """)
 
@@ -369,9 +410,9 @@ class MainWindow(QMainWindow):
 class AdminWindow(QMainWindow):
     def __init__(self, npm, nama, role):
         super().__init__()
-        uic.loadUi("UI/Admin.ui", self)
+        uic.loadUi(resource_path("pages/Home/UI_home/Admin.ui"), self)
         self.setWindowTitle("Control Practicum Center - Admin")
-        self.setWindowIcon(QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QIcon(resource_path("pages/Home/Asset_home/Logo Merah.png")))
 
         self.WelcomeText.setText(f"Welcome {nama}!")
         
@@ -382,9 +423,9 @@ class AdminWindow(QMainWindow):
 class Login(QMainWindow):
     def __init__(self):
         super(Login, self).__init__()
-        uic.loadUi("UI/Login.ui", self)
+        uic.loadUi(resource_path("pages/Home/UI_home/Login.ui"), self)
         self.setWindowTitle("Control Practicum Center")
-        self.setWindowIcon(QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QIcon(resource_path("pages/Home/Asset_home/Logo Merah.png")))
 
         self.Login.clicked.connect(self.login)
         self.ChangePass.clicked.connect(self.change_password)
@@ -422,7 +463,7 @@ class Login(QMainWindow):
             return
 
         try:
-            doc_ref = db.collection(ACCOUNT_COLLECTION).document(npm)
+            doc_ref = db.collection('Account').document(npm)
             user_data_doc = doc_ref.get() 
             
             if not user_data_doc.exists:
@@ -441,7 +482,6 @@ class Login(QMainWindow):
             kelompok = user_data.get('Kelompok')
 
             if stored_pass == password:
-                
                 if role == 'Mahasiswa':
                     self.main_window = MainWindow(npm, nama, role, kelompok) 
                     self.main_window.show()
@@ -461,9 +501,9 @@ class Login(QMainWindow):
 class ChangePass(QMainWindow):
     def __init__(self):
         super(ChangePass, self).__init__()
-        uic.loadUi("UI/ChangePass.ui", self)
+        uic.loadUi(resource_path("pages/Home/UI_home/ChangePass.ui"), self)
         self.setWindowTitle("Change Password")
-        self.setWindowIcon(QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QIcon(resource_path("pages/Home/Asset_home/Logo Merah.png")))
 
         self.ChangePass.clicked.connect(self.change_password)
         self.Back.clicked.connect(self.back_to_login)
@@ -502,7 +542,7 @@ class ChangePass(QMainWindow):
             return
 
         try:
-            doc_ref = db.collection(ACCOUNT_COLLECTION).document(npm)
+            doc_ref = db.collection('Account').document(npm)
             user_data_doc = doc_ref.get()
 
             if not user_data_doc.exists:
@@ -545,6 +585,7 @@ class ChangePass(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
+
     window = Login()
     window.show()
     sys.exit(app.exec_())

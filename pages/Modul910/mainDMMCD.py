@@ -1,7 +1,6 @@
 import sys
 import os
 import subprocess
-import asset.resources 
 from datetime import datetime
 from PyQt5 import QtWidgets, uic, QtChart, QtCore, QtGui
 import numpy as np
@@ -10,10 +9,50 @@ import matplotlib.pyplot as plt
 import control as ctrl
 import firebase_admin
 from firebase_admin import credentials, firestore
+from pathlib import Path
 
-# Firebase Configuration - Update these with your actual values
-FIREBASE_PROJECT_ID = "praktikum-reguler"  # Your project ID
-SERVICE_ACCOUNT_PATH = "praktikum-reguler-firebase-adminsdk-fbsvc-c2d439e362.json"
+import pages.Modul910.asset.resources 
+
+def resource_path(rel: str | Path) -> str:
+    """
+    Resolve a data file path that works in:
+      - dev (walk up parents so files in project root are found),
+      - PyInstaller --onedir,
+      - PyInstaller --onefile (temp _MEIPASS),
+      - PyInstaller v6 layout (data under _internal).
+    Returns a string path. It does NOT create files.
+    """
+    rel_path = Path(rel)
+
+    # 0) Absolute path: just return it (don’t prepend bases)
+    if rel_path.is_absolute():
+        return str(rel_path)
+
+    candidates: list[Path] = []
+
+    # 1) PyInstaller onefile: temp unpack dir
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        base = Path(sys._MEIPASS)
+        candidates += [base / rel_path, base / "_internal" / rel_path]
+
+    # 2) PyInstaller onedir: beside the executable
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.executable).parent
+        candidates += [exe_dir / rel_path, exe_dir / "_internal" / rel_path]
+
+    # 3) Dev: walk upwards so root-level assets can be found from subpackages
+    here = Path(__file__).resolve().parent
+    for parent in [here, *here.parents]:
+        candidates.append(parent / rel_path)
+        candidates.append(parent / "_internal" / rel_path)
+
+    # Pick the first existing candidate
+    for c in candidates:
+        if c.exists():
+            return str(c)
+
+    # Fallback: return the first candidate even if missing (caller can handle)
+    return str(candidates[0])
 
 class FirebaseManager:
     def __init__(self):
@@ -27,7 +66,8 @@ class FirebaseManager:
         try:
             # Initialize Firebase (only once)
             if not firebase_admin._apps:
-                cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+                print(resource_path("firebaseAuth.json"))
+                cred = credentials.Certificate(resource_path("firebaseAuth.json"))
                 firebase_admin.initialize_app(cred)
             
             # Get Firestore database reference
@@ -36,7 +76,7 @@ class FirebaseManager:
             print("Firebase initialized successfully")
             
         except FileNotFoundError:
-            print(f"Service account file not found: {SERVICE_ACCOUNT_PATH}")
+            print(f"Service account file not found: {resource_path('firebaseAuth.json')}")
             self.is_connected = False
         except Exception as e:
             print(f"Firebase initialization failed: {e}")
@@ -237,19 +277,20 @@ class RefreshingComboBox(QtWidgets.QComboBox):
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi("Modul 910/ui/main.ui", self)  # load your main.ui file
-        self.setWindowTitle("Practicum Software : Motor SIM Modeling and Control")
-        self.setWindowIcon(QtGui.QIcon("Asset/Logo Merah.png"))
+        
+        # print("Loading UI from:", resource_path("ui_910/main.ui"))
 
-        self.serial_conn = None  
+        uic.loadUi(resource_path("ui_910/main.ui"), self)
+        self.setWindowTitle("Practicum Software : Motor SIM Modeling and Control")
+        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
+
+        self.serial_conn = None
         self.child_windows = {}
         group = os.getenv('KELOMPOK')
 
         # Initialize Firebase Manager
         self.firebase_manager = FirebaseManager()
         self.current_students = self.firebase_manager.find_student(group)  # Example group "A1"
-
-        #self.firebase_manager.test_upload_student_submission()  # Test upload function
 
         self.olc.clicked.connect(self.olcClicked)
         self.clc.clicked.connect(self.clcClicked)
@@ -430,9 +471,9 @@ class MainWindow(QtWidgets.QMainWindow):
 class Encoder(QtWidgets.QMainWindow):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)  # Pass parent for Qt hierarchy
-        uic.loadUi("Modul 910/ui/calibration.ui", self)
+        uic.loadUi(resource_path("ui_910/calibration.ui"), self)
         self.setWindowTitle("Encoder Calibration")
-        self.setWindowIcon(QtGui.QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -542,18 +583,18 @@ class Encoder(QtWidgets.QMainWindow):
 class ProgressBar(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi("Modul 910/ui/progressbar.ui", self)  
+        uic.loadUi(resource_path("ui_910/progressbar.ui"), self)  
         self.setWindowTitle("Loading ...")
-        self.setWindowIcon(QtGui.QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
 
         self.setWindowModality(QtCore.Qt.ApplicationModal)
 
 class LogWindow(QtWidgets.QMainWindow):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)
-        uic.loadUi("Modul 910/ui/linlog.ui", self)
+        uic.loadUi(resource_path("ui_910/linlog.ui"), self)
         self.setWindowTitle("DC Motor vs PWM Linear Relation")
-        self.setWindowIcon(QtGui.QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -742,9 +783,9 @@ class LogWindow(QtWidgets.QMainWindow):
 class LRC(QtWidgets.QMainWindow):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)
-        uic.loadUi("Modul 910/ui/lrc.ui", self)
+        uic.loadUi(resource_path("ui_910/lrc.ui"), self)
         self.setWindowTitle("Linear Region Limit")
-        self.setWindowIcon(QtGui.QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -862,9 +903,9 @@ class LRC(QtWidgets.QMainWindow):
 class olc(QtWidgets.QMainWindow):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)
-        uic.loadUi("Modul 910/ui/olc.ui", self)
+        uic.loadUi(resource_path("ui_910/olc.ui"), self)
         self.setWindowTitle("DC Motor Open Loop Control")
-        self.setWindowIcon(QtGui.QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -1437,9 +1478,9 @@ class olc(QtWidgets.QMainWindow):
 class clc(QtWidgets.QMainWindow):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)
-        uic.loadUi("Modul 910/ui/clc.ui", self)
+        uic.loadUi(resource_path("ui_910/clc.ui"), self)
         self.setWindowTitle("DC Motor Closed Loop Control")
-        self.setWindowIcon(QtGui.QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -1809,9 +1850,9 @@ class clc(QtWidgets.QMainWindow):
 class sa(QtWidgets.QMainWindow):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)
-        uic.loadUi("Modul 910/ui/sa.ui", self)
+        uic.loadUi(resource_path("ui_910/sa.ui"), self)
         self.setWindowTitle("Submit Answers")
-        self.setWindowIcon(QtGui.QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -1953,8 +1994,9 @@ class sa(QtWidgets.QMainWindow):
         else:
             return 0
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
+def exec_DMMCD(nama, npm):
+    app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    sys.exit(app.exec_())
+    
+    return window

@@ -49,11 +49,11 @@
     
 	border-image: url(:/Main/Refrensi.png);
     border-radius: 10px;
-    transition: all 0.2s ease-in-out;
+    
 }
 
 QPushButton:hover {
-    transform: scale(1.1);
+    
 }</string>
     </property>
     <property name="text">
@@ -80,11 +80,11 @@ QPushButton:hover {
     
 	border-image: url(:/Main/PID.png);
     border-radius: 10px;
-    transition: all 0.2s ease-in-out;
+    
 }
 
 QPushButton:hover {
-    transform: scale(1.1);
+    
 }</string>
     </property>
     <property name="text">
@@ -114,11 +114,11 @@ QPushButton:hover {
     
 	border-image: url(:/Main/Plant.png);
     border-radius: 10px;
-    transition: all 0.2s ease-in-out;
+    
 }
 
 QPushButton:hover {
-    transform: scale(1.1);
+    
 }</string>
     </property>
     <property name="text">
@@ -142,11 +142,11 @@ QPushButton:hover {
     
 	border-image: url(:/Main/Scope.png);
     border-radius: 10px;
-    transition: all 0.2s ease-in-out;
+    
 }
 
 QPushButton:hover {
-    transform: scale(1.1);
+    
 }</string>
     </property>
     <property name="text">
@@ -173,11 +173,11 @@ QPushButton:hover {
     
 	border-image: url(:/Main/Scope.png);
     border-radius: 10px;
-    transition: all 0.2s ease-in-out;
+    
 }
 
 QPushButton:hover {
-    transform: scale(1.1);
+    
 }</string>
     </property>
     <property name="text">
@@ -222,11 +222,11 @@ QPushButton:hover {
     
 	border-image: url(:/Main/Run Sim Button.png);
     border-radius: 10px;
-    transition: all 0.2s ease-in-out;
+    
 }
 
 QPushButton:hover {
-    transform: scale(1.1);
+    
 }</string>
      </property>
      <property name="text">
@@ -249,11 +249,11 @@ QPushButton:hover {
       <string notr="true">QPushButton {
     border-image: url(:/Main/Submit Button.png);
     border-radius: 10px;
-    transition: all 0.2s ease-in-out;
+    
 }
 
 QPushButton:hover {
-    transform: scale(1.1);
+    
 }</string>
      </property>
      <property name="text">
@@ -278,11 +278,11 @@ QPushButton:hover {
     
 	border-image: url(:/Main/Scope.png);
     border-radius: 10px;
-    transition: all 0.2s ease-in-out;
+    
 }
 
 QPushButton:hover {
-    transform: scale(1.1);
+    
 }</string>
     </property>
     <property name="text">
@@ -359,7 +359,7 @@ QPushButton:hover {
      <string notr="true">color: rgb(255, 255, 255);</string>
     </property>
     <property name="text">
-     <string>Time Settling</string>
+     <string>Settling Time</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

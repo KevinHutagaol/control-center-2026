@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
-    <height>843</height>
+    <width>611</width>
+    <height>754</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
      </spacer>
     </item>
     <item>
-     <widget class="QFrame" name="frame_2">
+     <widget class="QFrame" name="a1">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -47,8 +47,8 @@
         <widget class="QFrame" name="frame">
          <property name="minimumSize">
           <size>
-           <width>520</width>
-           <height>480</height>
+           <width>400</width>
+           <height>400</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -87,7 +87,7 @@ font-family: &quot;SF Pro Display&quot;;
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer_2">
+        <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -96,8 +96,8 @@ font-family: &quot;SF Pro Display&quot;;
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>17</width>
-           <height>17</height>
+           <width>20</width>
+           <height>20</height>
           </size>
          </property>
         </spacer>
@@ -130,7 +130,7 @@ font-family: &quot;SF Pro Display&quot;;
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer_3">
+        <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -146,87 +146,7 @@ font-family: &quot;SF Pro Display&quot;;
         </spacer>
        </item>
        <item>
-        <widget class="QLineEdit" name="NewPass">
-         <property name="styleSheet">
-          <string notr="true">background-color:rgba(0, 0, 0, 0);
-border:none;
-color:rgb(255, 255, 255);
-border-bottom: 2px solid rgba(255, 255, 255, 100);
-padding-bottom:7px;
-font-size: 15px;
-font-family: &quot;SF Pro Display&quot;; 
-	font-weight: bold; 
-    font-style: normal;</string>
-         </property>
-         <property name="echoMode">
-          <enum>QLineEdit::Password</enum>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="placeholderText">
-          <string>Enter Your New Password</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Fixed</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>17</width>
-           <height>17</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="ConfirmPass">
-         <property name="styleSheet">
-          <string notr="true">background-color:rgba(0, 0, 0, 0);
-border:none;
-color:rgb(255, 255, 255);
-border-bottom: 2px solid rgba(255, 255, 255, 100);
-padding-bottom:7px;
-font-size: 15px;
-font-family: &quot;SF Pro Display&quot;; 
-	font-weight: bold; 
-    font-style: normal;</string>
-         </property>
-         <property name="echoMode">
-          <enum>QLineEdit::Password</enum>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="placeholderText">
-          <string>Confirm Your New Password</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Minimum</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>10</width>
-           <height>10</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="ChangePass">
+        <widget class="QPushButton" name="Login">
          <property name="font">
           <font>
            <family>SF Pro Display</family>
@@ -255,22 +175,22 @@ font-family: &quot;SF Pro Display&quot;;
 
 /* Saat mouse hover */
 QPushButton:hover {
-    background-color: rgb(255, 255, 255, 225);
+    background-color: rgb(255, 255, 255);
 }</string>
          </property>
          <property name="text">
-          <string>Change Password</string>
+          <string>Login</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="Back">
+        <widget class="QPushButton" name="ChangePass">
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
- 		background-color: rgb(255, 255, 255,0);
+ 		background-color: rgb(255, 255, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 5px;
 		color: rgb(225, 225, 225);		
@@ -287,9 +207,25 @@ QPushButton:hover {
 }</string>
          </property>
          <property name="text">
-          <string>Back to login page</string>
+          <string>Want to change password?</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Maximum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>5</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

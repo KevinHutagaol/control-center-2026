@@ -3,26 +3,54 @@ import os
 import random
 import numpy as np
 import requests
-import UI.resource
 from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QMainWindow, QMessageBox, QDesktopWidget
 from PyQt5.QtGui import QIcon
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5 import uic
-from problems import problem_set
-from session import session
-from ss_controller_plot import simulate_and_plot
+from pathlib import Path
+
+from pages.Modul7.problems import problem_set
+from pages.Modul7.session import session
+from pages.Modul7.ss_controller_plot import simulate_and_plot
+import pages.Modul7.UI.resource
+
+def resource_path(rel: str) -> str:
+    """
+    Resolve a data file path that works in:
+      - dev (run from .py),
+      - PyInstaller --onedir,
+      - PyInstaller --onefile (temp _MEIPASS),
+      - PyInstaller v6 layout (data under _internal).
+    Returns a string path. It does NOT create files.
+    """
+    rel_path = Path(rel)
+
+    candidates = []
+
+    # onefile: temp unpack dir
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        base = Path(sys._MEIPASS)
+        candidates += [base / rel_path, base / "_internal" / rel_path]
+
+    # onedir: beside the executable
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.executable).parent
+        candidates += [exe_dir / rel_path, exe_dir / "_internal" / rel_path]
+
+    # dev: beside this source file
+    here = Path(__file__).resolve().parent
+    candidates.append(here / rel_path)
+
+    # pick the first existing candidate
+    for c in candidates:
+        if c.exists():
+            return str(c)
+
+    # fallback: return the first candidate even if missing (caller can handle)
+    return str(candidates[0])
 
 FIREBASE_BASE_URL = "https://state-space-controller-design-default-rtdb.firebaseio.com/"
-
-def resource_path(relative_path):
-    """ Get the absolute path to the resource, works for dev and PyInstaller bundled """
-    try:
-        # PyInstaller creates a temp folder and stores the path in _MEIPASS
-        base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
-    except Exception:
-        base_path = os.path.abspath('.')
-    return os.path.join(base_path, relative_path)
 
 def center_widget(widget):
     qr = widget.frameGeometry()
@@ -52,7 +80,7 @@ def mae(user_matrix, correct_matrix):
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        uic.loadUi(resource_path("Modul 7/UI/Main.ui"), self)
+        uic.loadUi(resource_path("UI/Main.ui"), self)
         self.setWindowTitle("State Space Controller Design")
         self.setMinimumSize(1280, 720)
         self.setMaximumSize(1280, 720)
@@ -179,7 +207,7 @@ class MainWindow(QMainWindow):
 class AMatrix(QMainWindow):
     def __init__(self):
         super(AMatrix, self).__init__()
-        uic.loadUi(resource_path("Modul 7/UI/Amatrix.ui"), self)
+        uic.loadUi(resource_path("UI/Amatrix.ui"), self)
         self.setWindowTitle("A Matrix")
         self.setFixedSize(220, 220)
         A = problem_set[session["problem_set"]]["A"]
@@ -196,7 +224,7 @@ class AMatrix(QMainWindow):
 class BMatrix(QMainWindow):
     def __init__(self):
         super(BMatrix, self).__init__()
-        uic.loadUi(resource_path("Modul 7/UI/Bmatrix.ui"), self)
+        uic.loadUi(resource_path("UI/Bmatrix.ui"), self)
         self.setWindowTitle("B Matrix")
         self.setFixedSize(220, 220)
         B = problem_set[session["problem_set"]]["B"]
@@ -207,7 +235,7 @@ class BMatrix(QMainWindow):
 class CMatrix(QMainWindow):
     def __init__(self):
         super(CMatrix, self).__init__()
-        uic.loadUi(resource_path("Modul 7/UI/Cmatrix.ui"), self)
+        uic.loadUi(resource_path("UI/Cmatrix.ui"), self)
         self.setWindowTitle("C Matrix")
         self.setFixedSize(220, 220)
         C = problem_set[session["problem_set"]]["C"]
@@ -218,7 +246,7 @@ class CMatrix(QMainWindow):
 class DMatrix(QMainWindow):
     def __init__(self):
         super(DMatrix, self).__init__()
-        uic.loadUi(resource_path("Modul 7/UI/Dmatrix.ui"), self)
+        uic.loadUi(resource_path("UI/Dmatrix.ui"), self)
         self.setWindowTitle("D Matrix")
         self.setFixedSize(220, 220)
         D = problem_set[session["problem_set"]]["D"]
@@ -227,7 +255,7 @@ class DMatrix(QMainWindow):
 class Controller(QMainWindow):
     def __init__(self):
         super(Controller, self).__init__()
-        uic.loadUi(resource_path("Modul 7/UI/Controller.ui"), self)
+        uic.loadUi(resource_path("UI/Controller.ui"), self)
         self.setWindowTitle("Controller")
         self.setFixedSize(548, 207)
 
@@ -268,7 +296,7 @@ class Controller(QMainWindow):
 class PreGain(QMainWindow):
     def __init__(self):
         super(PreGain, self).__init__()
-        uic.loadUi(resource_path("Modul 7/UI/PreGain.ui"), self)
+        uic.loadUi(resource_path("UI/PreGain.ui"), self)
         self.setWindowTitle("Pre Gain")
         self.setFixedSize(275, 165) 
 
@@ -297,23 +325,20 @@ class PreGain(QMainWindow):
             QMessageBox.warning(None, "Input Error", "Please enter a valid number.")
             self.N.clear()
 
+def exec_COD(nama, npm):
+    session["npm"] = npm
 
-# main
-app = QApplication(sys.argv)
-main_window = MainWindow()
-widget = QtWidgets.QStackedWidget()
-widget.setWindowIcon(QIcon(resource_path("Asset/Logo Merah.png")))
-widget.addWidget(main_window)
-widget.setCurrentWidget(main_window)
-widget.resize(main_window.minimumSize())
-widget.show()
-center_widget(widget)
+    app = QApplication.instance() or QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    
+    widget = QtWidgets.QStackedWidget()
+    widget.setWindowIcon(QIcon(resource_path("Asset/Logo Merah.png")))
+    widget.addWidget(window)
+    widget.setCurrentWidget(window)
+    widget.resize(window.minimumSize())
+    widget.show()
+    center_widget(widget)
 
-try:
-    sys.exit(app.exec_())
-except:
-    print("Exiting")
-
-
-# Push data to Firebase
-#db.push(data)
+    # do NOT call app.exec_() here when launched from the main app
+    return window

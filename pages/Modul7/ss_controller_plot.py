@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import control
-from problems import problem_set
+
+
+from pages.Modul7.problems import problem_set
 
 def plot_response(t, y):
     plt.figure(figsize=(10, 5))

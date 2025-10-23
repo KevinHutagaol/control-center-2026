@@ -6,12 +6,11 @@
 #   Attafahqi Amirtha Dariswan - Elektro 2022
 # ==============================================
 
-import subprocess
 import os
 import sys
 import json
 import hashlib
-# requests removed: tidak lagi pakai Realtime DB
+from pathlib import Path
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QPushButton, QGraphicsDropShadowEffect
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QSize, QTimer
@@ -25,17 +24,61 @@ import matplotlib.pyplot as plt
 import control as ctrl
 import math
 import pandas as pd
+from pathlib import Path
 
-import Asset.Resource
+import pages.Modul4.Asset.Resource
+
+def resource_path(rel: str | Path) -> str:
+    """
+    Resolve a data file path that works in:
+      - dev (walk up parents so files in project root are found),
+      - PyInstaller --onedir,
+      - PyInstaller --onefile (temp _MEIPASS),
+      - PyInstaller v6 layout (data under _internal).
+    Returns a string path. It does NOT create files.
+    """
+    rel_path = Path(rel)
+
+    # 0) Absolute path: just return it (don’t prepend bases)
+    if rel_path.is_absolute():
+        return str(rel_path)
+
+    candidates: list[Path] = []
+
+    # 1) PyInstaller onefile: temp unpack dir
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        base = Path(sys._MEIPASS)
+        candidates += [base / rel_path, base / "_internal" / rel_path]
+
+    # 2) PyInstaller onedir: beside the executable
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.executable).parent
+        candidates += [exe_dir / rel_path, exe_dir / "_internal" / rel_path]
+
+    # 3) Dev: walk upwards so root-level assets can be found from subpackages
+    here = Path(__file__).resolve().parent
+    for parent in [here, *here.parents]:
+        candidates.append(parent / rel_path)
+        candidates.append(parent / "_internal" / rel_path)
+
+    # Pick the first existing candidate
+    for c in candidates:
+        if c.exists():
+            return str(c)
+
+    # Fallback: return the first candidate even if missing (caller can handle)
+    return str(candidates[0])
+
 
 # === Firestore ===
 from google.cloud import firestore
-# pastikan file credentials ada di project folder
-db = firestore.Client.from_service_account_json("FirebaseDataPraktikan.json")
+print(resource_path("firebaseAuth.json"))
+db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
+print("Firebase initialized successfully")
 
 s = symbols('s') 
 
-ADMIN_NPM = "2206817396" 
+ADMIN_NPM = "2206817396"
 TOTAL_STUDENT = 149
 
 class HoverButton(QPushButton):
@@ -89,10 +132,10 @@ class Leaderboard(QMainWindow):
         screen_rect = screen.geometry()
         screen_width = screen_rect.width()
         screen_height = screen_rect.height()
-        ui_file = "ui/Leaderboard.ui" if screen_width >= 1920 and screen_height >= 1080 else "ui/LeaderboardNoHD.ui"
+        ui_file = resource_path("ui/Leaderboard.ui" if screen_width >= 1920 and screen_height >= 1080 else "ui/LeaderboardNoHD.ui")
         uic.loadUi(ui_file, self)
         self.setWindowTitle("Root Locus Controller Design")
-        self.setWindowIcon(QIcon("Asset/Logo Control.png"))
+        self.setWindowIcon(QIcon(resource_path("Asset/Logo Control.png")))
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.last_data_snapshot = None
         # buat direktori Hasil jika belum ada
@@ -112,7 +155,7 @@ class Leaderboard(QMainWindow):
         Ambil semua dokumen di collection modul4 dan kembalikan dict {docid: docdict}
         """
         try:
-            docs = db.collection("Modul 4").stream()
+            docs = db.collection("Modul4").stream()
         except Exception as e:
             print("Error fetching Firestore data:", e)
             return {}
@@ -274,9 +317,12 @@ class Leaderboard(QMainWindow):
 class MainWindow(QMainWindow):
     def __init__(self, Nama, NPM):
         super(MainWindow, self).__init__()
-        uic.loadUi("Modul 4/ui/MainNoHD.ui", self)
+
+        # print("Loading UI from:", resource_path("ui/MainNoHD.ui"))
+
+        uic.loadUi(resource_path("ui/MainNoHD.ui"), self)
         self.setWindowTitle("Practicum Software : Virtual PID")
-        self.setWindowIcon(QIcon("Asset/Logo Merah.png"))
+        self.setWindowIcon(QIcon(resource_path("Asset/Logo Merah.png")))
         self.Nama = Nama
         self.NPM = NPM
         
@@ -431,7 +477,7 @@ class MainWindow(QMainWindow):
         error = (error_Kp + error_Ki + error_Kd) / 3
 
         try:
-            doc_ref = db.collection("Modul 4").document(str(self.NPM))
+            doc_ref = db.collection("Modul4").document(str(self.NPM))
             doc_ref.set({
                 "error_kp": float(error_Kp),
                 "error_ki": float(error_Ki),
@@ -570,22 +616,14 @@ class MainWindow(QMainWindow):
                 hover_button.setObjectName(button.objectName())  
                 
                 # Reconnect signals
-                if button_name == "Controller":
-                    hover_button.clicked.connect(self.controller)
-                elif button_name == "runSim":
-                    hover_button.clicked.connect(self.simulation)
-                elif button_name == "Refrensi":
-                    hover_button.clicked.connect(self.reference)
-                elif button_name == "Plant":
-                    hover_button.clicked.connect(self.TransferFunction)
-                elif button_name == "scopeOutput":
-                    hover_button.clicked.connect(self.outputResponse)
-                elif button_name == "scopeController":
-                    hover_button.clicked.connect(self.errorResponse)
-                elif button_name == "Submit":
-                    hover_button.clicked.connect(self.trueValue)
-                elif button_name == "scopeOutput_Diskrit":
-                    hover_button.clicked.connect(self.outputResponse_discrete)
+                if button_name == "Controller": hover_button.clicked.connect(self.controller)
+                elif button_name == "runSim": hover_button.clicked.connect(self.simulation)
+                elif button_name == "Refrensi": hover_button.clicked.connect(self.reference)
+                elif button_name == "Plant": hover_button.clicked.connect(self.TransferFunction)
+                elif button_name == "scopeOutput": hover_button.clicked.connect(self.outputResponse)
+                elif button_name == "scopeController": hover_button.clicked.connect(self.errorResponse)
+                elif button_name == "Submit": hover_button.clicked.connect(self.trueValue)
+                elif button_name == "scopeOutput_Diskrit": hover_button.clicked.connect(self.outputResponse_discrete)
 
                 button.deleteLater()
 
@@ -594,8 +632,8 @@ class MainWindow(QMainWindow):
 class PID(QMainWindow):
     def __init__(self, main_window):
         super(PID, self).__init__()
-        uic.loadUi("Modul 4/ui/PIDparam.ui", self)
-        self.setWindowIcon(QIcon("Asset/Logo Merah.png"))
+        uic.loadUi(resource_path("ui/PIDparam.ui"), self)
+        self.setWindowIcon(QIcon(resource_path("Asset/Logo Merah.png")))
         self.setWindowTitle("PID Parameter")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
@@ -628,8 +666,8 @@ class PID(QMainWindow):
 class References(QMainWindow):
     def __init__(self, main_window):
         super(References, self).__init__()
-        uic.loadUi("Modul 4/ui/ReferencePoint.ui", self)
-        self.setWindowIcon(QIcon("Asset/Logo Merah.png"))
+        uic.loadUi(resource_path("ui/ReferencePoint.ui"), self)
+        self.setWindowIcon(QIcon(resource_path("Asset/Logo Merah.png")))
         self.setWindowTitle("Reference Point")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
@@ -659,8 +697,8 @@ class References(QMainWindow):
 class TransferFunction(QMainWindow):
     def __init__(self, main_window):
         super(TransferFunction, self).__init__()
-        uic.loadUi("Modul 4/ui/TransferFunction.ui", self)
-        self.setWindowIcon(QIcon("Asset/Logo Merah.png"))
+        uic.loadUi(resource_path("ui/TransferFunction.ui"), self)
+        self.setWindowIcon(QIcon(resource_path("Asset/Logo Merah.png")))
         self.setWindowTitle("System Transfer Function")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
@@ -671,19 +709,11 @@ class TransferFunction(QMainWindow):
 
         self.show()
 
-def main():
-    app = QApplication(sys.argv)
-    
-    if npm == ADMIN_NPM:
-        window = Leaderboard()
-    else:
-        window = MainWindow(nama, npm)
 
+def exec_CDRL(nama, npm):
+    app = QApplication.instance() or QApplication(sys.argv)
+    window = Leaderboard() if npm == ADMIN_NPM else MainWindow(nama, npm)
     window.show()
-    app.exec_()
-
-if __name__ == "__main__":
-    nama = sys.argv[1]
-    npm = sys.argv[2]
-    main()
-
+    
+    # do NOT call app.exec_() here when launched from the main app
+    return window
