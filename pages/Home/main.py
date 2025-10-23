@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         uic.loadUi(resource_path("pages/Home/UI_home/Main.ui"), self)
         self.setWindowTitle("Control Practicum Center")
-        self.setWindowIcon(QIcon(resource_path("pages/Home/Asset_home/Logo Merah.png")))
+        self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.RootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.RootLocusPage))
         self.Frequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.FreqPage))
@@ -412,7 +412,7 @@ class AdminWindow(QMainWindow):
         super().__init__()
         uic.loadUi(resource_path("pages/Home/UI_home/Admin.ui"), self)
         self.setWindowTitle("Control Practicum Center - Admin")
-        self.setWindowIcon(QIcon(resource_path("pages/Home/Asset_home/Logo Merah.png")))
+        self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.WelcomeText.setText(f"Welcome {nama}!")
         
@@ -425,7 +425,7 @@ class Login(QMainWindow):
         super(Login, self).__init__()
         uic.loadUi(resource_path("pages/Home/UI_home/Login.ui"), self)
         self.setWindowTitle("Control Practicum Center")
-        self.setWindowIcon(QIcon(resource_path("pages/Home/Asset_home/Logo Merah.png")))
+        self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.Login.clicked.connect(self.login)
         self.ChangePass.clicked.connect(self.change_password)
@@ -503,7 +503,7 @@ class ChangePass(QMainWindow):
         super(ChangePass, self).__init__()
         uic.loadUi(resource_path("pages/Home/UI_home/ChangePass.ui"), self)
         self.setWindowTitle("Change Password")
-        self.setWindowIcon(QIcon(resource_path("pages/Home/Asset_home/Logo Merah.png")))
+        self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.ChangePass.clicked.connect(self.change_password)
         self.Back.clicked.connect(self.back_to_login)
