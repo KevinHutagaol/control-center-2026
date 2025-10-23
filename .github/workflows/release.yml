@@ -38,7 +38,7 @@ jobs:
     - name: Copy build outputs
       run: |
         cp -r dist/* release/
-        cp release/version.json release/
+        cp release/app-config.json release/
 
     - name: Create ZIP
       run: |
