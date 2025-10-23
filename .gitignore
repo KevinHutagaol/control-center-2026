@@ -17,3 +17,6 @@ firebaseAuth.json
 
 # Others
 /*.txt
+
+# UI
+*.qrc
