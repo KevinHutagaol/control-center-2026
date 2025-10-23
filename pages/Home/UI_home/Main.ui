@@ -1,0 +1,2195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1280</width>
+    <height>720</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 0, 0);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QStackedWidget" name="Stacked">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="Main">
+       <layout class="QVBoxLayout" name="verticalLayout_21">
+        <item>
+         <widget class="QFrame" name="Navbar">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>100</horstretch>
+            <verstretch>50</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>75</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);
+border-radius : 5px;</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QFrame" name="frame_3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">image: url(:/Asset/Asset/Header.png);</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="Nilai">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>100</horstretch>
+               <verstretch>10</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>10</height>
+              </size>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    image: url(:/Asset/Asset/Chart kosong.png);
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    
+	image: url(:/Asset/Asset/Chart isi.png);
+}
+</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="Bawah">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QFrame" name="frame">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QPushButton" name="RootLocus">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>400</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>90</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 20px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                </property>
+                <property name="text">
+                 <string>Root Locus</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="Frequency">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>90</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 20px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                </property>
+                <property name="text">
+                 <string>Frequency Response</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="CDRootLocus">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>90</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 20px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                </property>
+                <property name="text">
+                 <string>Controller Design : Root Locus</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="CDFrequency">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>90</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 20px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                </property>
+                <property name="text">
+                 <string>Controller Design : Frequency Response</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="StateSpace">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>90</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 20px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                </property>
+                <property name="text">
+                 <string>State Space Modeling</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="COD">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>90</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 20px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                </property>
+                <property name="text">
+                 <string>Controller and Observer Design</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="DCOD">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>90</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 20px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                </property>
+                <property name="text">
+                 <string>Discrete Controller and Observer Design</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>8</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="DCMotor">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>90</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 20px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                </property>
+                <property name="text">
+                 <string>DC Motor Modelling and Controller Design</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_4">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="QFrame" name="frame_57">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_21">
+                 <item>
+                  <widget class="QLabel" name="WelcomeText">
+                   <property name="styleSheet">
+                    <string notr="true">border-radius : 2px;
+color: rgb(255, 255, 255);
+font-size: 20px;
+padding:3px;
+font-family: &quot;SF Pro Display&quot;; 
+		font-weight: bold; 
+    	font-style: normal;</string>
+                   </property>
+                   <property name="text">
+                    <string>Welcome Attafahqi Amirtha Dariswan!</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_3">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Fixed</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="Kelompok">
+                   <property name="styleSheet">
+                    <string notr="true">border-radius : 5px;
+background-color: rgb(255, 255, 255);
+color: rgb(214, 0, 0);
+font-size: 20px;
+padding:3px;
+font-family: &quot;SF Pro Display&quot;; 
+		font-weight: bold; 
+    	font-style: normal;</string>
+                   </property>
+                   <property name="text">
+                    <string>1</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QStackedWidget" name="stackedWidget">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="FirstPage">
+                 <layout class="QVBoxLayout" name="verticalLayout_20">
+                  <item>
+                   <widget class="QFrame" name="frame_29">
+                    <property name="styleSheet">
+                     <string notr="true">image: url(:/Asset/Asset/Logo.png);</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="RootLocusPage">
+                 <layout class="QVBoxLayout" name="verticalLayout_4">
+                  <item>
+                   <widget class="QFrame" name="frame_5">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;
+padding:7px;</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_3">
+                     <item>
+                      <widget class="QFrame" name="frame_6">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>320</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Modul 23.png);
+</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="frame_7">
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Root Locus.png);</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_5"/>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="RunRL">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>60</height>
+                     </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+ 		background-color: rgb(0, 255, 0);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(255, 255, 255);
+		font-size: 40px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(0, 255, 0);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>RUN</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="FreqPage">
+                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                  <item>
+                   <widget class="QFrame" name="frame_8">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;
+padding:7px;</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_4">
+                     <item>
+                      <widget class="QFrame" name="frame_9">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>320</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Modul 23.png);
+</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="frame_10">
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/FreqResp.png);</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_6"/>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="RunFreq">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>60</height>
+                     </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+ 		background-color: rgb(0, 255, 0);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(255, 255, 255);
+		font-size: 40px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(0, 255, 0);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>RUN</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="CDRootLocusPage">
+                 <layout class="QVBoxLayout" name="verticalLayout_9">
+                  <item>
+                   <widget class="QFrame" name="frame_11">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;
+padding:7px;</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_5">
+                     <item>
+                      <widget class="QFrame" name="frame_12">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>320</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Modul 4.png);
+</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="frame_13">
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/VPID.png);</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_8"/>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="RunCDRL">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>60</height>
+                     </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+ 		background-color: rgb(0, 255, 0);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(255, 255, 255);
+		font-size: 40px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(0, 255, 0);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>RUN</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="CDFreqPage">
+                 <layout class="QVBoxLayout" name="verticalLayout_11">
+                  <item>
+                   <widget class="QFrame" name="frame_14">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;
+padding:7px;</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_6">
+                     <item>
+                      <widget class="QFrame" name="frame_15">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>320</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Modul 5.png);
+</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="frame_16">
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/CDFreq.png);</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_10"/>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="RunCDFreq">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>60</height>
+                     </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+ 		background-color: rgb(0, 255, 0);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(255, 255, 255);
+		font-size: 40px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(0, 255, 0);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>RUN</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="StateSpacePage">
+                 <layout class="QVBoxLayout" name="verticalLayout_13">
+                  <item>
+                   <widget class="QFrame" name="frame_17">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;
+padding:7px;</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_7">
+                     <item>
+                      <widget class="QFrame" name="frame_18">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>320</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Modul 6.png);
+</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="frame_19">
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/SSM.png);</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_12"/>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="RunStateSpace">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>60</height>
+                     </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+ 		background-color: rgb(0, 255, 0);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(255, 255, 255);
+		font-size: 40px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(0, 255, 0);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>RUN</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="CODPage">
+                 <layout class="QVBoxLayout" name="verticalLayout_15">
+                  <item>
+                   <widget class="QFrame" name="frame_20">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;
+padding:7px;</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_8">
+                     <item>
+                      <widget class="QFrame" name="frame_21">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>320</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Modul 7.png);
+</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="frame_22">
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Continous.png);</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_14"/>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="RunCOD">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>60</height>
+                     </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+ 		background-color: rgb(0, 255, 0);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(255, 255, 255);
+		font-size: 40px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(0, 255, 0);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>RUN</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="DCODPage">
+                 <layout class="QVBoxLayout" name="verticalLayout_17">
+                  <item>
+                   <widget class="QFrame" name="frame_23">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;
+padding:7px;</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_9">
+                     <item>
+                      <widget class="QFrame" name="frame_24">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>320</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Modul 8.png);
+</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="frame_25">
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Discrete.png);</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_16"/>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="RunDCOD">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>60</height>
+                     </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+ 		background-color: rgb(0, 255, 0);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(255, 255, 255);
+		font-size: 40px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(0, 255, 0);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>RUN</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="MotorPage">
+                 <layout class="QVBoxLayout" name="verticalLayout_19">
+                  <item>
+                   <widget class="QFrame" name="frame_26">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;
+padding:7px;</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_10">
+                     <item>
+                      <widget class="QFrame" name="frame_27">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>320</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Modul 910.png);
+</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="frame_28">
+                       <property name="styleSheet">
+                        <string notr="true">image: url(:/Asset/Asset/Motor.png);</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_18"/>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="RunMotor">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>60</height>
+                     </size>
+                    </property>
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+ 		background-color: rgb(0, 255, 0);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(255, 255, 255);
+		font-size: 40px;
+		padding:7px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(0, 255, 0);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>RUN</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="NilaiPage">
+       <layout class="QVBoxLayout" name="verticalLayout_41">
+        <item>
+         <widget class="QFrame" name="Navbar_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>100</horstretch>
+            <verstretch>50</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>75</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);
+border-radius : 5px;</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <item>
+            <widget class="QFrame" name="frame_30">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">image: url(:/Asset/Asset/Header.png);</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="Back">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>100</horstretch>
+               <verstretch>10</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>10</height>
+              </size>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+ 		background-color: rgb(214, 0, 0);
+		border-color: rgb(214, 0, 0);
+		border-radius : 5px;
+		color: rgb(255, 255, 255);
+		font-size: 20px;
+		padding: 1px 10px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(214, 0, 0, 150);
+}</string>
+             </property>
+             <property name="text">
+              <string>&lt; BACK</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="Bawah_2">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
+           <item>
+            <widget class="QFrame" name="frame_2">
+             <property name="maximumSize">
+              <size>
+               <width>900</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_22">
+              <item>
+               <widget class="QFrame" name="frame_34">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_13">
+                 <item>
+                  <widget class="QFrame" name="frame_35">
+                   <property name="styleSheet">
+                    <string notr="true">image: url(:/Asset/Asset/Control Board.png);</string>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="TotalNilai">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>150</height>
+                    </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">image: url(:/Nilai/Nilai/TotalNilai.png);
+background-color: rgb(255, 255, 255);
+border-radius : 10px;</string>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_58">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_22">
+                 <item>
+                  <widget class="QPushButton" name="btn23">
+                   <property name="minimumSize">
+                    <size>
+                     <width>60</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 15px;
+		padding: 3px 15px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                   </property>
+                   <property name="text">
+                    <string>2-3</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn4">
+                   <property name="minimumSize">
+                    <size>
+                     <width>60</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 15px;
+		padding: 3px 15px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                   </property>
+                   <property name="text">
+                    <string>4</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn5">
+                   <property name="minimumSize">
+                    <size>
+                     <width>60</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 15px;
+		padding: 3px 15px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                   </property>
+                   <property name="text">
+                    <string>5</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn6">
+                   <property name="minimumSize">
+                    <size>
+                     <width>60</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 15px;
+		padding: 3px 15px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                   </property>
+                   <property name="text">
+                    <string>6</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn7">
+                   <property name="minimumSize">
+                    <size>
+                     <width>60</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 15px;
+		padding: 3px 15px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                   </property>
+                   <property name="text">
+                    <string>7</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn8">
+                   <property name="minimumSize">
+                    <size>
+                     <width>60</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 15px;
+		padding: 3px 15px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                   </property>
+                   <property name="text">
+                    <string>8</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn910">
+                   <property name="minimumSize">
+                    <size>
+                     <width>60</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 15px;
+		padding: 3px 10px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                   </property>
+                   <property name="text">
+                    <string>9-10</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn11">
+                   <property name="minimumSize">
+                    <size>
+                     <width>60</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+ 		background-color: rgb(255, 255, 255);
+		border-color: rgb(255, 255, 255);
+		border-radius : 2px;
+		color: rgb(214, 0, 0);
+		font-size: 15px;
+		padding: 3px 15px;
+		font-family: &quot;SF Pro Display&quot;; 
+			font-weight: bold; 
+    		font-style: normal;
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    background-color: rgb(255, 255, 255);
+}</string>
+                   </property>
+                   <property name="text">
+                    <string>11</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QStackedWidget" name="stackedNilai">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="Modul23">
+                 <layout class="QVBoxLayout" name="verticalLayout_24">
+                  <item>
+                   <widget class="QFrame" name="Graph23">
+                    <property name="styleSheet">
+                     <string notr="true">image: url(:/Nilai/Nilai/Modul_23.png);</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Modul4">
+                 <layout class="QVBoxLayout" name="verticalLayout_25">
+                  <item>
+                   <widget class="QFrame" name="Graph4">
+                    <property name="styleSheet">
+                     <string notr="true">image: url(:/Nilai/Nilai/Modul_4.png);</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Modul5">
+                 <layout class="QVBoxLayout" name="verticalLayout_26">
+                  <item>
+                   <widget class="QFrame" name="Graph5">
+                    <property name="styleSheet">
+                     <string notr="true">image: url(:/Nilai/Nilai/Modul_5.png);</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Modul6">
+                 <layout class="QVBoxLayout" name="verticalLayout_27">
+                  <item>
+                   <widget class="QFrame" name="Graph6">
+                    <property name="styleSheet">
+                     <string notr="true">image: url(:/Nilai/Nilai/Modul_6.png);</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Modul7">
+                 <layout class="QVBoxLayout" name="verticalLayout_28">
+                  <item>
+                   <widget class="QFrame" name="Graph7">
+                    <property name="styleSheet">
+                     <string notr="true">image: url(:/Nilai/Nilai/Modul_7.png);</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Modul8">
+                 <layout class="QVBoxLayout" name="verticalLayout_29">
+                  <item>
+                   <widget class="QFrame" name="Graph8">
+                    <property name="styleSheet">
+                     <string notr="true">image: url(:/Nilai/Nilai/Modul_8.png);</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Modul910">
+                 <layout class="QVBoxLayout" name="verticalLayout_30">
+                  <item>
+                   <widget class="QFrame" name="Graph910">
+                    <property name="styleSheet">
+                     <string notr="true">image: url(:/Nilai/Nilai/Modul_910.png);</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="Modul11">
+                 <layout class="QVBoxLayout" name="verticalLayout_31">
+                  <item>
+                   <widget class="QFrame" name="Graph11">
+                    <property name="styleSheet">
+                     <string notr="true">image: url(:/Nilai/Nilai/Modul_11.png);</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_31">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_23">
+              <item>
+               <widget class="QFrame" name="DetailNilai">
+                <property name="minimumSize">
+                 <size>
+                  <width>700</width>
+                  <height>217</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">image: url(:/Nilai/Nilai/DetailNilai.png);</string>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="Refresh">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>40</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+   
+	image: url(:/Asset/Asset/Refresh 2.png);
+	
+	background-color: rgb(255, 255, 255);
+	border-radius:10px;
+	
+}
+
+/* Saat mouse hover */
+QPushButton:hover {
+    
+	
+	image: url(:/Asset/Asset/Refresh 1.png);
+	background-color: rgb(255, 255, 255);
+}</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="Watermark">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);
+font-size: 10px;
+font-family: &quot;Poppins&quot;; 
+    font-style: normal;</string>
+      </property>
+      <property name="text">
+       <string>© 2025 Copyright Control Laboratorium Universitas Indonesia</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources>
+  <include location="../resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>
