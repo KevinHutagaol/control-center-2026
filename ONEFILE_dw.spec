@@ -78,7 +78,7 @@ exe = EXE(
     upx_exclude=[],
     runtime_tmpdir=None,
     icon=icon_file,
-    console=True,
+    console=False,
 )
 
 # On macOS, wrap the EXE into an .app bundle
