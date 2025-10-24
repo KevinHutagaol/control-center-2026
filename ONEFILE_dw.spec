@@ -49,7 +49,7 @@ if not os.path.exists(icon_file):
     icon_file = None
 
 a = Analysis(
-    ['main.py'],                # keep your entry script
+    ['pages/Home/main.py'],
     pathex=[project_root],
     binaries=[],
     datas=datas,
