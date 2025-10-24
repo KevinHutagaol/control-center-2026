@@ -282,7 +282,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         uic.loadUi(resource_path("ui_910/main.ui"), self)
         self.setWindowTitle("Practicum Software : Motor SIM Modeling and Control")
-        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
         self.serial_conn = None
         self.child_windows = {}
@@ -473,7 +473,7 @@ class Encoder(QtWidgets.QMainWindow):
         super().__init__(main_window)  # Pass parent for Qt hierarchy
         uic.loadUi(resource_path("ui_910/calibration.ui"), self)
         self.setWindowTitle("Encoder Calibration")
-        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -585,7 +585,7 @@ class ProgressBar(QtWidgets.QDialog):
         super().__init__(parent)
         uic.loadUi(resource_path("ui_910/progressbar.ui"), self)  
         self.setWindowTitle("Loading ...")
-        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
         self.setWindowModality(QtCore.Qt.ApplicationModal)
 
@@ -594,7 +594,7 @@ class LogWindow(QtWidgets.QMainWindow):
         super().__init__(main_window)
         uic.loadUi(resource_path("ui_910/linlog.ui"), self)
         self.setWindowTitle("DC Motor vs PWM Linear Relation")
-        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -785,7 +785,7 @@ class LRC(QtWidgets.QMainWindow):
         super().__init__(main_window)
         uic.loadUi(resource_path("ui_910/lrc.ui"), self)
         self.setWindowTitle("Linear Region Limit")
-        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -905,7 +905,7 @@ class olc(QtWidgets.QMainWindow):
         super().__init__(main_window)
         uic.loadUi(resource_path("ui_910/olc.ui"), self)
         self.setWindowTitle("DC Motor Open Loop Control")
-        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -1480,7 +1480,7 @@ class clc(QtWidgets.QMainWindow):
         super().__init__(main_window)
         uic.loadUi(resource_path("ui_910/clc.ui"), self)
         self.setWindowTitle("DC Motor Closed Loop Control")
-        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -1852,7 +1852,7 @@ class sa(QtWidgets.QMainWindow):
         super().__init__(main_window)
         uic.loadUi(resource_path("ui_910/sa.ui"), self)
         self.setWindowTitle("Submit Answers")
-        self.setWindowIcon(QtGui.QIcon(resource_path("Asset/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
