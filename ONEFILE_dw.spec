@@ -5,6 +5,7 @@ from pathlib import Path
 from PyInstaller.utils.hooks import collect_submodules
 
 project_root = os.getcwd()
+is_macos = sys.platform == "darwin"
 
 def add_tree(datas_list, src_dir, dest_prefix):
     src_dir = Path(src_dir)
