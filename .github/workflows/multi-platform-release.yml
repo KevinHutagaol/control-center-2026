@@ -103,9 +103,47 @@ jobs:
           cd dist
           ditto -c -k --sequesterRsrc --keepParent "ControlCenter.app" "ControlCenter-macOS.zip"
 
+      - name: Upload .app as artifact (for DMG job)
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-app-bundle
+          path: dist/ControlCenter.app
+
       - name: Create GitHub Release (attach .zip)
         uses: softprops/action-gh-release@v1
         with:
           files: dist/ControlCenter-macOS.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos-dmg:
+    runs-on: macos-latest
+    needs: [create_release, build-macos-app]
+
+    steps:
+      - name: Download .app artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-app-bundle
+          path: dist
+
+      - name: Prepare DMG staging
+        run: |
+          rm -rf dmg && mkdir -p dmg
+          cp -R "dist/ControlCenter.app" dmg/
+          ln -s /Applications dmg/Applications
+
+      - name: Create .dmg
+        run: |
+          hdiutil create \
+            -volname "ControlCenter" \
+            -srcfolder dmg \
+            -ov -format UDZO "dist/ControlCenter-macOS.dmg"
+          ls -la dist
+
+      - name: Upload .dmg to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/ControlCenter-macOS.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
