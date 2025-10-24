@@ -8,7 +8,6 @@ project_root = os.getcwd()
 is_macos = sys.platform == "darwin"
 
 def add_tree(datas_list, src_dir, dest_prefix):
-    """Append (src_file, dest_dir) for every file under src_dir."""
     src_dir = Path(src_dir)
     if not src_dir.is_dir():
         return
@@ -39,9 +38,8 @@ add_tree(datas, m910_asset, os.path.join("pages", "Modul910","asset"))
 add_tree(datas, m910_ui,    os.path.join("pages", "Modul910","ui_910"))
 add_tree(datas, os.path.join(project_root, "public"), "public")
 
-
-hidden = []
-hidden += collect_submodules('pages')
+hidden = collect_submodules('pages')
+# Keep this only if you actually have pages/Home/resources_rc.py
 hidden += ['pages.Home.resources_rc']
 
 icon_file = "icon.icns" if is_macos else "icon.ico"
@@ -66,24 +64,20 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    getattr(a, "zipfiles", []),
-    a.datas,
-    [],
+    [],                    # no binaries here
+    exclude_binaries=True, # <-- onedir pattern
     name="ControlCenter",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,            # harmless if UPX not installed; it will skip
+    upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
     icon=icon_file,
     console=False,
 )
 
-# ---- ONEDIR output ----
 if is_macos:
-    # Wrap into .app bundle, then collect into a folder
     app = BUNDLE(
         exe,
         name="ControlCenter.app",
@@ -96,22 +90,21 @@ if is_macos:
         },
     )
     coll = COLLECT(
-        app,                  # collect the .app bundle
+        app,              # first arg is the BUNDLE
         a.binaries,
         a.zipfiles,
         a.datas,
         strip=False,
         upx=True,
-        name="ControlCenter", # dist/ControlCenter/ControlCenter.app
+        name="ControlCenter",   # dist/ControlCenter/ControlCenter.app
     )
 else:
-    # Windows/Linux: collect the exe + files into dist/ControlCenter/
     coll = COLLECT(
-        exe,
+        exe,              # first arg is the EXE
         a.binaries,
         a.zipfiles,
         a.datas,
         strip=False,
         upx=True,
-        name="ControlCenter",
+        name="ControlCenter",   # dist/ControlCenter/
     )
