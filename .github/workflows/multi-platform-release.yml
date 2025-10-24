@@ -64,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
-  build-macos:
+  build-macos-app:
     runs-on: macos-latest
     needs: create_release
 
