@@ -333,7 +333,7 @@ def exec_COD(nama, npm):
     window.show()
     
     widget = QtWidgets.QStackedWidget()
-    widget.setWindowIcon(QIcon(resource_path("Asset/Logo Merah.png")))
+    widget.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
     widget.addWidget(window)
     widget.setCurrentWidget(window)
     widget.resize(window.minimumSize())
