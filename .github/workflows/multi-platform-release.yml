@@ -98,6 +98,18 @@ jobs:
         run: ls -la dist
         shell: pwsh
 
+      - name: Resolve .app path
+        id: resolve_app
+        run: |
+          set -euo pipefail
+          APP_PATH="$(find dist -maxdepth 2 -type d -name "*.app" -print -quit)"
+          if [ -z "${APP_PATH}" ]; then
+            echo "ERROR: No .app found under dist"
+            exit 1
+          fi
+          echo "Found app: ${APP_PATH}"
+          echo "app_path=${APP_PATH}" >> "$GITHUB_OUTPUT"
+
       - name: Zip .app bundle
         run: |
           cd dist
