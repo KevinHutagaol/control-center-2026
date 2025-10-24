@@ -27,14 +27,55 @@ import pandas as pd
 from pathlib import Path
 from google.cloud import firestore
 
+
 import pages.Modul4.Asset.Resource
 
-from func.resourcePath import resource_path
+def resource_path(rel: str | Path) -> str:
+    """
+    Resolve a data file path that works in:
+      - dev (walk up parents so files in project root are found),
+      - PyInstaller --onedir,
+      - PyInstaller --onefile (temp _MEIPASS),
+      - PyInstaller v6 layout (data under _internal).
+    Returns a string path. It does NOT create files.
+    """
+    rel_path = Path(rel)
+
+    # 0) Absolute path: just return it (don’t prepend bases)
+    if rel_path.is_absolute():
+        return str(rel_path)
+
+    candidates: list[Path] = []
+
+    # 1) PyInstaller onefile: temp unpack dir
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        base = Path(sys._MEIPASS)
+        candidates += [base / rel_path, base / "_internal" / rel_path]
+
+    # 2) PyInstaller onedir: beside the executable
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.executable).parent
+        candidates += [exe_dir / rel_path, exe_dir / "_internal" / rel_path]
+
+    # 3) Dev: walk upwards so root-level assets can be found from subpackages
+    here = Path(__file__).resolve().parent
+    for parent in [here, *here.parents]:
+        candidates.append(parent / rel_path)
+        candidates.append(parent / "_internal" / rel_path)
+
+    # Pick the first existing candidate
+    for c in candidates:
+        if c.exists():
+            return str(c)
+
+    # Fallback: return the first candidate even if missing (caller can handle)
+    return str(candidates[0])
+
 
 # === Firestore ===
 try:
-    print(resource_path("../../firebaseAuth.json"))
-    db = firestore.Client.from_service_account_json(resource_path("../../firebaseAuth.json"))
+    print(resource_path("firebaseAuth.json"))
+    db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
 
     print("Firebase initialized successfully")
 
@@ -102,7 +143,7 @@ class Leaderboard(QMainWindow):
         ui_file = resource_path("ui/Leaderboard.ui" if screen_width >= 1920 and screen_height >= 1080 else "ui/LeaderboardNoHD.ui")
         uic.loadUi(ui_file, self)
         self.setWindowTitle("Root Locus Controller Design")
-        self.setWindowIcon(QIcon(resource_path("../../Asset/Logo Control.png")))
+        self.setWindowIcon(QIcon(resource_path("Asset/Logo Control.png")))
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.last_data_snapshot = None
         # buat direktori Hasil jika belum ada
@@ -284,6 +325,8 @@ class Leaderboard(QMainWindow):
 class MainWindow(QMainWindow):
     def __init__(self, Nama, NPM):
         super(MainWindow, self).__init__()
+
+        # print("Loading UI from:", resource_path("ui/MainNoHD.ui"))
 
         uic.loadUi(resource_path("ui/MainNoHD.ui"), self)
         self.setWindowTitle("Practicum Software : Virtual PID")
