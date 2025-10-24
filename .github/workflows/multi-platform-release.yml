@@ -85,7 +85,8 @@ jobs:
           pip install pyinstaller
 
       - name: Generate app-config.json
-        run: echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
+        run: |
+          echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
 
       - name: Build (ONEFILE.spec) for macOS
         run: pyinstaller ONEFILE_dw.spec
