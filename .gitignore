@@ -23,6 +23,9 @@ functions/node_modules/
 node_modules/
 *.local
 
+# Other workflows
+.github/workflows/release.yml
+
 # Firebase functions 
 functions/
 
