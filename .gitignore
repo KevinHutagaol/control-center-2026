@@ -23,6 +23,9 @@ functions/node_modules/
 node_modules/
 *.local
 
+# Pyinstaller Spec
+/ONEDIR.spec
+
 # Other workflows
 .github/workflows/release.yml
 
