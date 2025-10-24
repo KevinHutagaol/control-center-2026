@@ -1,0 +1,102 @@
+name: Build and Release - Multi Platform
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger saat push tag seperti v1.0.0
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create.outputs.upload_url }}
+    steps:
+      - name: Create (or reuse) Release for this tag
+        id: create
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+
+  build-windows:
+    runs-on: windows-latest
+    needs: create_release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Create app-config.json at repo root
+        shell: bash
+        run: echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
+
+      - name: Build (ONEFILE.spec) for windows
+        run: pyinstaller ONEFILE_nt.spec
+
+      - name: Show dist
+        run: dir dist
+        shell: pwsh
+
+      - name: Create GitHub Release (attach .exe)
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.exe   # <— glob must match the actual filename
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+  build-macos:
+    runs-on: macos-latest
+    needs: create_release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Generate app-config.json
+        run: echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
+
+      - name: Build (ONEFILE.spec) for macOS
+        run: pyinstaller ONEFILE_dw.spec
+
+      - name: Show dist
+        run: dir dist
+        shell: pwsh
+
+      - name: Create GitHub Release (attach .app)
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
