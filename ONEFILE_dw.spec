@@ -5,7 +5,6 @@ from pathlib import Path
 from PyInstaller.utils.hooks import collect_submodules
 
 project_root = os.getcwd()
-is_macos = sys.platform == "darwin"
 
 def add_tree(datas_list, src_dir, dest_prefix):
     src_dir = Path(src_dir)
@@ -77,34 +76,24 @@ exe = EXE(
     console=False,
 )
 
-if is_macos:
-    app = BUNDLE(
-        exe,
-        name="ControlCenter.app",
-        icon=icon_file,
-        bundle_identifier="com.example.controlcenter",
-        info_plist={
-            "NSHighResolutionCapable": True,
-            "CFBundleShortVersionString": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
-            "CFBundleVersion": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
-        },
-    )
-    coll = COLLECT(
-        app,              # first arg is the BUNDLE
-        a.binaries,
-        a.zipfiles,
-        a.datas,
-        strip=False,
-        upx=True,
-        name="ControlCenter",   # dist/ControlCenter/ControlCenter.app
-    )
-else:
-    coll = COLLECT(
-        exe,              # first arg is the EXE
-        a.binaries,
-        a.zipfiles,
-        a.datas,
-        strip=False,
-        upx=True,
-        name="ControlCenter",   # dist/ControlCenter/
-    )
+app = BUNDLE(
+    exe,
+    name="ControlCenter.app",
+    icon=icon_file,
+    bundle_identifier="com.example.controlcenter",
+    info_plist={
+        "NSHighResolutionCapable": True,
+        "CFBundleShortVersionString": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
+        "CFBundleVersion": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
+    },
+)
+
+coll = COLLECT(
+    app,              # first arg is the BUNDLE
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    name="ControlCenter",   # dist/ControlCenter/ControlCenter.app
+)
