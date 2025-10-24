@@ -43,7 +43,6 @@ add_tree(datas, os.path.join(project_root, "public"), "public")
 hidden = []
 hidden += collect_submodules('pages')
 hidden += ['pages.Home.resources_rc']
-hidden += ['func.resourcePath']
 
 icon_file = "icon.icns" if is_macos else "icon.ico"
 if not os.path.exists(icon_file):

@@ -13,15 +13,54 @@ import pages.Home.resources_rc as resources_rc
 
 import updaterFunc 
 
-from func.resourcePath import resource_path
-
 from pages.Modul4.mainCDRL import exec_CDRL
 from pages.Modul7.mainCOD import exec_COD
 from pages.Modul910.mainDMMCD import exec_DMMCD
 
+def resource_path(rel: str | Path) -> str:
+    """
+    Resolve a data file path that works in:
+      - dev (walk up parents so files in project root are found),
+      - PyInstaller --onedir,
+      - PyInstaller --onefile (temp _MEIPASS),
+      - PyInstaller v6 layout (data under _internal).
+    Returns a string path. It does NOT create files.
+    """
+    rel_path = Path(rel)
+
+    # 0) Absolute path: just return it (don’t prepend bases)
+    if rel_path.is_absolute():
+        return str(rel_path)
+
+    candidates: list[Path] = []
+
+    # 1) PyInstaller onefile: temp unpack dir
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        base = Path(sys._MEIPASS)
+        candidates += [base / rel_path, base / "_internal" / rel_path]
+
+    # 2) PyInstaller onedir: beside the executable
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.executable).parent
+        candidates += [exe_dir / rel_path, exe_dir / "_internal" / rel_path]
+
+    # 3) Dev: walk upwards so root-level assets can be found from subpackages
+    here = Path(__file__).resolve().parent
+    for parent in [here, *here.parents]:
+        candidates.append(parent / rel_path)
+        candidates.append(parent / "_internal" / rel_path)
+
+    # Pick the first existing candidate
+    for c in candidates:
+        if c.exists():
+            return str(c)
+
+    # Fallback: return the first candidate even if missing (caller can handle)
+    return str(candidates[0])
+
 try:
-    print(resource_path("../../firebaseAuth.json"))
-    cred = credentials.Certificate(resource_path("../../firebaseAuth.json"))
+    print(resource_path("firebaseAuth.json"))
+    cred = credentials.Certificate(resource_path("firebaseAuth.json"))
     
     if not firebase_admin._apps:
         firebase_admin.initialize_app(cred)
@@ -37,9 +76,9 @@ except Exception as e:
 class MainWindow(QMainWindow):
     def __init__(self, npm, nama, role, kelompok):
         super().__init__()
-        uic.loadUi(resource_path("UI_home/Main.ui"), self)
+        uic.loadUi(resource_path("pages/Home/UI_home/Main.ui"), self)
         self.setWindowTitle("Control Practicum Center")
-        self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.RootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.RootLocusPage))
         self.Frequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.FreqPage))
@@ -286,13 +325,13 @@ class MainWindow(QMainWindow):
 
         self.DetailNilai.setStyleSheet("""
             QFrame {
-                image: url('Nilai_home/DetailNilai.png') 
+                image: url('pages/Home/Nilai_home/DetailNilai.png') 
             }
         """)
 
         self.TotalNilai.setStyleSheet("""
             QFrame {
-                image: url(Nilai_home/TotalNilai.png);
+                image: url(pages/Home/Nilai_home/TotalNilai.png);
                 background-color: rgb(255, 255, 255);
                 border-radius : 10px;
             }
@@ -300,49 +339,49 @@ class MainWindow(QMainWindow):
 
         self.Graph23.setStyleSheet("""
             QFrame {
-                image: url('Nilai_home/Modul_23.png') 
+                image: url('pages/Home/Nilai_home/Modul_23.png') 
             }
         """)
 
         self.Graph4.setStyleSheet("""
             QFrame {
-                image: url('Nilai_home/Modul_4.png')
+                image: url('pages/Home/Nilai_home/Modul_4.png')
             }
         """)
 
         self.Graph5.setStyleSheet("""
             QFrame {
-                image: url('Nilai_home/Modul_5.png')
+                image: url('pages/Home/Nilai_home/Modul_5.png')
             }
         """)
 
         self.Graph6.setStyleSheet("""
             QFrame {
-                image: url('Nilai_home/Modul_6.png')
+                image: url('pages/Home/Nilai_home/Modul_6.png')
             }
         """)
 
         self.Graph7.setStyleSheet("""
             QFrame {
-                image: url('Nilai_home/Modul_7.png')
+                image: url('pages/Home/Nilai_home/Modul_7.png')
             }
         """)
 
         self.Graph8.setStyleSheet("""
             QFrame {
-                image: url('Nilai_home/Modul_8.png')
+                image: url('pages/Home/Nilai_home/Modul_8.png')
             }
         """)
 
         self.Graph910.setStyleSheet("""
             QFrame {
-                image: url('Nilai_home/Modul_910.png')
+                image: url('pages/Home/Nilai_home/Modul_910.png')
             }
         """)
 
         self.Graph11.setStyleSheet("""
             QFrame {
-                image: url('Nilai_home/Modul_11.png')
+                image: url('pages/Home/Nilai_home/Modul_11.png')
             }
         """)
 
@@ -367,9 +406,9 @@ class MainWindow(QMainWindow):
 class AdminWindow(QMainWindow):
     def __init__(self, npm, nama, role):
         super().__init__()
-        uic.loadUi(resource_path("UI_home/Admin.ui"), self)
+        uic.loadUi(resource_path("pages/Home/UI_home/Admin.ui"), self)
         self.setWindowTitle("Control Practicum Center - Admin")
-        self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.WelcomeText.setText(f"Welcome {nama}!")
         
@@ -380,9 +419,9 @@ class AdminWindow(QMainWindow):
 class Login(QMainWindow):
     def __init__(self):
         super(Login, self).__init__()
-        uic.loadUi(resource_path("UI_home/Login.ui"), self)
+        uic.loadUi(resource_path("pages/Home/UI_home/Login.ui"), self)
         self.setWindowTitle("Control Practicum Center")
-        self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.Login.clicked.connect(self.login)
         self.ChangePass.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.ChangePassPage))
