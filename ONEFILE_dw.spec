@@ -81,8 +81,9 @@ exe = EXE(
     console=False,
 )
 
-# On macOS, wrap the EXE into an .app bundle
+# ---- ONEDIR output ----
 if is_macos:
+    # Wrap into .app bundle, then collect into a folder
     app = BUNDLE(
         exe,
         name="ControlCenter.app",
@@ -94,5 +95,23 @@ if is_macos:
             "CFBundleVersion": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
         },
     )
-
-# NOTE: no COLLECT() for onefile
+    coll = COLLECT(
+        app,                  # collect the .app bundle
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        strip=False,
+        upx=True,
+        name="ControlCenter", # dist/ControlCenter/ControlCenter.app
+    )
+else:
+    # Windows/Linux: collect the exe + files into dist/ControlCenter/
+    coll = COLLECT(
+        exe,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        strip=False,
+        upx=True,
+        name="ControlCenter",
+    )
