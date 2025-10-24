@@ -59,12 +59,12 @@ jobs:
       - name: Create GitHub Release (attach .exe)
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*.exe   # <— glob must match the actual filename
+          files: dist/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
-  build-macos-app:
+  build-macos:
     runs-on: macos-latest
     needs: create_release
 
@@ -102,48 +102,27 @@ jobs:
         run: |
           cd dist
           ditto -c -k --sequesterRsrc --keepParent "ControlCenter.app" "ControlCenter-macOS.zip"
-
-      - name: Upload .app as artifact (for DMG job)
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-app-bundle
-          path: dist/ControlCenter.app
+        
+      - name: Create DMG from .app
+        run: |
+          APP_PATH="${{ steps.resolve_app.outputs.app_path }}"
+          rm -rf dmg && mkdir -p dmg
+          cp -R "$APP_PATH" dmg/
+          ln -s /Applications dmg/Applications
+          # Example output name: ControlCenter-macOS.dmg
+          APP_BASENAME="$(basename "$APP_PATH")"
+          DMG_NAME="$(basename "$APP_BASENAME" .app)-macOS.dmg"
+          hdiutil create \
+            -volname "$(basename "$APP_BASENAME" .app)" \
+            -srcfolder dmg \
+            -ov -format UDZO "dist/${DMG_NAME}"
+          ls -la "dist/${DMG_NAME}"
 
       - name: Create GitHub Release (attach .zip)
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/ControlCenter-macOS.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build-macos-dmg:
-    runs-on: macos-latest
-    needs: [create_release, build-macos-app]
-
-    steps:
-      - name: Download .app artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-app-bundle
-          path: dist
-
-      - name: Prepare DMG staging
-        run: |
-          rm -rf dmg && mkdir -p dmg
-          cp -R "dist/ControlCenter.app" dmg/
-          ln -s /Applications dmg/Applications
-
-      - name: Create .dmg
-        run: |
-          hdiutil create \
-            -volname "ControlCenter" \
-            -srcfolder dmg \
-            -ov -format UDZO "dist/ControlCenter-macOS.dmg"
-          ls -la dist
-
-      - name: Upload .dmg to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/ControlCenter-macOS.dmg
+          files: |
+            dist/*-macOS.zip
+            dist/*-macOS.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
