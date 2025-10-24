@@ -11,7 +11,7 @@ import sys
 import json
 import hashlib
 from pathlib import Path
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QPushButton, QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QPushButton, QGraphicsDropShadowEffect, QWidget
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtGui import QCursor, QColor, QIcon
@@ -73,9 +73,16 @@ def resource_path(rel: str | Path) -> str:
 
 
 # === Firestore ===
-print(resource_path("firebaseAuth.json"))
-db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
-print("Firebase initialized successfully")
+try:
+    print(resource_path("firebaseAuth.json"))
+    db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
+
+    print("Firebase initialized successfully")
+
+except Exception as e:
+    print("Firebase error:", e)
+    QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
+    sys.exit(1)
 
 s = symbols('s') 
 
