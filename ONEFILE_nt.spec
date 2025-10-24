@@ -70,7 +70,7 @@ exe = EXE(
     getattr(a, "zipfiles", []),  # safe for all versions
     a.datas,
     [],
-    name="ControlCenter",
+    name="ControlCenter-NT",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
