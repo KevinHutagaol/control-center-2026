@@ -42,8 +42,12 @@ pyasn1_modules==0.4.2
 pycparser==2.23
 PyJWT==2.10.1
 pyparsing==3.2.4
+PyQt5==5.15.9
 pyqt5-plugins==5.15.9.2.3
+PyQt5-Qt5==5.15.2
 pyqt5-tools==5.15.9.3.3
+PyQt5_sip==12.17.0
+PyQtChart==5.15.7
 PyQtChart-Qt5==5.15.2
 pyserial==3.5
 python-dateutil==2.9.0.post0
@@ -59,7 +63,3 @@ typing_extensions==4.15.0
 urllib3==2.5.0
 sympy==1.12.1
 pandas==2.2.2
-PyQt5_sip>=12.13
-PyQt5-Qt5>=5.15.14
-PyQt5>=5.15,<5.16
-PyQtChart>=5.15,<5.16
