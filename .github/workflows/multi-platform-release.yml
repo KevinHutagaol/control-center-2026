@@ -95,12 +95,17 @@ jobs:
         run: pyinstaller ONEFILE_dw.spec
 
       - name: Show dist
-        run: dir dist
+        run: ls -la dist
         shell: pwsh
 
-      - name: Create GitHub Release (attach .app)
+      - name: Zip .app bundle
+        run: |
+          cd dist
+          ditto -c -k --sequesterRsrc --keepParent "ControlCenter.app" "ControlCenter-macOS.zip"
+
+      - name: Create GitHub Release (attach .zip)
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*.app
+          files: dist/ControlCenter-macOS.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
