@@ -46,7 +46,8 @@ jobs:
 
       - name: Create app-config.json at repo root
         shell: bash
-        run: echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
+        run: |
+          echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
 
       - name: Build (ONEFILE.spec) for windows
         run: pyinstaller ONEFILE_nt.spec
