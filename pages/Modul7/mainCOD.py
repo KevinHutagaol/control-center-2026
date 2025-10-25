@@ -84,12 +84,12 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("State Space Controller Design")
         self.setMinimumSize(1280, 720)
         self.setMaximumSize(1280, 720)
-        npm = os.getenv('npm')
+        npm = session.get("npm")
         if npm:
             npm = npm.strip()
             print(npm)
         else:
-            print("No NPM variable here!")
+            print("No npm variable here!")
         response = requests.get(FIREBASE_BASE_URL + f"students/{npm}.json")
         
         if response.status_code == 200:
