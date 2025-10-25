@@ -119,13 +119,11 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-    def run_root_locus(self,nama,npm):
+    def run_root_locus(self, nama, npm):
         print("Running RL")
-        #subprocess.run([sys.executable, 'Modul23/RootLocus.py'])
     
-    def run_frequency_response(self,nama,npm):
+    def run_frequency_response(self, nama, npm):
         print("Running FR")
-        #subprocess.run([sys.executable, 'Modul23/FrequencyResponse.py'])
     
     def run_cd_root_locus(self, nama, npm):
         print("Running CDRL")
@@ -135,14 +133,13 @@ class MainWindow(QMainWindow):
         
         w.destroyed.connect(lambda: self._children.pop(key, None))
 
-    def run_cd_frequency_response(self,nama,npm):
+    def run_cd_frequency_response(self, nama, npm):
         print("Running CDFR")
-        #subprocess.run([sys.executable, 'Modul5/ControlDesign_FrequencyResponse.py'])
     
-    def run_state_space(self,nama,npm):
+    def run_state_space(self, nama, npm):
         print("Running SS")
     
-    def run_cod(self,nama,npm):
+    def run_cod(self, nama, npm):
         print("Running COD")
         w = exec_COD(nama, npm)
         key = f"Modul7-{npm}"
@@ -150,11 +147,10 @@ class MainWindow(QMainWindow):
         
         w.destroyed.connect(lambda: self._children.pop(key, None))
     
-    def run_dcod(self,nama,npm):
+    def run_dcod(self, nama, npm):
         print("Running DCOD")
-        #subprocess.run([sys.executable, 'Modul8/DCOD.py'])
     
-    def run_motor(self,nama,npm,kelompok):
+    def run_motor(self, nama, npm,kelompok):
         print("Running DMMCD")
         w = exec_DMMCD(nama, npm)
         key = f"Modul910-{npm}"
@@ -317,8 +313,6 @@ class MainWindow(QMainWindow):
         plt.tight_layout()
         # fig.savefig(f"{out_dir}/TotalNilai.png", transparent=True)
         plt.close(fig)
-
-        # pastikan semua figure clear
         plt.close('all')
 
         print(f"Charts untuk {nama} ({npm}) sudah disimpan di folder {out_dir}/")
@@ -543,8 +537,6 @@ class Login(QMainWindow):
 
 
 def main():
-    # os.system("cls" if os.name == "nt" else "clear")
-
     print(updaterFunc.isOutdated())
 
     app = QApplication(sys.argv)
