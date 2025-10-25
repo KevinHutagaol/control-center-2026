@@ -84,7 +84,12 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("State Space Controller Design")
         self.setMinimumSize(1280, 720)
         self.setMaximumSize(1280, 720)
-        npm = os.getenv('NPM')
+        npm = os.getenv('npm')
+        if npm:
+            npm = npm.strip()
+            print(npm)
+        else:
+            print("No NPM variable here!")
         response = requests.get(FIREBASE_BASE_URL + f"students/{npm}.json")
         
         if response.status_code == 200:
@@ -109,8 +114,6 @@ class MainWindow(QMainWindow):
             else:
                 print("User not found!")
                 QMessageBox.warning(None, "Warning", "User not found!")
-                self.NPM.clear()
-                self.NPM.setFocus()
 
         else:
             print("Failed to connect to Firebase!")
@@ -341,4 +344,4 @@ def exec_COD(nama, npm):
     center_widget(widget)
 
     # do NOT call app.exec_() here when launched from the main app
-    return window
+    return widget
