@@ -450,6 +450,7 @@ class Login(QMainWindow):
 
     def login(self):
         npm = self.NPM.text().strip()
+        os.environ["npm"] = npm
         password = self.Pass.text().strip().replace(' ', '')
 
         if not self.is_valid_npm(npm):
