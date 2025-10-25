@@ -25,6 +25,7 @@ node_modules/
 
 # Pyinstaller Spec
 /ONEDIR.spec
+/*exe
 
 # Other workflows
 .github/workflows/release.yml
