@@ -14,6 +14,7 @@ import pages.Home.resources_rc as resources_rc
 import func.updaterFunc as updaterFunc 
 
 from pages.Modul4.mainCDRL import exec_CDRL
+from pages.Modul5.mainCDFR import exec_CDFR
 from pages.Modul7.mainCOD import exec_COD
 from pages.Modul910.mainDMMCD import exec_DMMCD
 
@@ -126,6 +127,12 @@ class MainWindow(QMainWindow):
 
     def run_cd_frequency_response(self, nama, npm):
         print("Running CDFR")
+
+        w = exec_CDFR(nama, npm)
+        key = f"Modul5-{npm}"
+        self._children[key] = w
+        
+        w.destroyed.connect(lambda: self._children.pop(key, None))
     
     def run_state_space(self, nama, npm):
         print("Running SS")
