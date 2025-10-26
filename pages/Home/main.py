@@ -52,11 +52,19 @@ def resource_path(rel: str | Path) -> str:
     return str(candidates[0])
 
 def bundle_path() -> Path:
-    # The actual file the user started (outer EXE when frozen, .py in dev)
-    return Path(sys.argv[0]).resolve()
+    """Path to the outer executable or script."""
+    if getattr(sys, 'frozen', False):
+        return Path(sys.executable).resolve()
+    else:
+        return Path(__file__).resolve()
 
 def bundle_dir() -> Path:
-    return bundle_path().parent
+    """Directory containing the real exe (not the _MEI temp)."""
+    if getattr(sys, 'frozen', False):
+        return Path(sys.executable).resolve().parent
+    else:
+        return Path(__file__).resolve().parent
+
 
 try:
     cred = credentials.Certificate(resource_path("firebaseAuth.json"))
