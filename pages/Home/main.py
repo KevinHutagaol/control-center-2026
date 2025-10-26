@@ -422,16 +422,19 @@ class DownloadWorker(QThread):
 
     @staticmethod
     def launch_updater_and_exit():
-        updater_exe = resource_path("updater-NT.exe")
+        # Get directory of the running .exe (e.g. dist/)
+        exe_dir = os.path.dirname(sys.executable)
+        updater_exe = os.path.join(exe_dir, "updater-NT.exe")
+
         if not os.path.exists(updater_exe):
-            # Fallback: copy a bundled Updater.exe from your app resources to the exe dir
-            # shutil.copy(resource_path("public/Updater.exe"), updater_exe)
             raise RuntimeError(f"{updater_exe} not found")
+
+        new_package = os.path.join(exe_dir, "temp-updatepackage.exe")
 
         args = [
             updater_exe,
             "--target", sys.executable,
-            "--new", resource_path('temp-updatepackage.exe'),
+            "--new", new_package,
             "--waitpid", str(os.getpid()),
             "--relaunch",
         ]
@@ -440,6 +443,7 @@ class DownloadWorker(QThread):
         DETACHED_PROCESS = 0x00000008
         subprocess.Popen(args, creationflags=CREATE_NO_WINDOW | DETACHED_PROCESS)
 
+        # Fully exit so updater can replace the main executable
         sys.exit(0)
 
     def run(self):
