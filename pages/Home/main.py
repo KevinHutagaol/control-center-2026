@@ -52,20 +52,19 @@ def resource_path(rel: str | Path) -> str:
     return str(candidates[0])
 
 def bundle_path() -> Path:
-    """Return the path to the *outer* executable (not _MEI)."""
+    """Path to the outer executable or script."""
     if getattr(sys, 'frozen', False):
-        # PyInstaller onefile: original .exe path before extraction
-        outer_exe = os.environ.get('PYINSTALLER_ORIGINAL_EXE')
-        if outer_exe and os.path.exists(outer_exe):
-            return Path(outer_exe).resolve()
-        # fallback: current executable (may be in _MEI)
         return Path(sys.executable).resolve()
     else:
         return Path(__file__).resolve()
 
 def bundle_dir() -> Path:
-    """Return the directory containing the outer .exe."""
-    return bundle_path().parent
+    """Directory containing the real exe (not the _MEI temp)."""
+    if getattr(sys, 'frozen', False):
+        return Path(sys.executable).resolve().parent
+    else:
+        return Path(__file__).resolve().parent
+
 
 try:
     cred = credentials.Certificate(resource_path("firebaseAuth.json"))
@@ -442,31 +441,13 @@ class DownloadWorker(QThread):
         updater_exe = app_dir / "updater-NT.exe"
         new_package = app_dir / "temp-updatepackage.exe"
 
-        # Emit to the UI log (works even if there’s no console)
-        try:
-            # If you prefer, route these via a signal; quick and dirty:
-            print("bundle_path =", bundle_path(), flush=True)
-            print("sys.argv[0] =", sys.argv[0], flush=True)
-            print("sys.executable =", sys.executable, flush=True)
-            print("PYINSTALLER_ORIGINAL_EXE =", os.environ.get("PYINSTALLER_ORIGINAL_EXE"), flush=True)
-            print("_MEIPASS =", getattr(sys, "_MEIPASS", None), flush=True)
-            print("bundle_dir =", app_dir, flush=True)
-            try:
-                print("bundle_dir contents =", [p.name for p in app_dir.iterdir()], flush=True)
-            except Exception as _e:
-                print("listdir failed:", _e, flush=True)
-            print("updater    =", updater_exe, flush=True)
-            print("new pkg    =", new_package, flush=True)
-        except Exception:
-            pass  # don't let logging crash
-
-        # Fail with BOTH names so we see which one exists in the zip
         if not updater_exe.exists():
-            alt = app_dir / "updater.exe"
-            if alt.exists():
-                updater_exe = alt
-            else:
-                raise RuntimeError(f"{updater_exe} not found; also tried {alt}")
+            raise RuntimeError(f"{updater_exe} not found")
+
+        print("bundle_path=", bundle_path())
+        print("bundle_dir =", bundle_dir())
+        print("updater    =", updater_exe)
+        print("new pkg    =", new_package)
 
         args = [
             str(updater_exe),
@@ -779,17 +760,8 @@ class Login(QMainWindow):
 
 
 def main():
-    # --- print location info ---
-    print("=== Path diagnostics ===")
-    print("os.getcwd()               =", os.getcwd())
-    print("sys.argv[0]               =", sys.argv[0])
-    print("sys.executable            =", sys.executable)
-    print("PYINSTALLER_ORIGINAL_EXE  =", os.environ.get("PYINSTALLER_ORIGINAL_EXE"))
-    print("_MEIPASS                  =", getattr(sys, "_MEIPASS", None))
-    print("==========================")
-
-    # --- start your app ---
     app = QApplication(sys.argv)
+
     window = Login()
     window.show()
     sys.exit(app.exec_())
