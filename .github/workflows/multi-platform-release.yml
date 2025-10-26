@@ -84,11 +84,12 @@ jobs:
           pip install pyinstaller
 
       - name: Clean previous build
+        shell: cmd
         run: |
-          rmdir /s /q build || echo "no build"
-          rmdir /s /q dist || echo "no dist"
-          del /f /q *.spec || echo "no spec"
-          
+          rmdir /s /q build 2>nul || echo no build
+          rmdir /s /q dist 2>nul || echo no dist
+          del /f /q *.spec 2>nul || echo no spec
+
       - name: Create app-config.json at repo root
         shell: bash
         run: |
