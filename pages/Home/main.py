@@ -779,8 +779,17 @@ class Login(QMainWindow):
 
 
 def main():
-    app = QApplication(sys.argv)
+    # --- print location info ---
+    print("=== Path diagnostics ===")
+    print("os.getcwd()               =", os.getcwd())
+    print("sys.argv[0]               =", sys.argv[0])
+    print("sys.executable            =", sys.executable)
+    print("PYINSTALLER_ORIGINAL_EXE  =", os.environ.get("PYINSTALLER_ORIGINAL_EXE"))
+    print("_MEIPASS                  =", getattr(sys, "_MEIPASS", None))
+    print("==========================")
 
+    # --- start your app ---
+    app = QApplication(sys.argv)
     window = Login()
     window.show()
     sys.exit(app.exec_())
