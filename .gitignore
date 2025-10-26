@@ -24,8 +24,8 @@ node_modules/
 *.local
 
 # Pyinstaller Spec
-/ONEDIR.spec
-/*exe
+/ONEDIR_nt.spec
+/dist/*.exe
 
 # Other workflows
 .github/workflows/release.yml
@@ -38,3 +38,6 @@ functions/
 
 # Temporary
 /firebaseConfig.json
+
+# Test files
+*test*.py
