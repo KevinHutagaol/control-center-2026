@@ -52,18 +52,20 @@ def resource_path(rel: str | Path) -> str:
     return str(candidates[0])
 
 def bundle_path() -> Path:
-    """Path to the outer executable or script."""
+    """Return the path to the *outer* executable (not _MEI)."""
     if getattr(sys, 'frozen', False):
+        # PyInstaller onefile: original .exe path before extraction
+        outer_exe = os.environ.get('PYINSTALLER_ORIGINAL_EXE')
+        if outer_exe and os.path.exists(outer_exe):
+            return Path(outer_exe).resolve()
+        # fallback: current executable (may be in _MEI)
         return Path(sys.executable).resolve()
     else:
         return Path(__file__).resolve()
 
 def bundle_dir() -> Path:
-    """Directory containing the real exe (not the _MEI temp)."""
-    if getattr(sys, 'frozen', False):
-        return Path(sys.executable).resolve().parent
-    else:
-        return Path(__file__).resolve().parent
+    """Return the directory containing the outer .exe."""
+    return bundle_path().parent
 
 try:
     cred = credentials.Certificate(resource_path("firebaseAuth.json"))
@@ -440,13 +442,13 @@ class DownloadWorker(QThread):
         updater_exe = app_dir / "updater-NT.exe"
         new_package = app_dir / "temp-updatepackage.exe"
 
-        if not updater_exe.exists():
-            raise RuntimeError(f"{updater_exe} not found")
-
         print("bundle_path=", bundle_path())
         print("bundle_dir =", bundle_dir())
         print("updater    =", updater_exe)
         print("new pkg    =", new_package)
+
+        if not updater_exe.exists():
+            raise RuntimeError(f"{updater_exe} not found")
 
         args = [
             str(updater_exe),
