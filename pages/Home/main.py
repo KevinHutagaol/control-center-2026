@@ -1,4 +1,4 @@
-import sys, os, requests, subprocess, time
+import sys, os, requests, subprocess, time, shutil
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QWidget, QProgressBar, QPushButton, QVBoxLayout, QDialog, QHBoxLayout, QTextEdit, QLabel
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSignal, QThread, QTimer
@@ -50,6 +50,13 @@ def resource_path(rel: str | Path) -> str:
 
     # Fallback: return the first candidate even if missing (caller can handle)
     return str(candidates[0])
+
+def bundle_path() -> Path:
+    # The actual file the user started (outer EXE when frozen, .py in dev)
+    return Path(sys.argv[0]).resolve()
+
+def bundle_dir() -> Path:
+    return bundle_path().parent
 
 try:
     cred = credentials.Certificate(resource_path("firebaseAuth.json"))
@@ -422,19 +429,22 @@ class DownloadWorker(QThread):
 
     @staticmethod
     def launch_updater_and_exit():
-        # Get directory of the running .exe (e.g. dist/)
-        exe_dir = os.path.dirname(sys.executable)
-        updater_exe = os.path.join(exe_dir, "updater-NT.exe")
+        app_dir = bundle_dir()
+        updater_exe = app_dir / "updater-NT.exe"
+        new_package = app_dir / "temp-updatepackage.exe"
 
-        if not os.path.exists(updater_exe):
+        if not updater_exe.exists():
             raise RuntimeError(f"{updater_exe} not found")
 
-        new_package = os.path.join(exe_dir, "temp-updatepackage.exe")
+        print("bundle_path=", bundle_path())
+        print("bundle_dir =", bundle_dir())
+        print("updater    =", updater_exe)
+        print("new pkg    =", new_package)
 
         args = [
-            updater_exe,
-            "--target", sys.executable,
-            "--new", new_package,
+            str(updater_exe),
+            "--target", str(bundle_path()),
+            "--new",    str(new_package),
             "--waitpid", str(os.getpid()),
             "--relaunch",
         ]
@@ -442,8 +452,6 @@ class DownloadWorker(QThread):
         CREATE_NO_WINDOW = 0x08000000
         DETACHED_PROCESS = 0x00000008
         subprocess.Popen(args, creationflags=CREATE_NO_WINDOW | DETACHED_PROCESS)
-
-        # Fully exit so updater can replace the main executable
         sys.exit(0)
 
     def run(self):
@@ -451,8 +459,9 @@ class DownloadWorker(QThread):
         
         try:
             api_url = self.asset["url"]
-            # filename = self.asset["name"]
+            
             filename = "temp-updatepackage.exe"
+            dest = bundle_dir() / filename
 
             headers = {
                 "Accept": "application/octet-stream",
@@ -469,17 +478,20 @@ class DownloadWorker(QThread):
                 chunk_size = 1024 * 128
 
                 self.status.emit(f"Downloading {self.asset['name']} as {filename} ({total/1_048_576:.2f} MB)...")
-                with open(filename, "wb") as f:
+                self.status.emit(f"Location: {dest}")
+                time.sleep(2)
+
+                with open(dest, "wb") as f:
                     for chunk in r.iter_content(chunk_size=chunk_size):
                         if self._cancel:
                             self.status.emit("Canceled by user.")
                             try:
                                 f.close()
-                                os.remove(filename)
+                                if dest.exists():
+                                    dest.unlink()
                             except Exception:
                                 pass
                             return
-                        
                         if not chunk:
                             continue
 
@@ -495,11 +507,9 @@ class DownloadWorker(QThread):
                 if total > 0 and got != total:
                     self.status.emit(f"Warning: size mismatch (got {got} / expected {total}).")
 
-                self.done.emit(filename)
-
-                self.status.emit(f"Download Complete")
-                self.status.emit(f"Ready for replacing old files...")
-                self.status.emit(f"Replacing old files")
+                self.status.emit(f"Download Complete: {str(dest)}")
+                self.status.emit("Ready for replacing old files...")
+                self.status.emit("Replacing old files")
                 self.status.emit("The app will close now and the replacement will continue...")
 
                 time.sleep(2)
