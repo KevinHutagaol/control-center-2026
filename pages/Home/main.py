@@ -65,14 +65,6 @@ def bundle_dir() -> Path:
     else:
         return Path(__file__).resolve().parent
 
-
-def bundle_path() -> Path:
-    # The actual file the user started (outer EXE when frozen, .py in dev)
-    return Path(sys.argv[0]).resolve()
-
-def bundle_dir() -> Path:
-    return bundle_path().parent
-
 try:
     cred = credentials.Certificate(resource_path("firebaseAuth.json"))
     
