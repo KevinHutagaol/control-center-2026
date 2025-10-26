@@ -38,8 +38,9 @@ add_tree(datas, m910_asset, os.path.join("pages", "Modul910","asset"))
 add_tree(datas, m910_ui,    os.path.join("pages", "Modul910","ui_910"))
 add_tree(datas, os.path.join(project_root, "public"), "public")
 
-hidden = collect_submodules('pages')
-# Keep this only if you actually have pages/Home/resources_rc.py
+
+hidden = []
+hidden += collect_submodules('pages')
 hidden += ['pages.Home.resources_rc']
 
 icon_file = "icon.icns" if is_macos else "icon.ico"
@@ -77,17 +78,17 @@ exe = EXE(
     console=False,
 )
 
-app = BUNDLE(
-    exe,
-    name="ControlCenter.app",
-    icon=icon_file,
-    bundle_identifier="com.example.controlcenter",
-    info_plist={
-        "NSHighResolutionCapable": True,
-        "CFBundleShortVersionString": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
-        "CFBundleVersion": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
-    },
-)
+    app = BUNDLE(
+        exe,
+        name="ControlCenter.app",
+        icon=icon_file,
+        bundle_identifier="com.example.controlcenter",
+        info_plist={
+            "NSHighResolutionCapable": True,
+            "CFBundleShortVersionString": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
+            "CFBundleVersion": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
+        },
+    )
 
 coll = COLLECT(
     app,              # first arg is the BUNDLE
