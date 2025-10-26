@@ -1,7 +1,7 @@
-import sys
-import os
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QWidget
+import sys, os, requests, subprocess, time
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QWidget, QProgressBar, QPushButton, QVBoxLayout, QDialog, QHBoxLayout, QTextEdit, QLabel
 from PyQt5 import uic
+from PyQt5.QtCore import pyqtSignal, QThread, QTimer
 from PyQt5.QtGui import QIcon, QValidator
 import firebase_admin
 from firebase_admin import credentials
@@ -11,21 +11,13 @@ from pathlib import Path
 
 import pages.Home.resources_rc as resources_rc
 
-import updaterFunc 
+import func.updaterFunc as updaterFunc 
 
 from pages.Modul4.mainCDRL import exec_CDRL
 from pages.Modul7.mainCOD import exec_COD
 from pages.Modul910.mainDMMCD import exec_DMMCD
 
 def resource_path(rel: str | Path) -> str:
-    """
-    Resolve a data file path that works in:
-      - dev (walk up parents so files in project root are found),
-      - PyInstaller --onedir,
-      - PyInstaller --onefile (temp _MEIPASS),
-      - PyInstaller v6 layout (data under _internal).
-    Returns a string path. It does NOT create files.
-    """
     rel_path = Path(rel)
 
     # 0) Absolute path: just return it (don’t prepend bases)
@@ -59,7 +51,6 @@ def resource_path(rel: str | Path) -> str:
     return str(candidates[0])
 
 try:
-    print(resource_path("firebaseAuth.json"))
     cred = credentials.Certificate(resource_path("firebaseAuth.json"))
     
     if not firebase_admin._apps:
@@ -67,7 +58,7 @@ try:
         
     db = firestore.client() 
 
-    print("Firebase initialized successfully")
+    print("Home: Firebase initialized successfully")
 except Exception as e:
     print("Firebase error:", e)  # tampilkan di console
     QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
@@ -248,7 +239,7 @@ class MainWindow(QMainWindow):
                 tt = doc_data.get(f"({modul}) Tugas Tambahan",0)
                 return 0.20*tp + 0.35*bs + 0.25*ba + 0.20*tt
 
-        modul_list = ["Modul 2&3","Modul 4","Modul 5","Modul 6","Modul 7","Modul 8","Modul 9&10","Modul 11"]
+        modul_list = ["Modul 2&3", "Modul 4", "Modul 5", "Modul 6", "Modul 7", "Modul 8", "Modul 9&10", "Modul 11"]
         modul_scores = [hitung_modul(m) for m in modul_list]
 
         pretest = doc_data.get("Pretest",0)
@@ -280,8 +271,7 @@ class MainWindow(QMainWindow):
         total = 0.05*pretest + 0.15*posttest + sum([0.10*s for s in modul_scores])
 
         grade = "E"
-        ranges = [("A",85,100),("A-",80,85),("B+",75,80),("B",70,75),("B-",65,70),
-                ("C+",60,65),("C",55,60),("D",40,55),("E",0,40)]
+        ranges = [("A",85,100),("A-",80,85),("B+",75,80),("B",70,75),("B-",65,70),("C+",60,65),("C",55,60),("D",40,55),("E",0,40)]
         for g,minv,maxv in ranges:
             if minv <= total < maxv or (g=="A" and total==100):
                 grade = g
@@ -408,7 +398,169 @@ class AdminWindow(QMainWindow):
         
         self.show()
 
+class DownloadWorker(QThread):
+    progress = pyqtSignal(int)        # 0..100
+    status   = pyqtSignal(str)        # log lines
+    done     = pyqtSignal(str)        # filename
+    failed   = pyqtSignal(str)        # error text
 
+    def __init__(self, asset):
+        super().__init__()
+        self.asset = asset
+        self._cancel = False
+
+    def cancel(self):
+        self._cancel = True
+        self.status.emit("Cancel requested by user.")
+
+    @staticmethod
+    def launch_updater_and_exit():
+        updater_exe = resource_path("updater.exe")
+        if not os.path.exists(updater_exe):
+            # Fallback: copy a bundled Updater.exe from your app resources to the exe dir
+            # shutil.copy(resource_path("public/Updater.exe"), updater_exe)
+            raise RuntimeError(f"{updater_exe} not found")
+
+        args = [
+            updater_exe,
+            "--target", sys.executable,
+            "--new", resource_path('temp-updatepackage.exe'),
+            "--waitpid", str(os.getpid()),
+            "--relaunch",
+        ]
+
+        CREATE_NO_WINDOW = 0x08000000
+        DETACHED_PROCESS = 0x00000008
+        subprocess.Popen(args, creationflags=CREATE_NO_WINDOW | DETACHED_PROCESS)
+
+        # Important: fully exit the app so Updater.exe can replace file
+        sys.exit(0)
+
+    def run(self):
+        GITHUB_TOKEN = "***REMOVED***"
+        
+        try:
+            api_url = self.asset["url"]
+            # filename = self.asset["name"]
+            filename = "temp-updatepackage.exe"
+
+            headers = {
+                "Accept": "application/octet-stream",
+                "Authorization": f"token {GITHUB_TOKEN}",
+            }
+
+            self.status.emit(f"Connecting to GitHub...")
+            with requests.get(api_url, headers=headers, stream=True, timeout=30) as r:
+                self.status.emit(f"Connected to GitHub...")
+
+                r.raise_for_status()
+                total = int(r.headers.get("Content-Length", 0))
+                got = 0
+                chunk_size = 1024 * 128
+
+                self.status.emit(f"Downloading {self.asset['name']} as {filename} ({total/1_048_576:.2f} MB)...")
+                with open(filename, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=chunk_size):
+                        if self._cancel:
+                            self.status.emit("Canceled by user.")
+                            try:
+                                f.close()
+                                os.remove(filename)
+                            except Exception:
+                                pass
+                            return
+                        
+                        if not chunk:
+                            continue
+
+                        f.write(chunk)
+                        got += len(chunk)
+
+                        if total > 0:
+                            pct = got * 100 / total
+                            self.progress.emit(int(pct))
+
+                            self.status.emit(f"Downloading... {pct:.2f}%")
+
+                if total > 0 and got != total:
+                    self.status.emit(f"Warning: size mismatch (got {got} / expected {total}).")
+
+                self.done.emit(filename)
+
+                self.status.emit(f"Download Complete")
+                self.status.emit(f"Ready for replacing old files...")
+                self.status.emit(f"Replacing old files")
+                self.status.emit("The app will close now and the replacement will continue...")
+
+                time.sleep(2)
+
+                DownloadWorker.launch_updater_and_exit()
+
+        except Exception as e:
+            self.failed.emit(str(e))
+
+class UpdaterDialog(QDialog):
+    def __init__(self, parent, asset):
+        super().__init__(parent)
+        self.setWindowTitle("Downloading Update...")
+        self.setModal(True)
+        self.resize(520, 320)
+
+        self.label = QLabel(f"Target: {asset['name']}")
+        self.bar = QProgressBar()
+        self.bar.setRange(0, 100)
+        self.bar.setValue(0)
+
+        self.log = QTextEdit()
+        self.log.setReadOnly(True)
+
+        self.btnCancel = QPushButton("Cancel")
+        self.btnClose  = QPushButton("Close")
+        self.btnClose.setEnabled(False)
+
+        btns = QHBoxLayout()
+        btns.addStretch(1)
+        btns.addWidget(self.btnCancel)
+        btns.addWidget(self.btnClose)
+
+        lay = QVBoxLayout(self)
+        lay.addWidget(self.label)
+        lay.addWidget(self.bar)
+        lay.addWidget(self.log, 1)
+        lay.addLayout(btns)
+
+        self.worker = DownloadWorker(asset)
+        self.worker.progress.connect(self.bar.setValue)
+        self.worker.status.connect(self._append)
+        self.worker.done.connect(self._done)
+        self.worker.failed.connect(self._failed)
+
+        self.btnCancel.clicked.connect(self._cancel)
+        self.btnClose.clicked.connect(self.accept)
+
+        self.worker.start()
+
+    def _append(self, text: str):
+        self.log.append(text)
+
+    def _done(self, filename: str):
+        self.bar.setValue(100)
+        self.btnCancel.setEnabled(False)
+        self.btnClose.setEnabled(True)
+        self.setWindowTitle("Update installed")
+
+    def _failed(self, err: str):
+        self._append(f"Failed: {err}")
+        self.btnCancel.setEnabled(False)
+        self.btnClose.setEnabled(True)
+        self.setWindowTitle("Failed install update")
+        
+    def _cancel(self):
+        self.btnCancel.setEnabled(False)
+        self._append("Cancelling update...")
+        self.worker.cancel()
+        time.sleep(2)
+        QApplication.quit()
 
 class Login(QMainWindow):
     def __init__(self):
@@ -425,7 +577,50 @@ class Login(QMainWindow):
 
         self.Pass.setValidator(self.NoSpaceValidator(self))
 
+        self._version_check_scheduled = False
         self.show()
+
+        if not self._version_check_scheduled:
+            self._version_check_scheduled = True
+            QTimer.singleShot(0, self.checkVersion)
+
+    def checkVersion(self):
+        print("Checking Version (async)...")
+
+        self.worker = updaterFunc.VersionChecker()
+        self.worker.result.connect(self._on_version_checked)
+        self.worker.error.connect(lambda err: QMessageBox.critical(self, "Error: Checking Release Version", f"Consult to your lab assistant:\n{err}"))
+        self.worker.start()
+
+    def _on_version_checked(self, outdated, local, remote):
+        print(f"{local} (local) <===> {remote} (remote)")
+
+        if outdated:
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Information)
+            msg.setWindowTitle("Update Available")
+            msg.setText(f"New version in release: {remote}")
+            msg.setInformativeText("Press update to download the new releases and replace the old files. The update is mandatory for the app.")
+            update_btn = msg.addButton("Update Now", QMessageBox.AcceptRole)
+            later_btn = msg.addButton("Close App", QMessageBox.RejectRole)
+            msg.setDefaultButton(update_btn)
+            msg.exec_()
+
+            if msg.clickedButton() is update_btn:
+                try:
+                    tag, assets = updaterFunc.list_assets()
+                    asset = next((a for a in assets if "NT" in a["name"]), None)
+                    if not asset:
+                        QMessageBox.warning(self, "Tidak ditemukan", "Asset NT tidak ditemukan di rilis ini.")
+                        return
+
+                    dlg = UpdaterDialog(self, asset)
+                    dlg.exec_()
+                except Exception as e:
+                    QMessageBox.critical(self, "Gagal Update", f"Terjadi error saat update:\n{e}")
+
+            elif msg.clickedButton() is later_btn:
+                QApplication.quit()
 
     class NoSpaceValidator(QValidator):
         def __init__(self, parent=None):
@@ -537,8 +732,6 @@ class Login(QMainWindow):
 
 
 def main():
-    print(updaterFunc.isOutdated())
-
     app = QApplication(sys.argv)
 
     window = Login()
