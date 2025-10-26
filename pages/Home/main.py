@@ -442,13 +442,31 @@ class DownloadWorker(QThread):
         updater_exe = app_dir / "updater-NT.exe"
         new_package = app_dir / "temp-updatepackage.exe"
 
-        print("bundle_path=", bundle_path())
-        print("bundle_dir =", bundle_dir())
-        print("updater    =", updater_exe)
-        print("new pkg    =", new_package)
+        # Emit to the UI log (works even if there’s no console)
+        try:
+            # If you prefer, route these via a signal; quick and dirty:
+            print("bundle_path =", bundle_path(), flush=True)
+            print("sys.argv[0] =", sys.argv[0], flush=True)
+            print("sys.executable =", sys.executable, flush=True)
+            print("PYINSTALLER_ORIGINAL_EXE =", os.environ.get("PYINSTALLER_ORIGINAL_EXE"), flush=True)
+            print("_MEIPASS =", getattr(sys, "_MEIPASS", None), flush=True)
+            print("bundle_dir =", app_dir, flush=True)
+            try:
+                print("bundle_dir contents =", [p.name for p in app_dir.iterdir()], flush=True)
+            except Exception as _e:
+                print("listdir failed:", _e, flush=True)
+            print("updater    =", updater_exe, flush=True)
+            print("new pkg    =", new_package, flush=True)
+        except Exception:
+            pass  # don't let logging crash
 
+        # Fail with BOTH names so we see which one exists in the zip
         if not updater_exe.exists():
-            raise RuntimeError(f"{updater_exe} not found")
+            alt = app_dir / "updater.exe"
+            if alt.exists():
+                updater_exe = alt
+            else:
+                raise RuntimeError(f"{updater_exe} not found; also tried {alt}")
 
         args = [
             str(updater_exe),
