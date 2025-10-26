@@ -494,8 +494,8 @@ class Ui_MainWindow(object):
         self.lagCompensatorButton.setText(_translate("MainWindow", "Lag Compensated Response"))
         self.leadCompensatorButton.setText(_translate("MainWindow", "Lead Compensated Response"))
         self.lagleadCompensatorButton.setText(_translate("MainWindow", "Lag-Lead Compensated Response"))
-from mplwidget import MplWidget
 
+from pages.Modul5.mplwidget import MplWidget
 
 if __name__ == "__main__":
     import sys
