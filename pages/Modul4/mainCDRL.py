@@ -74,10 +74,9 @@ def resource_path(rel: str | Path) -> str:
 
 # === Firestore ===
 try:
-    print(resource_path("firebaseAuth.json"))
     db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
 
-    print("Firebase initialized successfully")
+    print("CDRL: Firebase initialized successfully")
 
 except Exception as e:
     print("Firebase error:", e)
