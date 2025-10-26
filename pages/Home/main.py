@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
     def __init__(self, npm, nama, role, kelompok):
         super().__init__()
         uic.loadUi(resource_path("pages/Home/UI_home/Main.ui"), self)
-        self.setWindowTitle("Control Practicum Center")
+        self.setWindowTitle(f"Control Practicum Center {updaterFunc.get_local_version()}")
         self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.RootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.RootLocusPage))
@@ -566,7 +566,7 @@ class Login(QMainWindow):
     def __init__(self):
         super(Login, self).__init__()
         uic.loadUi(resource_path("pages/Home/UI_home/Login.ui"), self)
-        self.setWindowTitle("Control Practicum Center")
+        self.setWindowTitle(f"Control Practicum Center {updaterFunc.get_local_version()}")
         self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.Login.clicked.connect(self.login)
