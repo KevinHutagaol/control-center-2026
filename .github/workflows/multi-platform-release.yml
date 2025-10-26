@@ -51,7 +51,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
   build-windows:
     runs-on: windows-latest
     needs: create_release
@@ -93,77 +92,77 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
-  build-macos:
-    runs-on: macos-latest
-    needs: create_release
+  # build-macos:
+  #   runs-on: macos-latest
+  #   needs: create_release
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt --upgrade --no-deps --only-binary=:all: \
-            || true
-          pip install --only-binary=:all: PyQt5 PyQtChart PyQt5-sip PyQt5-Qt5
-          pip install pyinstaller
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install -r requirements.txt --upgrade --no-deps --only-binary=:all: \
+  #           || true
+  #         pip install --only-binary=:all: PyQt5 PyQtChart PyQt5-sip PyQt5-Qt5
+  #         pip install pyinstaller
 
-      - name: Generate app-config.json
-        run: |
-          echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
+  #     - name: Generate app-config.json
+  #       run: |
+  #         echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
 
-      - name: Build (ONEFILE.spec) for macOS
-        run: pyinstaller ONEFILE_dw.spec
+  #     - name: Build (ONEFILE.spec) for macOS
+  #       run: pyinstaller ONEFILE_dw.spec
 
-      - name: Show dist
-        run: ls -la dist
-        shell: pwsh
+  #     - name: Show dist
+  #       run: ls -la dist
+  #       shell: pwsh
 
-      - name: Resolve .app path
-        id: resolve_app
-        run: |
-          set -euo pipefail
-          APP_PATH="$(find dist -maxdepth 2 -type d -name "*.app" -print -quit)"
-          if [ -z "${APP_PATH}" ]; then
-            echo "ERROR: No .app found under dist"
-            exit 1
-          fi
-          echo "Found app: ${APP_PATH}"
-          echo "app_path=${APP_PATH}" >> "$GITHUB_OUTPUT"
+  #     - name: Resolve .app path
+  #       id: resolve_app
+  #       run: |
+  #         set -euo pipefail
+  #         APP_PATH="$(find dist -maxdepth 2 -type d -name "*.app" -print -quit)"
+  #         if [ -z "${APP_PATH}" ]; then
+  #           echo "ERROR: No .app found under dist"
+  #           exit 1
+  #         fi
+  #         echo "Found app: ${APP_PATH}"
+  #         echo "app_path=${APP_PATH}" >> "$GITHUB_OUTPUT"
 
-      - name: Zip .app bundle
-        run: |
-          cd dist
-          ditto -c -k --sequesterRsrc --keepParent "ControlCenter.app" "ControlCenter-macOS.zip"
+  #     - name: Zip .app bundle
+  #       run: |
+  #         cd dist
+  #         ditto -c -k --sequesterRsrc --keepParent "ControlCenter.app" "ControlCenter-macOS.zip"
         
-      - name: Create DMG from .app
-        run: |
-          APP_PATH="${{ steps.resolve_app.outputs.app_path }}"
-          rm -rf dmg && mkdir -p dmg
-          cp -R "$APP_PATH" dmg/
-          ln -s /Applications dmg/Applications
-          # Example output name: ControlCenter-macOS.dmg
-          APP_BASENAME="$(basename "$APP_PATH")"
-          DMG_NAME="$(basename "$APP_BASENAME" .app)-macOS.dmg"
-          hdiutil create \
-            -volname "$(basename "$APP_BASENAME" .app)" \
-            -srcfolder dmg \
-            -ov -format UDZO "dist/${DMG_NAME}"
-          ls -la "dist/${DMG_NAME}"
+  #     - name: Create DMG from .app
+  #       run: |
+  #         APP_PATH="${{ steps.resolve_app.outputs.app_path }}"
+  #         rm -rf dmg && mkdir -p dmg
+  #         cp -R "$APP_PATH" dmg/
+  #         ln -s /Applications dmg/Applications
+  #         # Example output name: ControlCenter-macOS.dmg
+  #         APP_BASENAME="$(basename "$APP_PATH")"
+  #         DMG_NAME="$(basename "$APP_BASENAME" .app)-macOS.dmg"
+  #         hdiutil create \
+  #           -volname "$(basename "$APP_BASENAME" .app)" \
+  #           -srcfolder dmg \
+  #           -ov -format UDZO "dist/${DMG_NAME}"
+  #         ls -la "dist/${DMG_NAME}"
 
-      - name: Create GitHub Release (attach .zip)
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            dist/*-macOS.zip
-            dist/*-macOS.dmg
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Create GitHub Release (attach .zip)
+  #       uses: softprops/action-gh-release@v1
+  #       with:
+  #         files: |
+  #           dist/*-macOS.zip
+  #           dist/*-macOS.dmg
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
