@@ -1,13 +1,10 @@
-import os
-import sys
-import zipfile
-import shutil
-import requests
-import json
+import os, sys, zipfile, shutil, requests, json
 from PyQt5.QtWidgets import QMessageBox
 from requests.auth import HTTPBasicAuth
 from packaging import version
 from pathlib import Path
+from tqdm import tqdm
+from PyQt5.QtCore import QThread, pyqtSignal
 
 # Konfigurasi
 REMOTE_JSON_URL = "https://raw.githubusercontent.com/AtlasCJr/ControlCenter/main/latest.json"
@@ -15,16 +12,11 @@ LOCAL_VERSION_FILE = "app-config.json"
 UPDATE_ZIP_NAME = "update.zip"
 EXTRACT_DIR = "update_temp"
 APP_DIR = "."
+REPO = "AtlasCJr/ControlCenter"
+GITHUB_USER = "AtlasCJr"
+GITHUB_TOKEN = "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"
 
 def resource_path(rel: str | Path) -> str:
-    """
-    Resolve a data file path that works in:
-      - dev (walk up parents so files in project root are found),
-      - PyInstaller --onedir,
-      - PyInstaller --onefile (temp _MEIPASS),
-      - PyInstaller v6 layout (data under _internal).
-    Returns a string path. It does NOT create files.
-    """
     rel_path = Path(rel)
 
     # 0) Absolute path: just return it (don’t prepend bases)
@@ -66,37 +58,85 @@ def get_local_version() -> str:
         return None
 
 def get_remote_version() -> str:
-    GITHUB_USER = "AtlasCJr"
-    GITHUB_TOKEN = "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"
+    url = f"https://api.github.com/repos/{REPO}/releases/latest"
+    auth = HTTPBasicAuth(GITHUB_USER, GITHUB_TOKEN) if GITHUB_TOKEN else None
 
-    url = "https://raw.githubusercontent.com/AtlasCJr/ControlCenter/main/app-latest.json"
-
-    response = requests.get(url, auth=HTTPBasicAuth(GITHUB_USER, GITHUB_TOKEN))
-
+    response = requests.get(url, auth=auth)
     if response.status_code == 200:
         data = response.json()
-        return data["latest_version"]
+        return data.get("tag_name")
     else:
+        print(response.text)
         return None
     
 def isOutdated():
     local = get_local_version()
     remote = get_remote_version()
 
-    print(local, "---",  remote)
-
     if not local or not remote:
         return False
     
-    return version.parse(local) > version.parse(remote)
+    return version.parse(local) < version.parse(remote)
+    
+class VersionChecker(QThread):
+    result = pyqtSignal(bool, str, str)  # (is_outdated, local, remote)
+    error = pyqtSignal(str)
 
-def download_zip(url):
-    print("🔽 Download update...")
-    r = requests.get(url, stream=True)
-    with open(UPDATE_ZIP_NAME, "wb") as f:
-        for chunk in r.iter_content(chunk_size=8192):
-            f.write(chunk)
-    print("✅ Selesai download")
+    def run(self):
+        try:
+            local = get_local_version()
+            remote = get_remote_version()
+
+            if not local or not remote:
+                self.result.emit(False, local, remote)
+                return
+
+            outdated = isOutdated()
+            self.result.emit(outdated, local, remote)
+        except Exception as e:
+            self.error.emit(str(e))
+
+def list_assets():
+    url = f"https://api.github.com/repos/{REPO}/releases/latest"
+    auth = HTTPBasicAuth(GITHUB_USER, GITHUB_TOKEN) if GITHUB_TOKEN else None
+    r = requests.get(url, auth=auth)
+    r.raise_for_status()
+    rel = r.json()
+    assets = rel.get("assets", [])
+    return rel.get("tag_name"), assets
+
+def download_zip(asset):
+    api_url = asset["url"]
+    headers = {
+        "Accept": "application/octet-stream",
+        "Authorization": f"token {GITHUB_TOKEN}",
+    }
+
+    with requests.get(api_url, headers=headers, stream=True) as r:
+        r.raise_for_status()
+        filename = asset["name"]
+
+        # Dapatkan total ukuran file dari header (dalam byte)
+        total_size = int(r.headers.get("Content-Length", 0))
+        block_size = 8192
+
+        print(f"📦 Downloading update: {filename}")
+
+        # tqdm untuk progress bar
+        with open(filename, "wb") as f, tqdm(
+            total=total_size,
+            unit="B",
+            unit_scale=True,
+            unit_divisor=1024,
+            desc="🔽 Progress",
+            ncols=80,
+        ) as progress:
+            for chunk in r.iter_content(chunk_size=block_size):
+                if chunk:
+                    f.write(chunk)
+                    progress.update(len(chunk))
+
+        print(f"✅ Download finished: {filename}")
 
 
 def extract_and_replace():
@@ -119,29 +159,6 @@ def extract_and_replace():
 
     os.remove(UPDATE_ZIP_NAME)
     shutil.rmtree(EXTRACT_DIR)
-
-
-def ask_for_update(parent=None):
-    local = get_local_version()
-    remote, url = get_remote_version()
-
-    if isOutdated():
-        msg = QMessageBox(parent)
-        msg.setIcon(QMessageBox.Information)
-        msg.setWindowTitle("Update Tersedia")
-        msg.setText(f"Versi baru tersedia: v{remote}, kamu pakai v{local}")
-        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        msg.setInformativeText("Klik OK untuk update dan restart aplikasi.")
-
-        if msg.exec_() == QMessageBox.Ok:
-            try:
-                download_zip(url)
-                extract_and_replace()
-                restart_app()
-            except Exception as e:
-                QMessageBox.critical(parent, "Gagal Update", f"Terjadi error saat update:\n{e}")
-    else:
-        print("✅ Aplikasi versi terbaru")
 
 
 def restart_app():
