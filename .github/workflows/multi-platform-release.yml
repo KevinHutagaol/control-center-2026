@@ -22,6 +22,35 @@ jobs:
           draft: false
           prerelease: false
 
+  build-updater-windows:
+    runs-on: windows-latest
+    needs: create_release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build updater for windows
+        run: pyinstaller ONEFILE_up.spec
+
+      - name: Show dist
+        run: dir dist
+        shell: pwsh
+
+      - name: Create GitHub Release (attach .exe)
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
   build-windows:
     runs-on: windows-latest
