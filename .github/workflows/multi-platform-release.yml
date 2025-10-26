@@ -42,12 +42,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
 
-      - name: Clean previous build
-        run: |
-          rmdir /s /q build || echo "no build"
-          rmdir /s /q dist || echo "no dist"
-          del /f /q *.spec || echo "no spec"
-
       - name: Build updater for windows
         run: pyinstaller ONEFILE_up.spec
 
