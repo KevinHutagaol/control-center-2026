@@ -340,7 +340,13 @@ class ControlApp(QMainWindow):
 
                 self.ax_atas.set_title("Bode Plot (Magnitude)")
                 self.ax_atas.set_ylabel("Magnitude (dB)")
-                self.ax_atas.grid(True, which='both'); self.ax_atas.legend()
+                self.ax_atas.grid(True, which='both')
+                self.ax_atas.legend(
+                    loc='best',
+                    fontsize=8,
+                    framealpha=0.8,
+                    fancybox=True
+                )
 
                 self.ax_bawah.set_title("Bode Plot (Phase)")
                 self.ax_bawah.set_ylabel("Phase (deg)")
