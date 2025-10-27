@@ -198,13 +198,25 @@ class ControlApp(QMainWindow):
         # Atas: magnitude
         self.ax_atas.set_title("Bode Plot (Magnitude)")
         self.ax_atas.set_ylabel("Magnitude (dB)")
-        self.ax_atas.grid(True, which='both'); self.ax_atas.legend()
+        self.ax_atas.grid(True, which='both')
+        self.ax_atas.legend(
+            loc='best',
+            fontsize=8,
+            framealpha=0.8,
+            fancybox=True
+        )
 
         # Bawah: phase
         self.ax_bawah.set_title("Bode Plot (Phase)")
         self.ax_bawah.set_ylabel("Phase (deg)")
         self.ax_bawah.set_xlabel("Frequency (rad/s)")
-        self.ax_bawah.grid(True, which='both'); self.ax_bawah.legend()
+        self.ax_bawah.grid(True, which='both')
+        self.ax_bawah.legend(
+            loc='best',
+            fontsize=8,
+            framealpha=0.8,
+            fancybox=True
+        )
 
         # Tampilkan panel bawah
         self.ui.plot_bawah.setVisible(True)
