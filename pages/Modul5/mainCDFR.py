@@ -345,9 +345,14 @@ class ControlApp(QMainWindow):
                 self.ax_bawah.set_title("Bode Plot (Phase)")
                 self.ax_bawah.set_ylabel("Phase (deg)")
                 self.ax_bawah.set_xlabel("Frequency (rad/s)")
-                self.ax_bawah.grid(True, which='both'); self.ax_bawah.legend()
+                self.ax_bawah.grid(True, which='both')
+                self.axbaw.legend(
+                    loc='best',
+                    fontsize=8,
+                    framealpha=0.8,
+                    fancybox=True
+                )
 
-            # Nyquist
             elif self.ui.nyquistButton.isChecked():
                 warnings.filterwarnings("ignore", category=RuntimeWarning)
                 ct.nyquist_plot(G, omega=OMEGA_RANGE, ax=self.ax_atas, label="Uncompensated")
