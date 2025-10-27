@@ -352,7 +352,7 @@ class ControlApp(QMainWindow):
                 self.ax_bawah.set_ylabel("Phase (deg)")
                 self.ax_bawah.set_xlabel("Frequency (rad/s)")
                 self.ax_bawah.grid(True, which='both')
-                self.axbaw.legend(
+                self.ax_bawah.legend(
                     loc='best',
                     fontsize=8,
                     framealpha=0.8,
