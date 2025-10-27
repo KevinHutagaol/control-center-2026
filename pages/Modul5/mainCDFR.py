@@ -33,6 +33,18 @@ def safe_margin(sys):
     if np.isnan(pm): pm = 0.0
     return gm, pm, wg, wp, gm_db
 
+def _to_float_txt(s, default=0.0):
+    try:
+        return float(str(s).strip().replace(',', '.'))
+    except Exception:
+        return default
+
+def is_template_triplet(kc_txt, zc_txt, pc_txt, tol=1e-12):
+    kc = _to_float_txt(kc_txt, 1.0)
+    zc = _to_float_txt(zc_txt, 0.0)
+    pc = _to_float_txt(pc_txt, 0.0)
+    return abs(kc - 1.0) < tol and abs(zc) < tol and abs(pc) < tol
+
 class ControlApp(QMainWindow):
     def __init__(self):
         super().__init__()
