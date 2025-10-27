@@ -248,23 +248,77 @@ class ControlApp(QMainWindow):
         try:
             # Closed-loop
             if self.ui.CLButton.isChecked():
+                self.ax_atas.clear()
+                self._set_main_aspect(equal=False)
+                print("CDFR: Plotting Closed Loop Step Response")
+                t = np.linspace(0.0, 20.0, 1000)
+
+                STEP_STYLES = {
+                    "Uncompensated": dict(color="#2563eb", linestyle="-",  linewidth=2.0),  # blue solid
+                    "Lag":            dict(color="#22c55e", linestyle="-.", linewidth=1.8),  # green dash-dot
+                    "Lead":           dict(color="#f59e0b", linestyle="--", linewidth=1.8),  # orange dashed
+                    "Lag-Lead":       dict(color="#ef4444", linestyle=":",  linewidth=2.0),  # red dotted
+                    "Step":           dict(color="black",   linestyle=":",  linewidth=1.2)   # black dotted
+                }
+
+                # Uncompensated
                 T_unc = ct.feedback(G, 1)
-                t, y = ct.step_response(T_unc)
-                self.ax_atas.plot(t, y, label="Uncompensated")
+                t, y = ct.step_response(T_unc, T=t)
+                self.ax_atas.plot(t, y, label="Uncompensated", **STEP_STYLES["Uncompensated"])
 
-                if Gc is not None:
-                    L = ct.series(Gc, G)
+                lagIsTemplate = is_template_triplet(self.ui.lineEdit_12.text(), self.ui.lineEdit_13.text(), self.ui.lineEdit_11.text())
+                leadIsTemplate = is_template_triplet(self.ui.lineEdit_8.text(), self.ui.lineEdit_9.text(), self.ui.lineEdit_10.text())
+                
+                if not lagIsTemplate:
+                    Kc = float(self.ui.lineEdit_12.text())
+                    Zc = float(self.ui.lineEdit_13.text())
+                    Pc = float(self.ui.lineEdit_11.text())
+
+                    GLag = Kc * ct.tf([1, Zc], [1, Pc])
+
+                    L = ct.series(GLag, G)
                     T_cmp = ct.feedback(L, 1)
-                    t2, y2 = ct.step_response(T_cmp)
-                    self.ax_atas.plot(t2, y2, '--', label=comp_label)
+                    t2, y2 = ct.step_response(T_cmp, T=t)
+                    self.ax_atas.plot(t2, y2, label="Lag Compensation", **STEP_STYLES["Lag"])
 
+                if not leadIsTemplate:
+                    Kc = float(self.ui.lineEdit_8.text())
+                    Zc = float(self.ui.lineEdit_9.text())
+                    Pc = float(self.ui.lineEdit_10.text())
+
+                    GLead = Kc * ct.tf([1, Zc], [1, Pc])
+
+                    L = ct.series(GLead, G)
+                    T_cmp = ct.feedback(L, 1)
+                    t2, y2 = ct.step_response(T_cmp, T=t)
+                    self.ax_atas.plot(t2, y2, label="Lead Compensation", **STEP_STYLES["Lead"])
+
+                if not leadIsTemplate and not lagIsTemplate:
+                    Gc = ct.series(GLead, GLag)
+                    L = ct.series(GLead, G)
+                    T_cmp = ct.feedback(L, 1)
+                    t2, y2 = ct.step_response(T_cmp, T=t)
+                    self.ax_atas.plot(t2, y2, label="Lag-Lead Compensation", **STEP_STYLES["Lag-Lead"])
+
+                self.ax_atas.plot([0, 0, 20], [0, 1, 1], label="Step Input", **STEP_STYLES["Step"])
+
+                # Formatting
                 self.ax_atas.set_title("Closed-Loop Step Response")
                 self.ax_atas.set_xlabel("Time (s)")
                 self.ax_atas.set_ylabel("Amplitude")
-                self.ax_atas.grid(True); self.ax_atas.legend()
+                self.ax_atas.grid(True)
+                self.ax_atas.legend(
+                    loc='lower right',
+                    fontsize=8,
+                    framealpha=0.8,
+                    fancybox=True
+                )
 
             # Bode
             elif self.ui.bodeButton.isChecked():
+                self.ax_atas.clear()
+                self._set_main_aspect(equal=False)
+                print("CDFR: Bode Plot")
                 show_bawah = True
 
                 gm, pm, wg, wp, gm_db = safe_margin(G)
