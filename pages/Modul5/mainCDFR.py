@@ -92,11 +92,11 @@ class ControlApp(QMainWindow):
         self.ui.lineEdit.setText("0")       # n3
         self.ui.lineEdit_1.setText("0")     # n2
         self.ui.lineEdit_2.setText("0")     # n1
-        self.ui.lineEdit_3.setText("0")     # n0
+        self.ui.lineEdit_3.setText("1")     # n0
 
         self.ui.lineEdit_4.setText("0")     # d3
         self.ui.lineEdit_5.setText("0")     # d2
-        self.ui.lineEdit_6.setText("0")     # d1
+        self.ui.lineEdit_6.setText("1")     # d1
         self.ui.lineEdit_7.setText("1")     # d0
 
         # Lag default (Zc > Pc)
