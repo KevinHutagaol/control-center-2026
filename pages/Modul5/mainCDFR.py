@@ -359,18 +359,71 @@ class ControlApp(QMainWindow):
                     fancybox=True
                 )
 
+            # Nyquist
             elif self.ui.nyquistButton.isChecked():
                 warnings.filterwarnings("ignore", category=RuntimeWarning)
-                ct.nyquist_plot(G, omega=OMEGA_RANGE, ax=self.ax_atas, label="Uncompensated")
-                if Gc is not None:
-                    L = ct.series(Gc, G)
-                    ct.nyquist_plot(L, omega=OMEGA_RANGE, ax=self.ax_atas, label=comp_label)
+                self.ax_atas.clear()
+                self._set_main_aspect(equal=True)
 
+                # Base style dictionary (avoid line style duplicates)
+                STEP_STYLES = {
+                    "Uncompensated": dict(color="#2563eb", linewidth=1.8),
+                    "Lag":           dict(color="#22c55e", linewidth=1.8),
+                    "Lead":          dict(color="#f59e0b", linewidth=1.8),
+                    "Lag-Lead":      dict(color="#ef4444", linewidth=1.8),
+                }
+
+                print("CDFR: Nyquist Plot")
+
+                # --- Always plot plant ---
+                ct.nyquist_plot(G, omega=OMEGA_RANGE, ax=self.ax_atas,
+                                label="Uncompensated", **STEP_STYLES["Uncompensated"])
+
+                # --- Compensators ---
+                lagIsTemplate  = is_template_triplet(self.ui.lineEdit_12.text(),
+                                                    self.ui.lineEdit_13.text(),
+                                                    self.ui.lineEdit_11.text())
+                leadIsTemplate = is_template_triplet(self.ui.lineEdit_8.text(),
+                                                    self.ui.lineEdit_9.text(),
+                                                    self.ui.lineEdit_10.text())
+
+                GLag = GLead = None
+
+                if not lagIsTemplate:
+                    Kc = float(self.ui.lineEdit_12.text())
+                    Zc = float(self.ui.lineEdit_13.text())
+                    Pc = float(self.ui.lineEdit_11.text())
+                    GLag = Kc * ct.tf([1, Zc], [1, Pc])
+                    L = ct.series(GLag, G)
+                    ct.nyquist_plot(L, omega=OMEGA_RANGE, ax=self.ax_atas,
+                                    label="Lag Compensation", **STEP_STYLES["Lag"])
+
+                if not leadIsTemplate:
+                    Kc = float(self.ui.lineEdit_8.text())
+                    Zc = float(self.ui.lineEdit_9.text())
+                    Pc = float(self.ui.lineEdit_10.text())
+                    GLead = Kc * ct.tf([1, Zc], [1, Pc])
+                    L = ct.series(GLead, G)
+                    ct.nyquist_plot(L, omega=OMEGA_RANGE, ax=self.ax_atas,
+                                    label="Lead Compensation", **STEP_STYLES["Lead"])
+
+                if (GLag is not None) and (GLead is not None):
+                    Gc_ll = ct.series(GLag, GLead)
+                    L = ct.series(Gc_ll, G)
+                    ct.nyquist_plot(L, omega=OMEGA_RANGE, ax=self.ax_atas,
+                                    label="Lag-Lead Compensation", **STEP_STYLES["Lag-Lead"])
+
+                # --- Formatting ---
                 self.ax_atas.set_title("Nyquist Plot")
                 self.ax_atas.grid(True)
+                try:
+                    self.ax_atas.set_aspect('equal', adjustable='box')
+                except Exception:
+                    pass
                 h, l = self.ax_atas.get_legend_handles_labels()
                 by = dict(zip(l, h))
-                self.ax_atas.legend(by.values(), by.keys())
+                self.ax_atas.legend(by.values(), by.keys(), fontsize=8,
+                                    framealpha=0.8, fancybox=True)
 
             elif self.ui.lagCompensatorButton.isChecked():
                 show_bawah = True
