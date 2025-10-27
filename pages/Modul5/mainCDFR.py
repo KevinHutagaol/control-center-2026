@@ -426,16 +426,22 @@ class ControlApp(QMainWindow):
                                     framealpha=0.8, fancybox=True)
 
             elif self.ui.lagCompensatorButton.isChecked():
+                self.ax_atas.clear()
+                self._set_main_aspect(equal=False)
                 show_bawah = True
 
                 self._plot_bode_top_bottom(G, *self.get_compensator_tf())
 
             elif self.ui.leadCompensatorButton.isChecked():
+                self.ax_atas.clear()
+                self._set_main_aspect(equal=False)
                 show_bawah = True
 
                 self._plot_bode_top_bottom(G, *self.get_compensator_tf())
 
             elif self.ui.lagleadCompensatorButton.isChecked():
+                self.ax_atas.clear()
+                self._set_main_aspect(equal=False)
                 show_bawah = True
 
                 self._plot_bode_top_bottom(G, *self.get_compensator_tf())
