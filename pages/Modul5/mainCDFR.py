@@ -72,6 +72,9 @@ class ControlApp(QMainWindow):
 
         self.show()
 
+        self.ui.CLButton.setChecked(True)
+        self.plot_system()
+
     def _on_main_canvas_click(self, event):
         # Left-click inside either axes opens a popup
         if event is None or event.button != 1 or event.inaxes is None:
