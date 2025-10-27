@@ -222,12 +222,22 @@ class ControlApp(QMainWindow):
         self.ui.plot_bawah.setVisible(True)
         self.ui.line.setVisible(True)
 
+    def _set_main_aspect(self, equal: bool):
+        ax = self.ax_atas
+        if equal:
+            ax.set_aspect('equal', adjustable='box')
+        else:
+            # reset any equal/box-aspect from Nyquist
+            try:
+                ax.set_box_aspect(None)  # mpl ≥ 3.3
+            except Exception:
+                pass
+            ax.set_aspect('auto', adjustable='box')
+        ax.autoscale(enable=True, axis='both', tight=False)
 
-    # @pyqtSlot()
     def plot_system(self):
         G = self.get_plant_tf()
-        if G is None:
-            return
+        if G is None: return
 
         Gc, comp_label = self.get_compensator_tf()
 
