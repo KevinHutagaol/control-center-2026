@@ -78,17 +78,17 @@ exe = EXE(
     console=False,
 )
 
-    app = BUNDLE(
-        exe,
-        name="ControlCenter.app",
-        icon=icon_file,
-        bundle_identifier="com.example.controlcenter",
-        info_plist={
-            "NSHighResolutionCapable": True,
-            "CFBundleShortVersionString": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
-            "CFBundleVersion": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
-        },
-    )
+app = BUNDLE(
+    exe,
+    name="ControlCenter.app",
+    icon=icon_file,
+    bundle_identifier="com.example.controlcenter",
+    info_plist={
+        "NSHighResolutionCapable": True,
+        "CFBundleShortVersionString": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
+        "CFBundleVersion": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
+    },
+)
 
 coll = COLLECT(
     app,              # first arg is the BUNDLE
