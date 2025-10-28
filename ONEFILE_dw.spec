@@ -89,13 +89,3 @@ app = BUNDLE(
         "CFBundleVersion": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
     },
 )
-
-coll = COLLECT(
-    app,              # first arg is the BUNDLE
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    strip=False,
-    upx=True,
-    name="ControlCenter",   # dist/ControlCenter/ControlCenter.app
-)
