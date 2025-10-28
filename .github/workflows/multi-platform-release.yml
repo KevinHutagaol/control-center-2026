@@ -128,7 +128,7 @@ jobs:
           echo "{\"version\": \"${GITHUB_REF_NAME}\"}" > app-config.json
 
       - name: Build (ONEFILE.spec) for macOS
-        run: pyinstaller --target-arch arm64 ONEFILE_dw.spec
+        run: pyinstaller ONEFILE_dw.spec
 
       - name: Show dist
         run: ls -la dist
