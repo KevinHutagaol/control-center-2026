@@ -134,43 +134,30 @@ jobs:
         run: ls -la dist
         shell: pwsh
 
-      - name: Resolve .app path
-        id: resolve_app
-        run: |
-          set -euo pipefail
-          APP_PATH="$(find dist -maxdepth 2 -type d -name "*.app" -print -quit)"
-          if [ -z "${APP_PATH}" ]; then
-            echo "ERROR: No .app found under dist"
-            exit 1
-          fi
-          echo "Found app: ${APP_PATH}"
-          echo "app_path=${APP_PATH}" >> "$GITHUB_OUTPUT"
-
       - name: Zip .app bundle
         run: |
           cd dist
           ditto -c -k --sequesterRsrc --keepParent "ControlCenter.app" "ControlCenter-macOS.zip"
         
-      - name: Create DMG from .app
-        run: |
-          APP_PATH="${{ steps.resolve_app.outputs.app_path }}"
-          rm -rf dmg && mkdir -p dmg
-          cp -R "$APP_PATH" dmg/
-          ln -s /Applications dmg/Applications
-          # Example output name: ControlCenter-macOS.dmg
-          APP_BASENAME="$(basename "$APP_PATH")"
-          DMG_NAME="$(basename "$APP_BASENAME" .app)-macOS.dmg"
-          hdiutil create \
-            -volname "$(basename "$APP_BASENAME" .app)" \
-            -srcfolder dmg \
-            -ov -format UDZO "dist/${DMG_NAME}"
-          ls -la "dist/${DMG_NAME}"
+      # - name: Create DMG from .app
+      #   run: |
+      #     APP_PATH="${{ steps.resolve_app.outputs.app_path }}"
+      #     rm -rf dmg && mkdir -p dmg
+      #     cp -R "$APP_PATH" dmg/
+      #     ln -s /Applications dmg/Applications
+      #     # Example output name: ControlCenter-macOS.dmg
+      #     APP_BASENAME="$(basename "$APP_PATH")"
+      #     DMG_NAME="$(basename "$APP_BASENAME" .app)-macOS.dmg"
+      #     hdiutil create \
+      #       -volname "$(basename "$APP_BASENAME" .app)" \
+      #       -srcfolder dmg \
+      #       -ov -format UDZO "dist/${DMG_NAME}"
+      #     ls -la "dist/${DMG_NAME}"
 
       - name: Create GitHub Release (attach .zip)
         uses: softprops/action-gh-release@v1
         with:
           files: |
             dist/*-macOS.zip
-            dist/*-macOS.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
