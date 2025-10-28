@@ -137,7 +137,7 @@ jobs:
       - name: Zip .app bundle
         run: |
           cd dist
-          ditto -c -k --sequesterRsrc --keepParent "ControlCenter.app" "ControlCenter-macOS.zip"
+          ditto -c -k --sequesterRsrc --keepParent "ControlCenter-arm64.app" "ControlCenter-arm64.zip"
         
       # - name: Create DMG from .app
       #   run: |
@@ -158,6 +158,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/*-macOS.zip
+            dist/*-arm64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
