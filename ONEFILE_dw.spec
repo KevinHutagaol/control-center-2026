@@ -101,7 +101,7 @@ app = BUNDLE(
 )
 
 coll = COLLECT(
-    app,
+    exe,
     a.binaries,
     a.zipfiles,
     a.datas,
