@@ -76,11 +76,11 @@ exe = EXE(
     getattr(a, "zipfiles", []),  # safe for all versions
     a.datas,
     [],
-    name="ControlCenter-arm64",
+    name="ControlCenter",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,          # ok even if UPX isn’t installed; it’ll just skip
+    upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
     exclude_binaries=False,
@@ -101,7 +101,7 @@ app = BUNDLE(
 )
 
 coll = COLLECT(
-    exe,
+    app,
     a.binaries,
     a.zipfiles,
     a.datas,
