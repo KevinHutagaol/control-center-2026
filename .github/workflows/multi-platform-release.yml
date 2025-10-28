@@ -96,7 +96,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
   build-macos:
     runs-on: macos-latest
     needs: create_release
@@ -110,10 +109,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Uninstall existing Python
+        run: |
+          sudo rm -rf /Library/Frameworks/Python.framework
+          brew uninstall --ignore-dependencies python@3.11 || true
+
+      - name: Install Python from python.org
+        run: |
+          curl -O https://www.python.org/ftp/python/3.11.9/python-3.11.9-macos11.pkg
+          sudo installer -pkg python-3.11.9-macos11.pkg -target /
 
       - name: Install dependencies
         run: |
