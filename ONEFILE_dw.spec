@@ -83,6 +83,7 @@ exe = EXE(
     upx=True,          # ok even if UPX isn’t installed; it’ll just skip
     upx_exclude=[],
     runtime_tmpdir=None,
+    exclude_binaries=False,
     icon=icon_file,
     console=False,
 )
@@ -97,4 +98,14 @@ app = BUNDLE(
         "CFBundleShortVersionString": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
         "CFBundleVersion": os.environ.get("GITHUB_REF_NAME", "0.0.0"),
     },
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    name="ControlCenter-arm64"
 )
