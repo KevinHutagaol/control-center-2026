@@ -127,48 +127,43 @@ class MainWindow(QMainWindow):
         self.show()
 
     def run_root_locus(self, nama, npm):
-        print("Running RL")
+        print("Running Root Locus")
     
     def run_frequency_response(self, nama, npm):
-        print("Running FR")
+        print("Running Frequency Response")
     
     def run_cd_root_locus(self, nama, npm):
-        print("Running CDRL")
+        print("Running Controller Design: Root Locus")
         w = exec_CDRL(nama, npm)
         key = f"Modul4-{npm}"
         self._children[key] = w
-        
         w.destroyed.connect(lambda: self._children.pop(key, None))
 
     def run_cd_frequency_response(self, nama, npm):
-        print("Running CDFR")
-
+        print("Running Controller Design: Frequency Response")
         w = exec_CDFR(nama, npm)
         key = f"Modul5-{npm}"
         self._children[key] = w
-        
         w.destroyed.connect(lambda: self._children.pop(key, None))
     
     def run_state_space(self, nama, npm):
-        print("Running SS")
+        print("Running State Space Modeling")
     
     def run_cod(self, nama, npm):
-        print("Running COD")
+        print("Running Controller and Observer Design")
         w = exec_COD(nama, npm)
         key = f"Modul7-{npm}"
         self._children[key] = w
-        
         w.destroyed.connect(lambda: self._children.pop(key, None))
     
     def run_dcod(self, nama, npm):
-        print("Running DCOD")
+        print("Running Discrete Controller and Observer Design")
     
-    def run_motor(self, nama, npm,kelompok):
-        print("Running DMMCD")
+    def run_motor(self, nama, npm, kelompok):
+        print("Running DC Motor Modeling and Controller Design")
         w = exec_DMMCD(nama, npm)
         key = f"Modul910-{npm}"
         self._children[key] = w
-        
         w.destroyed.connect(lambda: self._children.pop(key, None))
 
     def generate_charts(self, npm, doc_data, out_dir="Nilai"):
