@@ -32,12 +32,13 @@ node_modules/
 
 # Firebase functions 
 functions/
+/firebaseConfig.json
 
 # Others
 /*.txt
 
-# Temporary
-/firebaseConfig.json
+# Unfinished Modules
+pages/Modul2
 
 # Test files
 *test*.py
