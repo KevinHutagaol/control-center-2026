@@ -44,24 +44,31 @@ def resource_path(rel: str | Path) -> str:
     return str(candidates[0])
 
 def get_local_version() -> str:
+    print("Getting local version...")
     try:
         with open(resource_path(LOCAL_VERSION_FILE)) as f:
             data = json.load(f)
+            print(f"Local version: {data['version']}")
             return data["version"]
     except:
         return None
 
 def get_remote_version() -> str:
+    print("Getting remote version...")
     url = f"https://api.github.com/repos/{REPO}/releases/latest"
     auth = HTTPBasicAuth(GITHUB_USER, GITHUB_TOKEN) if GITHUB_TOKEN else None
 
-    response = requests.get(url, auth=auth)
-    if response.status_code == 200:
+    try:
+        # timeout=(connect_timeout, read_timeout)
+        response = requests.get(url, auth=auth, timeout=(3, 10))
+        response.raise_for_status()  # raise if status != 200
         data = response.json()
         return data.get("tag_name")
-    else:
-        print(response.text)
-        return None
+    except requests.exceptions.Timeout:
+        print("Connection timed out. please check your internet connection.")
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch remote version: {e}")
+    return None
     
 def isOutdated():
     local = get_local_version()
