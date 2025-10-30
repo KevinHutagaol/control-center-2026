@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
     <string notr="true">background-color: rgb(255, 0, 0);</string>
@@ -168,6 +171,44 @@ QPushButton:hover {
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>70</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    image: url(:/Asset/Asset/Chart kosong.png);
+	border: 0px;
+	border-radius : 2px;
+}
+
+
+QPushButton:hover {
+	
+	image: url(:/Asset/Asset/Chart isi.png);
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -249,61 +290,6 @@ QPushButton:hover {
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_9">
-           <item>
-            <widget class="QFrame" name="frame_107">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>222</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 0, 0);
-border-radius : 5px;
-border-top-right-radius: 0px;
-border-bottom-right-radius: 0px;</string>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_27">
-              <item>
-               <widget class="QLabel" name="Kelompok2_2">
-                <property name="styleSheet">
-                 <string notr="true">border-radius : 2px;
-color: rgb(255, 255, 255);
-font-size: 20px;
-padding:3px;
-font-family: &quot;SF Pro Display&quot;; 
-		font-weight: bold; 
-    	font-style: normal;</string>
-                </property>
-                <property name="text">
-                 <string>1</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
            <item>
             <widget class="QFrame" name="frame_33">
              <property name="minimumSize">
@@ -651,9 +637,6 @@ QPushButton:hover {
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="cursor">
-              <cursorShape>ArrowCursor</cursorShape>
-             </property>
              <property name="currentIndex">
               <number>1</number>
              </property>
@@ -922,9 +905,6 @@ border-radius : 5px;</string>
                          <height>141</height>
                         </size>
                        </property>
-                       <property name="cursor">
-                        <cursorShape>PointingHandCursor</cursorShape>
-                       </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
  		background-color: rgba(0, 255, 0, 255);
@@ -977,9 +957,6 @@ QPushButton:hover {
                          <width>0</width>
                          <height>141</height>
                         </size>
-                       </property>
-                       <property name="cursor">
-                        <cursorShape>PointingHandCursor</cursorShape>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
@@ -1260,9 +1237,6 @@ border-radius : 5px;</string>
                          <height>141</height>
                         </size>
                        </property>
-                       <property name="cursor">
-                        <cursorShape>PointingHandCursor</cursorShape>
-                       </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
  		background-color: rgba(0, 255, 0, 255);
@@ -1541,9 +1515,6 @@ border-radius : 5px;</string>
                          <width>0</width>
                          <height>141</height>
                         </size>
-                       </property>
-                       <property name="cursor">
-                        <cursorShape>PointingHandCursor</cursorShape>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
@@ -2103,9 +2074,6 @@ border-radius : 5px;</string>
                          <height>141</height>
                         </size>
                        </property>
-                       <property name="cursor">
-                        <cursorShape>PointingHandCursor</cursorShape>
-                       </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
  		background-color: rgba(0, 255, 0, 255);
@@ -2384,9 +2352,6 @@ border-radius : 5px;</string>
                          <width>0</width>
                          <height>141</height>
                         </size>
-                       </property>
-                       <property name="cursor">
-                        <cursorShape>PointingHandCursor</cursorShape>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
@@ -2667,9 +2632,6 @@ border-radius : 5px;</string>
                          <height>141</height>
                         </size>
                        </property>
-                       <property name="cursor">
-                        <cursorShape>PointingHandCursor</cursorShape>
-                       </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
  		background-color: rgba(0, 255, 0, 255);
@@ -2742,61 +2704,6 @@ QPushButton:hover {
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_20">
            <item>
-            <widget class="QFrame" name="frame_100">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>222</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 0, 0);
-border-radius : 5px;
-border-top-right-radius: 0px;
-border-bottom-right-radius: 0px;</string>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_21">
-              <item>
-               <widget class="QLabel" name="Kelompok2">
-                <property name="styleSheet">
-                 <string notr="true">border-radius : 2px;
-color: rgb(255, 255, 255);
-font-size: 20px;
-padding:3px;
-font-family: &quot;SF Pro Display&quot;; 
-		font-weight: bold; 
-    	font-style: normal;</string>
-                </property>
-                <property name="text">
-                 <string>1</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
             <widget class="QFrame" name="frame_101">
              <property name="minimumSize">
               <size>
@@ -2858,7 +2765,7 @@ font-family: &quot;SF Pro Display&quot;;
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_27">
               <item>
-               <widget class="QFrame" name="frame_104">
+               <widget class="QFrame" name="Grade_Total">
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -2876,9 +2783,9 @@ font-family: &quot;SF Pro Display&quot;;
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_26">
                  <item>
-                  <widget class="QFrame" name="frame_110">
+                  <widget class="QFrame" name="Grade_A">
                    <property name="styleSheet">
-                    <string notr="true">image: url(:/Asset/Asset/Control Board.png);</string>
+                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_A.png);</string>
                    </property>
                    <property name="frameShape">
                     <enum>QFrame::StyledPanel</enum>
@@ -2889,9 +2796,48 @@ font-family: &quot;SF Pro Display&quot;;
                   </widget>
                  </item>
                  <item>
-                  <widget class="QFrame" name="TotalNilai">
+                  <widget class="QFrame" name="Grade_B">
                    <property name="styleSheet">
-                    <string notr="true">image: url(:/Nilai/Nilai/TotalNilai.png);</string>
+                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_B.png);</string>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="Grade_C">
+                   <property name="styleSheet">
+                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_C.png);</string>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="Grade_D">
+                   <property name="styleSheet">
+                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_D.png);</string>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="Grade_E">
+                   <property name="styleSheet">
+                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_E.png);</string>
                    </property>
                    <property name="frameShape">
                     <enum>QFrame::StyledPanel</enum>
@@ -3197,49 +3143,52 @@ QPushButton:hover {
                  </sizepolicy>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true"/>
+                 <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul23.png);</string>
                 </property>
                 <property name="currentIndex">
                  <number>0</number>
                 </property>
                 <widget class="QWidget" name="Modul23">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_23.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul23.png);</string>
                  </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_11"/>
                 </widget>
                 <widget class="QWidget" name="Modul4">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_4.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul4.png);</string>
                  </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_28"/>
                 </widget>
                 <widget class="QWidget" name="Modul5">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_5.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul5.png);</string>
                  </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_29"/>
                 </widget>
                 <widget class="QWidget" name="Modul6">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_6.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul6.png);</string>
                  </property>
                 </widget>
                 <widget class="QWidget" name="Modul7">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_7.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul7.png);</string>
                  </property>
                 </widget>
                 <widget class="QWidget" name="Modul8">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_8.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul8.png);</string>
                  </property>
                 </widget>
                 <widget class="QWidget" name="Modul910">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_910.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul910.png);</string>
                  </property>
                 </widget>
                 <widget class="QWidget" name="Modul11">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_11.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul11.png);</string>
                  </property>
                 </widget>
                </widget>
@@ -3340,9 +3289,9 @@ QPushButton:hover {
                </widget>
               </item>
               <item>
-               <widget class="QFrame" name="Top10">
+               <widget class="QFrame" name="Top10Total">
                 <property name="styleSheet">
-                 <string notr="true">image: url(:/Nilai/Nilai/Top10.png);</string>
+                 <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Total.png);</string>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -3353,9 +3302,9 @@ QPushButton:hover {
                </widget>
               </item>
               <item>
-               <widget class="QFrame" name="DetailNilai">
+               <widget class="QFrame" name="Bottom10Total">
                 <property name="styleSheet">
-                 <string notr="true">image: url(:/Nilai/Nilai/DetailNilai.png);</string>
+                 <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Bottom10_Total.png);</string>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
