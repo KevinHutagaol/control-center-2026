@@ -110,7 +110,7 @@ class MainWindow(QMainWindow):
         self.kelompok = kelompok
 
         self.RootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.RootLocusPage))
-        self.Frequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.FreqPage))
+        self.CDFrequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDFreqPage))
         self.CDRootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDRootLocusPage))
         self.CDFrequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDFreqPage))
         self.StateSpace.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.StateSpacePage))
@@ -127,11 +127,11 @@ class MainWindow(QMainWindow):
         self.RunDCOD.clicked.connect(lambda checked, n=nama, p=npm: self.run_dcod(n, p))
         self.RunMotor.clicked.connect(lambda checked, n=nama, p=npm, k=kelompok: self.run_motor(n, p, k))
 
-        self.WelcomeText.setText(f"Welcome {nama}!")
-        self.Kelompok.setText(kelompok)
+        # self.WelcomeText.setText(f"Welcome {nama}!")
+        # self.Kelompok.setText(kelompok)
 
-        self.WelcomeText2.setText(f"Welcome {nama}!")
-        self.Kelompok2.setText(kelompok)
+        self.WelcomeText.setText(f"Welcome {nama}!")
+        self.Kelompok2_2.setText(kelompok)
 
         self.Grade.clicked.connect(lambda checked, p=npm: self.check_nilai(p))
         self.Practicum.clicked.connect(lambda: self.Stacked.setCurrentWidget(self.PracticumPage))
@@ -643,7 +643,7 @@ class AdminWindow(QMainWindow):
         self.kelompok = kelompok
 
         self.RootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.RootLocusPage))
-        self.Frequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.FreqPage))
+        self.CDFrequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDFreqPage))
         self.CDRootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDRootLocusPage))
         self.CDFrequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDFreqPage))
         self.StateSpace.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.StateSpacePage))
