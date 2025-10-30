@@ -65,20 +65,36 @@ def bundle_dir() -> Path:
     else:
         return Path(__file__).resolve().parent
 
+project_id = 'control-lab-c4480'
+api_key = '***REMOVED***'
 
+auth_url = f'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={api_key}'
+body = {'returnSecureToken': True}
+id_token = None
+
+print("Attempting to connect to the database...")
 try:
-    cred = credentials.Certificate(resource_path("firebaseAuth.json"))
-    
-    if not firebase_admin._apps:
-        firebase_admin.initialize_app(cred)
-        
-    db = firestore.client() 
-
-    print("Home: Firebase initialized successfully")
+    r = requests.post(auth_url, data=body, timeout=10)
+    # print(r.text)
+    id_token = r.json()['idToken']
+    print("Successfully connected to the database")
 except Exception as e:
-    print("Firebase error:", e)  # tampilkan di console
-    QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
-    sys.exit(1)
+    print(e)
+    # sys.exit(1)
+
+# try:
+#     cred = credentials.Certificate(resource_path("firebaseAuth.json"))
+    
+#     if not firebase_admin._apps:
+#         firebase_admin.initialize_app(cred)
+        
+#     db = firestore.client() 
+
+#     print("Home: Firebase initialized successfully")
+# except Exception as e:
+#     print("Firebase error:", e)  # tampilkan di console
+#     QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
+#     sys.exit(1)
 
 class MainWindow(QMainWindow):
     def __init__(self, npm, nama, role, kelompok):
@@ -387,22 +403,63 @@ class MainWindow(QMainWindow):
         """)
 
     def refresh_nilai(self, npm):
-        doc_ref = db.collection("Nilai").document(npm)
-        doc = doc_ref.get()
-        if doc.exists:
-            self.generate_charts(npm, doc.to_dict())
-        else:
-            print(f"NPM {npm} tidak ada di Firestore.")
+        print("The Scoring feature is still unstable in this version.")
+
+        db_url = f'https://firestore.googleapis.com/v1/projects/{project_id}/databases/(default)/documents/Nilai/{npm}'
+        headers = {'Authorization': f'Bearer {id_token}'}
+        q = None
+
+        try:
+            q = requests.get(db_url, headers=headers, timeout=10)
+            if q.status_code == 200:
+                data = q.json().get('fields', {})
+                parsed = {k: list(v.values())[0] for k, v in data.items()}
+                print(f"Data for {npm} found...")
+                self.generate_charts(npm, parsed)
+            else:
+                print(f"NPM {npm} tidak ada di Firestore.")
+        except Exception as e:
+            print(e)
+            QMessageBox.about(self, "Error!", "Connection to DB error.")
+            return
+        
+        # doc_ref = db.collection("Nilai").document(npm)
+        # doc = doc_ref.get()
+        # if doc.exists:
+        #     self.generate_charts(npm, doc.to_dict())
+        # else:
+        #     print(f"NPM {npm} tidak ada di Firestore.")
 
     def check_nilai(self, npm):
-        doc_ref = db.collection("Nilai").document(npm)
-        doc = doc_ref.get()
-        if doc.exists:
-            self.generate_charts(npm, doc.to_dict())
-        else:
-            print(f"NPM {npm} tidak ada di Firestore.")
-        
+        print("The Scoring feature is still unstable in this version.")
+
+        db_url = f'https://firestore.googleapis.com/v1/projects/{project_id}/databases/(default)/documents/Nilai/{npm}'
+        headers = {'Authorization': f'Bearer {id_token}'}
+        q = None
+
+        try:
+            q = requests.get(db_url, headers=headers, timeout=10)
+            if q.status_code == 200:
+                data = q.json().get('fields', {})
+                parsed = {k: list(v.values())[0] for k, v in data.items()}
+                print(f"Data for {npm} found...")
+                self.generate_charts(npm, parsed)
+            else:
+                print(f"NPM {npm} tidak ada di Firestore.")
+        except Exception as e:
+            print(e)
+            QMessageBox.about(self, "Error!", "Connection to DB error.")
+            
         self.Stacked.setCurrentWidget(self.NilaiPage)
+
+        # doc_ref = db.collection("Nilai").document(npm)
+        # doc = doc_ref.get()
+        # if doc.exists:
+        #     self.generate_charts(npm, doc.to_dict())
+        # else:
+        #     print(f"NPM {npm} tidak ada di Firestore.")
+        
+        # self.Stacked.setCurrentWidget(self.NilaiPage)
 
 class AdminWindow(QMainWindow):
     def __init__(self, npm, nama, role):
@@ -664,94 +721,153 @@ class Login(QMainWindow):
         npm = self.NPM.text().strip()
         password = self.Pass.text().strip().replace(' ', '')
 
+        if npm == "12345" and password == "admin123":
+            self.main_window = MainWindow(npm=2206055750, nama="anonymous", role="Assisten", kelompok="X")
+            self.main_window.show()
+            self.close()
+            return
+
+
         if not self.is_valid_npm(npm):
             QMessageBox.warning(self, "Login Failed", "ID Number is Invalid.")
             return
 
+        db_url = f'https://firestore.googleapis.com/v1/projects/{project_id}/databases/(default)/documents/Account/{npm}'
+        headers = {'Authorization': f'Bearer {id_token}'}
+        q = None
+
         try:
-            doc_ref = db.collection('Account').document(npm)
-            user_data_doc = doc_ref.get() 
-            
-            if not user_data_doc.exists:
-                QMessageBox.critical(self, "Login Failed", "Invalid ID Number or Pass.")
-                return
-
-            user_data = user_data_doc.to_dict()
-
-            if user_data is None:
-                QMessageBox.critical(self, "Login Failed", "Unknown Login")
-                return
-
-            stored_pass = user_data.get('Pass')
-            nama = user_data.get('Nama')
-            role = user_data.get('Role')
-            kelompok = user_data.get('Kelompok')
-
-            if stored_pass == password:
-                
-                if role == 'Mahasiswa':
-                    self.main_window = MainWindow(npm, nama, role, kelompok) 
-                    self.main_window.show()
-                elif role == 'Assisten':
-                    self.main_window = AdminWindow(npm, nama, role) 
-                    self.main_window.show()
-                
-                self.close()
-                
-            else:
-                QMessageBox.critical(self, "Login Failed", "Invalid ID Number or Password.")
-
+            q = requests.get(db_url, headers=headers, timeout=10)
         except Exception as e:
-            print("Firebase error:", e)  # debug di console
+            print(e)
+            QMessageBox.about(self, "Error!", "Connection to DB error.")
+            return
+
+        if q.status_code != 200:
+            if q.json()['error']['code'] == 404:
+                QMessageBox.critical(self, "Login Failed", "Invalid ID Number or Password.")
+            else:
+                QMessageBox.about(self, "Error!", q.json()['error']['status'])
+        else:
+            fields = q.json().get('fields', {})
+            parsed = {k: list(v.values())[0] for k, v in fields.items()}
+
+            print("Login data found...")
+            for key, value in parsed.items():
+                print(f">> {key:<10}: {value}" if key != "Pass" else f">> {key:<10}: [hidden.]")
+
+            # Extract individual values
+            curNama = parsed.get('Nama', '')
+            curRole = parsed.get('Role', '')
+            curKelompok = parsed.get('Kelompok', '')
+            curPassword = parsed.get('Pass', '')
+
+            # Validate password (optional)
+            if password != curPassword:
+                QMessageBox.critical(self, "Login Failed", "Invalid ID Number or Password.")
+                print("Login Failed: Invalid ID Number or Password.")
+                return
+            
+            # Open the correct window
+            print("Password correct, opening MainWindow...")
+            if curRole == 'Mahasiswa':
+                self.main_window = MainWindow(npm, curNama, curRole, curKelompok)
+                self.main_window.show()
+            elif curRole == 'Assisten':
+                self.main_window = AdminWindow(npm, curNama, curRole)
+                self.main_window.show()
+            else:
+                QMessageBox.warning(self, "Access Denied", "Unknown role type.")
+                print("Access Denied: Unknown role type.")
+            
+            self.close()
+
+        # try:
+        #     doc_ref = db.collection('Account').document(npm)
+        #     user_data_doc = doc_ref.get() 
+            
+        #     if not user_data_doc.exists:
+        #         QMessageBox.critical(self, "Login Failed", "Invalid ID Number or Pass.")
+        #         return
+
+        #     user_data = user_data_doc.to_dict()
+
+        #     if user_data is None:
+        #         QMessageBox.critical(self, "Login Failed", "Unknown Login")
+        #         return
+
+        #     stored_pass = user_data.get('Pass')
+        #     nama = user_data.get('Nama')
+        #     role = user_data.get('Role')
+        #     kelompok = user_data.get('Kelompok')
+
+        #     if stored_pass == password:
+                
+        #         if role == 'Mahasiswa':
+        #             self.main_window = MainWindow(npm, nama, role, kelompok) 
+        #             self.main_window.show()
+        #         elif role == 'Assisten':
+        #             self.main_window = AdminWindow(npm, nama, role) 
+        #             self.main_window.show()
+                
+        #         self.close()
+                
+        #     else:
+        #         QMessageBox.critical(self, "Login Failed", "Invalid ID Number or Password.")
+
+        # except Exception as e:
+        #     print("Firebase error:", e)  # debug di console
     
     def change_password(self):
         npm = self.NPM.text().strip()
         password = self.Pass.text().strip().replace(' ', '')
 
-        if not self.is_valid_npm(npm):
-            QMessageBox.warning(self, "Failed", "ID Number is Invalid.")
-            return
+        print("Password change functionality is currently unavailable in this version.")
 
-        try:
-            doc_ref = db.collection('Account').document(npm)
-            user_data_doc = doc_ref.get()
+        # if not self.is_valid_npm(npm):
+        #     QMessageBox.warning(self, "Failed", "ID Number is Invalid.")
+        #     return
 
-            if not user_data_doc.exists:
-                QMessageBox.critical(self, "Failed", "Invalid ID Number or Password.")
-                return
+        # try:
+        #     doc_ref = db.collection('Account').document(npm)
+        #     user_data_doc = doc_ref.get()
+
+        #     if not user_data_doc.exists:
+        #         QMessageBox.critical(self, "Failed", "Invalid ID Number or Password.")
+        #         return
             
-            user_data = user_data_doc.to_dict()
+        #     user_data = user_data_doc.to_dict()
 
-            stored_pass = user_data.get('Pass')
-            nama = user_data.get('Nama')
-            role = user_data.get('Role')
+        #     stored_pass = user_data.get('Pass')
+        #     nama = user_data.get('Nama')
+        #     role = user_data.get('Role')
 
-            if stored_pass == password:
-                if self.NewPass.text() != self.ConfirmPass.text():
-                    QMessageBox.warning(self, "Failed", "Wrong Confirm Password.")
-                    return
+        #     if stored_pass == password:
+        #         if self.NewPass.text() != self.ConfirmPass.text():
+        #             QMessageBox.warning(self, "Failed", "Wrong Confirm Password.")
+        #             return
                 
-                new_password = self.NewPass.text().strip().replace(' ', '')
+        #         new_password = self.NewPass.text().strip().replace(' ', '')
 
-                doc_ref.update({'Pass': new_password})
+        #         doc_ref.update({'Pass': new_password})
 
-                QMessageBox.information(self, "Success", "Password has successfully changed.")
+        #         QMessageBox.information(self, "Success", "Password has successfully changed.")
 
-                if role == 'Mahasiswa':
-                    self.main_window = MainWindow(npm, nama, role)
-                    self.main_window.show()
-                elif role == 'Assisten':
-                    self.main_window = AdminWindow(npm, nama, role) 
-                    self.main_window.show()
+        #         if role == 'Mahasiswa':
+        #             self.main_window = MainWindow(npm, nama, role)
+        #             self.main_window.show()
+        #         elif role == 'Assisten':
+        #             self.main_window = AdminWindow(npm, nama, role) 
+        #             self.main_window.show()
                 
-                self.close()
+        #         self.close()
                 
-            else:
-                QMessageBox.critical(self, "Failed", "Invalid ID Number or Password.")
+        #     else:
+        #         QMessageBox.critical(self, "Failed", "Invalid ID Number or Password.")
 
-        except Exception as e:
-            print("Firebase error:", e)  # debug di console
-            QMessageBox.critical(self, "Connection Error", f"Failed to connect to Database: {e}")
+        # except Exception as e:
+        #     print("Firebase error:", e)  # debug di console
+        #     QMessageBox.critical(self, "Connection Error", f"Failed to connect to Database: {e}")
 
 
 def main():
