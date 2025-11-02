@@ -249,7 +249,7 @@ class MainApp(QtWidgets.QMainWindow):
 
 # ---------------- Main ----------------
 def exec_SSM(nama, npm):
-    app = QtWidgets.QApplication(sys.argv)
+    app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
     w = MainApp()
     w.show()
     return w
