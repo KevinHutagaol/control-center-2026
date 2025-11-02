@@ -446,12 +446,38 @@ class MainWindow(QMainWindow):
                 )
                 return 0.05*pre + 0.15*post + sum([0.10*s for s in mod_scores])
 
+            # rows = []
+            # for d in db.collection('Nilai').stream():
+            #     data = d.to_dict() or {}
+            #     total_d = compute_total(data)
+            #     name = data.get("Nama", d.id)
+            #     rows.append((name, d.id, total_d))
+
+            url = f"https://firestore.googleapis.com/v1/projects/{project_id}/databases/(default)/documents/Nilai"
+            headers = {"Authorization": f"Bearer {id_token}"}
+
+            try:
+                r = requests.get(url, headers=headers, timeout=10)
+                r.raise_for_status()
+            except requests.exceptions.RequestException as e:
+                print(f"Error fetching collection: {e}")
+                return []
+
+            docs = r.json().get("documents", [])
             rows = []
-            for d in db.collection('Nilai').stream():
-                data = d.to_dict() or {}
+
+            for doc in docs:
+                # Extract doc ID
+                doc_id = doc["name"].split("/")[-1]
+                # Extract fields and flatten Firestore type wrappers
+                fields = doc.get("fields", {})
+                data = {k: list(v.values())[0] for k, v in fields.items()}
+
+                # Your total computation function
                 total_d = compute_total(data)
-                name = data.get("Nama", d.id)
-                rows.append((name, d.id, total_d))
+                name = data.get("Nama", doc_id)
+
+                rows.append((name, doc_id, total_d))
 
             rows_sorted = sorted(rows, key=lambda x: x[2], reverse=True)[:10]
 
