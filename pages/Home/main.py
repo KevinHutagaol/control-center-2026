@@ -15,6 +15,7 @@ import func.updaterFunc as updaterFunc
 
 from pages.Modul4.mainCDRL import exec_CDRL
 from pages.Modul5.mainCDFR import exec_CDFR
+from pages.Modul6.mainSSM import exec_SSM
 from pages.Modul7.mainCOD import exec_COD
 from pages.Modul910.mainDMMCD import exec_DMMCD
 
@@ -175,6 +176,10 @@ class MainWindow(QMainWindow):
     
     def run_state_space(self, nama, npm):
         print("Running State Space Modeling")
+        w = exec_SSM(nama, npm)
+        key = f"Modul6-{npm}"
+        self._children[key] = w
+        w.destroyed.connect(lambda: self._children.pop(key, None))
     
     def run_cod(self, nama, npm):
         print("Running Controller and Observer Design")
