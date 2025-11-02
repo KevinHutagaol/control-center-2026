@@ -102,8 +102,8 @@ class MplCanvas(FigureCanvas):
 class MainApp(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi(resource_path("Main.ui"), self)
-        print(resource_path("Main.ui"))
+        uic.loadUi(resource_path("UI6/Main.ui"), self)
+        # print(resource_path("UI6/Main.ui"))
         self.setWindowTitle("RLC Meter - Circuit Modeling")
         self.setWindowIcon(QIcon("Asset/Logo Merah.png"))
 
