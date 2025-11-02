@@ -26,6 +26,7 @@ home_nilai  = os.path.join(project_root, "pages", "Home",    "Nilai_home")
 m4_asset    = os.path.join(project_root, "pages", "Modul4",  "Asset")
 m4_ui       = os.path.join(project_root, "pages", "Modul4",  "ui")
 m5_ui       = os.path.join(project_root, "pages", "Modul5",  "UI5")
+m6_ui       = os.path.join(project_root, "pages", "Modul6",  "UI6")
 m7_ui       = os.path.join(project_root, "pages", "Modul7",  "UI")
 m910_asset  = os.path.join(project_root, "pages", "Modul910","asset")
 m910_ui     = os.path.join(project_root, "pages", "Modul910","ui_910")
@@ -35,6 +36,7 @@ add_tree(datas, home_nilai, os.path.join("pages", "Home",    "Nilai_home"))
 add_tree(datas, m4_asset,   os.path.join("pages", "Modul4",  "Asset"))
 add_tree(datas, m4_ui,      os.path.join("pages", "Modul4",  "ui"))
 add_tree(datas, m5_ui,      os.path.join("pages", "Modul5",  "UI5"))
+add_tree(datas, m6_ui,      os.path.join("pages", "Modul6",  "UI6"))
 add_tree(datas, m7_ui,      os.path.join("pages", "Modul7",  "UI"))
 add_tree(datas, m910_asset, os.path.join("pages", "Modul910","asset"))
 add_tree(datas, m910_ui,    os.path.join("pages", "Modul910","ui_910"))
@@ -47,6 +49,7 @@ hidden += ['pages.Home.resources_rc']
 hidden += ['pages.Modul5.mplwidget']
 hidden += ['pages.Home.Modul5New']
 hidden += ['pages.Home.myQRC']
+hidden += ['pages.Modul6.resource_rc6']
 
 a = Analysis(
     ['pages/Home/main.py'],
