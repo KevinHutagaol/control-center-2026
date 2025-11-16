@@ -193,7 +193,7 @@ class MainWindow(QMainWindow):
     
     def run_motor(self, nama, npm, kelompok):
         print("Running DC Motor Modeling and Controller Design")
-        w = exec_DMMCD(nama, npm)
+        w = exec_DMMCD(nama, npm, kelompok)
         key = f"Modul910-{npm}"
         self._children[key] = w
         w.destroyed.connect(lambda: self._children.pop(key, None))
