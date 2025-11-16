@@ -125,8 +125,8 @@ class MainWindow(QMainWindow):
         self.RunCDFreq.clicked.connect(lambda checked, n=nama, p=npm: self.run_cd_frequency_response(n, p))
         self.RunStateSpace.clicked.connect(lambda checked, n=nama, p=npm: self.run_state_space(n, p))
         self.RunCOD.clicked.connect(lambda checked, n=nama, p=npm: self.run_cod(n, p))
-        self.RunDCOD.clicked.connect(lambda checked, n=nama, p=npm: self.run_dcod(n, p))
-        self.RunMotor.clicked.connect(lambda checked, n=nama, p=npm, k=kelompok: self.run_motor(n, p, k))
+        self.RunDCOD.clicked.connect(lambda checked, n=nama, p=npm, k=kelompok: self.run_motor(n, p, k))
+        self.RunMotor.clicked.connect(lambda checked, n=nama, p=npm: self.run_dcod(n, p))
 
         # self.WelcomeText.setText(f"Welcome {nama}!")
         # self.Kelompok.setText(kelompok)
