@@ -473,7 +473,10 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(self, "Warning", "No serial port is open.")
 
     def closeEvent(self, event):
-        self.serial_conn.close()
+        try:
+            self.serial_conn.close()
+        except Exception as e:
+            print(e)
         event.accept()
 
 class Encoder(QtWidgets.QMainWindow):
