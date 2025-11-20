@@ -14,6 +14,7 @@ from pathlib import Path
 import queue
 import pandas as pd
 import requests
+import time
 
 import pages.Modul910.asset.resources 
 
@@ -63,6 +64,8 @@ class FirebaseManager:
         """Initialize Firebase connection"""
         self.is_connected = False
         self.id_token = None
+        self.refresh_token = None
+        self.expires_in = None
         self.initialize_firebase()
 
     def initialize_firebase(self):
@@ -75,20 +78,62 @@ class FirebaseManager:
         print("Attempting to connect to the database...")
         try:
             r = requests.post(auth_url, data=body, timeout=10)
-            self.id_token = r.json()['idToken']
+            r.raise_for_status()           # raise if HTTP error
+            data = r.json()                # parse JSON
+
+            # NOTE: keys from signUp are camelCase
+            self.id_token = data['idToken']
+            self.refresh_token = data['refreshToken']
+            expires_in = int(data.get('expiresIn', '3600'))  # seconds as string
+
+            # store absolute expiry time (now + expires_in - safety margin)
+            self.token_expiry = time.time() + expires_in - 60  # refresh 1 min early
+            
             print("Successfully connected to the database")
             self.is_connected = True
         except Exception as e:
             print(e)
             self.is_connected = False
+
+    def refresh_id_token(self):
+        api_key = '***REMOVED***'
+        refresh_url = f'https://securetoken.googleapis.com/v1/token?key={api_key}'
+
+        body = {
+            'grant_type': 'refresh_token',
+            'refresh_token': self.refresh_token,
+        }
+
+        try:
+            r = requests.post(refresh_url, data=body, timeout=10)
+            r.raise_for_status()
+            data = r.json()
+
+            self.id_token = data['id_token']         # note: key is id_token (underscore)
+            self.refresh_token = data['refresh_token']
+            expires_in = int(data.get('expires_in', '3600'))
+            self.token_expiry = time.time() + expires_in - 60
+
+            print("ID token refreshed")
+        except Exception as e:
+            print("Failed to refresh id_token:", e)
+            # fallback: mark disconnected, or re-run initialize_firebase
+            self.is_connected = False
+
+    def ensure_token_valid(self):
+        import time
+        if not hasattr(self, 'expires_in'):
+            return
+        if time.time() > self.token_expiry:
+            self.refresh_id_token()
             
     def upload_student_submission(self, student, student_name, submission_data):
-        """Overwrite/update an existing student document in Firestore"""
         if not self.id_token:
             print("No id_token; user not authenticated")
             return False
+        
+        self.ensure_token_valid()
 
-        # Existing document path, since the doc already exists
         url = (
             "https://firestore.googleapis.com/v1/"
             f"projects/control-lab-c4480/databases/(default)/documents/Modul89/{student}"
@@ -162,15 +207,10 @@ class FirebaseManager:
             }
         }
 
-        # Optional: debug body
-        # import json
-        # print(json.dumps(firestore_doc, indent=2))
-
-        # ---------- PATCH existing document ----------
         try:
             resp = requests.patch(url, headers=headers, json=firestore_doc, timeout=10)
             print("Firestore response status:", resp.status_code)
-            print("Firestore response body:", resp.text)
+            # print("Firestore response body:", resp.text)
             resp.raise_for_status()
             return True
         except requests.exceptions.RequestException as e:
@@ -252,7 +292,7 @@ class FirebaseManager:
             'controller_type': 'PID'
         }
 
-        self.upload_student_submission("2206055870", "Malik Al Hazazi Vanery", sample_submission)
+        self.upload_student_submission("2206055901", "Usamah Hafizh Ammar Za'im", sample_submission)
 class RefreshingComboBox(QtWidgets.QComboBox):
     """QComboBox that refreshes its items whenever opened."""
     def showPopup(self):
