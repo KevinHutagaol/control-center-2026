@@ -359,7 +359,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.current_students = self.firebase_manager.find_student(group)  # Example group "A1"
         QtWidgets.QMessageBox.information(self, "Info", f"Found {len(self.current_students)} students in group {group}.")
 
-        self.firebase_manager.test_upload_student_submission()
+        # self.firebase_manager.test_upload_student_submission()
 
         self.olc.clicked.connect(self.olcClicked)
         self.clc.clicked.connect(self.clcClicked)
