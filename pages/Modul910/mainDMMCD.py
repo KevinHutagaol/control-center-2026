@@ -13,6 +13,7 @@ from firebase_admin import credentials, firestore
 from pathlib import Path
 import queue
 import pandas as pd
+import requests
 
 import pages.Modul910.asset.resources 
 
@@ -60,171 +61,198 @@ def resource_path(rel: str | Path) -> str:
 class FirebaseManager:
     def __init__(self):
         """Initialize Firebase connection"""
-        self.db = None
         self.is_connected = False
+        self.id_token = None
         self.initialize_firebase()
-    
+
     def initialize_firebase(self):
         """Initialize Firebase with service account credentials"""
+        api_key = '***REMOVED***'
+
+        auth_url = f'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={api_key}'
+        body = {'returnSecureToken': True}
+        
+        print("Attempting to connect to the database...")
         try:
-            # Initialize Firebase (only once)
-            if not firebase_admin._apps:
-                print(resource_path("firebaseAuth.json"))
-                cred = credentials.Certificate(resource_path("firebaseAuth.json"))
-                firebase_admin.initialize_app(cred)
-            
-            # Get Firestore database reference
-            self.db = firestore.client()
+            r = requests.post(auth_url, data=body, timeout=10)
+            self.id_token = r.json()['idToken']
+            print("Successfully connected to the database")
             self.is_connected = True
-            print("Firebase initialized successfully")
-            
-        except FileNotFoundError:
-            print(f"Service account file not found: {resource_path('firebaseAuth.json')}")
-            self.is_connected = False
         except Exception as e:
-            print(f"Firebase initialization failed: {e}")
+            print(e)
             self.is_connected = False
-
+            
     def upload_student_submission(self, student, student_name, submission_data):
-        """Upload student submission and scores to Firebase"""
-        if not self.is_connected:
+        """Overwrite/update an existing student document in Firestore"""
+        if not self.id_token:
+            print("No id_token; user not authenticated")
             return False
-            
-        try:
-            timestamp = datetime.now(timezone(timedelta(hours=7)))
-            
-            submission_entry = {
-                'timestamp': timestamp,
-                'submitted_parameters': {
-                    'K_fopdt': submission_data.get('K_fopdt', 0),
-                    'tau_fopdt': submission_data.get('tau_fopdt', 0),
-                    'L_fopdt': submission_data.get('L_fopdt', 0),
-                    'K1': submission_data.get('K1', 0),
-                    'K2': submission_data.get('K2', 0),
-                    'K3': submission_data.get('K3', 0)
-                },
-                'true_parameters': {
-                    'K_fopdt': submission_data.get('true_K_fopdt', 0),
-                    'tau_fopdt': submission_data.get('true_tau_fopdt', 0),
-                    'L_fopdt': submission_data.get('true_L_fopdt', 0),
-                    'k1': submission_data.get('true_k1', 0),
-                    'k2': submission_data.get('true_k2', 0),
-                    'k3': submission_data.get('true_k3', 0)
-                },
-                'scores': {
-                    'model_score': submission_data.get('model_score', 0),
-                    'control_score': submission_data.get('control_score', 0),
-                    'final_score': submission_data.get('final_score', 0)
-                },
-                'errors': {
-                    'K_fopdt_error_percent': submission_data.get('K_fopdt_error_percent', 0),
-                    'tau_fopdt_error_percent': submission_data.get('tau_fopdt_error_percent', 0),
-                    'L_fopdt_error_percent': submission_data.get('L_fopdt_error_percent', 0),
-                    'k1_error_percent': submission_data.get('k1_error_percent', 0),
-                    'k2_error_percent': submission_data.get('k2_error_percent', 0),
-                    'k3_error_percent': submission_data.get('k3_error_percent', 0)
-                },
-                'controller_type': submission_data.get('controller_type', 'Unknown'),  # P, PI, or PID
-                'nama': student_name
+
+        # Existing document path, since the doc already exists
+        url = (
+            "https://firestore.googleapis.com/v1/"
+            f"projects/control-lab-c4480/databases/(default)/documents/Modul89/{student}"
+        )
+
+        headers = {
+            "Authorization": f"Bearer {self.id_token}",
+            "Content-Type": "application/json",
+        }
+
+        # ---------- Build your data in Python ----------
+        timestamp = datetime.now(timezone(timedelta(hours=7))).isoformat()
+
+        submitted_parameters = {
+            "K_fopdt": submission_data.get("K_fopdt", 0),
+            "tau_fopdt": submission_data.get("tau_fopdt", 0),
+            "L_fopdt": submission_data.get("L_fopdt", 0),
+            "K1": submission_data.get("K1", 0),
+            "K2": submission_data.get("K2", 0),
+            "K3": submission_data.get("K3", 0),
+        }
+
+        true_parameters = {
+            "K_fopdt": submission_data.get("true_K_fopdt", 0),
+            "tau_fopdt": submission_data.get("true_tau_fopdt", 0),
+            "L_fopdt": submission_data.get("true_L_fopdt", 0),
+            "k1": submission_data.get("true_k1", 0),
+            "k2": submission_data.get("true_k2", 0),
+            "k3": submission_data.get("true_k3", 0),
+        }
+
+        scores = {
+            "model_score": submission_data.get("model_score", 0),
+            "control_score": submission_data.get("control_score", 0),
+            "final_score": submission_data.get("final_score", 0),
+        }
+
+        errors = {
+            "K_fopdt_error_percent": submission_data.get("K_fopdt_error_percent", 0),
+            "tau_fopdt_error_percent": submission_data.get("tau_fopdt_error_percent", 0),
+            "L_fopdt_error_percent": submission_data.get("L_fopdt_error_percent", 0),
+            "k1_error_percent": submission_data.get("k1_error_percent", 0),
+            "k2_error_percent": submission_data.get("k2_error_percent", 0),
+            "k3_error_percent": submission_data.get("k3_error_percent", 0),
+        }
+
+        # ---------- Helper converters to Firestore types ----------
+        def num_field(value):
+            return {"doubleValue": float(value)}
+
+        def str_field(value):
+            return {"stringValue": str(value)}
+
+        def map_num_dict(d):
+            return {
+                "mapValue": {
+                    "fields": {k: num_field(v) for k, v in d.items()}
+                }
             }
-            
-            doc_ref = self.db.collection("Modul 8-9").document(student)
-            
-            # Check if document exists
-            doc = doc_ref.get()
-            if doc.exists:
-                doc_ref.set(submission_entry)
-                print(f"Added submission to existing 'Modul 8-9' field for student: {student}")
-            else:
-                QtWidgets.QMessageBox.information(None, "Info", f"Document does not exist for student: {student}.")
 
-            return True
-            
-        except Exception as e:
-            print(f"Failed to upload student submission: {e}")
-            return False
+        # ---------- Build Firestore document body ----------
+        firestore_doc = {
+            "fields": {
+                "timestamp": {"timestampValue": timestamp},
+                "controller_type": str_field(submission_data.get("controller_type", "Unknown")),
+                "nama": str_field(student_name),
+                "submitted_parameters": map_num_dict(submitted_parameters),
+                "true_parameters": map_num_dict(true_parameters),
+                "scores": map_num_dict(scores),
+                "errors": map_num_dict(errors),
+            }
+        }
 
-    def upload_student_score(self, student, score):
-        """Upload or update student score in Firebase"""
-        if not self.is_connected:
-            return False
-            
+        # Optional: debug body
+        # import json
+        # print(json.dumps(firestore_doc, indent=2))
+
+        # ---------- PATCH existing document ----------
         try:
-            doc_ref = self.db.collection("Nilai").document(student)
-            
-            # Check if document exists
-            doc = doc_ref.get()
-            if doc.exists:
-                doc_data = doc.to_dict()
-
-                if '(Modul 8&9) Borang Simulasi' in doc_data:
-                    # Field exists, update the score
-                    doc_ref.update({
-                        '(Modul 8&9) Borang Simulasi': score
-                    })
-                    print(f"Updated existing score for student: {student}")
-                
-                else:
-                   QtWidgets.QMessageBox.information(None, "Info", f"'(Modul 8&9) Borang Simulasi' field does not exist for student: {student}.")
-
-            else:
-                # Document doesn't exist, create it with the score
-                QtWidgets.QMessageBox.information(None, "Info", f"Document does not exist for student: {student}.")
-
+            resp = requests.patch(url, headers=headers, json=firestore_doc, timeout=10)
+            print("Firestore response status:", resp.status_code)
+            print("Firestore response body:", resp.text)
+            resp.raise_for_status()
             return True
-            
-        except Exception as e:
-            print(f"Failed to upload student score: {e}")
+        except requests.exceptions.RequestException as e:
+            print("Error updating submission in Firestore:", e)
+            if getattr(e, "response", None) is not None:
+                print("Response text:", e.response.text)
             return False
 
     def find_student(self, group):
         """Check if a student document exists in Firebase"""
         if not self.is_connected:
             return []
+        
+        # print(self.id_token)
             
+        url = f"https://firestore.googleapis.com/v1/projects/control-lab-c4480/databases/(default)/documents/Account"
+        headers = {"Authorization": f"Bearer {self.id_token}"}
+        
         try:
-            docs = self.db.collection("Account").stream()
-
-            matching_students = []
-            for doc in docs:
-                data = doc.to_dict()
-                if 'Kelompok' in data and data['Kelompok'] == group:
-                    matching_students.append({
-                        'NPM': doc.id,
-                        'Name': data.get('Nama', 'Unknown')
-                    })
-
-            return matching_students
-
-        except Exception as e:
-            print(f"Failed to find student: {e}")
+            r = requests.get(url, headers=headers, timeout=10)
+            r.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching collection: {e}")
             return []
+        
+        docs = r.json().get("documents", [])
+        rows = []
+
+        for doc in docs:
+            fields = doc.get("fields", {})
+
+            kelompok_field = fields.get("Kelompok")
+            if not kelompok_field:
+                continue
+
+            # Firestore REST: one of stringValue / integerValue / doubleValue / etc.
+            kelompok_value = (
+                kelompok_field.get("stringValue")
+                or kelompok_field.get("integerValue")
+                or kelompok_field.get("doubleValue")
+            )
+
+            # Compare as string to be safe
+            if str(kelompok_value) == str(group):
+                rows.append({
+                    "NPM": doc.get("name").split('/')[-1],
+                    "Name": doc.get("fields", {}).get("Nama")
+                })
+
+        print(rows)
+        return rows
+        
 
     def test_upload_student_submission(self):
         """Test function to upload a sample student submission"""
         sample_student = "0"
         sample_submission = {
-            'K_fopdt': 1.0,
-            'tau_fopdt': 0.5,
-            'L_fopdt': 0.1,
-            'K1': 2.0,
-            'K2': 3.0,
-            'K3': 4.0,
-            'true_K_fopdt': 1.1,
-            'true_tau_fopdt': 0.55,
-            'true_L_fopdt': 0.15,
-            'true_k1': 2.1,
-            'true_k2': 3.1,
-            'true_k3': 4.1,
-            'model_score': 90,
-            'control_score': 85,
-            'final_score': 88,
-            'K_fopdt_error_percent': 10,
-            'tau_fopdt_error_percent': 10,
-            'L_fopdt_error_percent': 50,
+            'K_fopdt': 69,
+            'tau_fopdt': 67,
+            'L_fopdt': 420,
+            'K1': 0,
+            'K2': 0,
+            'K3': 0,
+            'true_K_fopdt': 0,
+            'true_tau_fopdt': 0,
+            'true_L_fopdt': 0,
+            'true_k1': 0,
+            'true_k2': 0,
+            'true_k3': 0,
+            'model_score': 0,
+            'control_score': 0,
+            'final_score': 0,
+            'K_fopdt_error_percent': 1,
+            'tau_fopdt_error_percent': 0,
+            'L_fopdt_error_percent': 0,
+            'k1_error_percent': 0,
+            'k2_error_percent': 0,
+            'k3_error_percent': 0,
             'controller_type': 'PID'
         }
-        self.upload_student_submission(sample_student, sample_submission)
+
+        self.upload_student_submission("2206055870", "Malik Al Hazazi Vanery", sample_submission)
 class RefreshingComboBox(QtWidgets.QComboBox):
     """QComboBox that refreshes its items whenever opened."""
     def showPopup(self):
@@ -290,6 +318,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.firebase_manager = FirebaseManager()
         self.current_students = self.firebase_manager.find_student(group)  # Example group "A1"
         QtWidgets.QMessageBox.information(self, "Info", f"Found {len(self.current_students)} students in group {group}.")
+
+        self.firebase_manager.test_upload_student_submission()
 
         self.olc.clicked.connect(self.olcClicked)
         self.clc.clicked.connect(self.clcClicked)
