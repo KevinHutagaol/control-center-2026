@@ -305,17 +305,32 @@ class RefreshingComboBox(QtWidgets.QComboBox):
         port_info_list = []
 
         for port in ports:
+            # Handle possible None values
+            vid = f"0x{port.vid:04X}" if port.vid is not None else None
+            pid = f"0x{port.pid:04X}" if port.pid is not None else None
+            serial_number = port.serial_number if getattr(port, "serial_number", None) else None
+
+            # Clean description (avoid repeating device name)
+            try:
+                desc = " ".join(
+                    part for part in (port.description or "").split()
+                    if not port.device.lower() in part.lower()
+                )
+            except Exception:
+                desc = port.description or ""
+
             port_info = {
                 'device': port.device,
-                'description': " ".join(part for part in port.description.split() if port.device.lower() not in part.lower()),
+                'description': desc,
                 'manufacturer': port.manufacturer,
-                'vid': hex(port.vid).upper(),
-                'pid': hex(port.pid).upper(),
-                'serial_number': port.serial_number,
-                'hwid': port.hwid
+                'vid': vid,
+                'pid': pid,
+                'serial_number': serial_number,
+                'hwid': port.hwid,
             }
 
-            port_info_list.append(port_info)    
+            port_info_list.append(port_info)
+
         return port_info_list
 
     def refresh_ports(self):

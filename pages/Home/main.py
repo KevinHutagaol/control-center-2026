@@ -83,20 +83,6 @@ except Exception as e:
     print(e)
     # sys.exit(1)
 
-# try:
-#     cred = credentials.Certificate(resource_path("firebaseAuth.json"))
-    
-#     if not firebase_admin._apps:
-#         firebase_admin.initialize_app(cred)
-        
-#     db = firestore.client() 
-
-#     print("Home: Firebase initialized successfully")
-# except Exception as e:
-#     print("Firebase error:", e)  # tampilkan di console
-#     QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
-#     sys.exit(1)
-
 class MainWindow(QMainWindow):
     def __init__(self, npm, nama, role, kelompok):
         super().__init__()
@@ -754,9 +740,9 @@ class AdminWindow(QMainWindow):
     def run_dcod(self, nama, npm):
         print("Running DCOD")
     
-    def run_motor(self, nama, npm,kelompok):
+    def run_motor(self, nama, npm, kelompok, id_token):
         print("Running DMMCD")
-        w = exec_DMMCD(nama, npm)
+        w = exec_DMMCD(nama, npm, kelompok)
         key = f"Modul910-{npm}"
         self._children[key] = w
         
