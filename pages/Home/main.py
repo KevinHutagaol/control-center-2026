@@ -17,6 +17,7 @@ from pages.Modul4.mainCDRL import exec_CDRL
 from pages.Modul5.mainCDFR import exec_CDFR
 from pages.Modul6.mainSSM import exec_SSM
 from pages.Modul7.mainCOD import exec_COD
+from pages.Modul8.mainDCOD import exec_DCOD
 from pages.Modul910.mainDMMCD import exec_DMMCD
 
 def resource_path(rel: str | Path) -> str:
@@ -176,6 +177,10 @@ class MainWindow(QMainWindow):
     
     def run_dcod(self, nama, npm):
         print("Running Discrete Controller and Observer Design")
+        w = exec_DCOD()
+        key = f"Modul8-{npm}"
+        self._children[key] = w
+        w.destroyed.connect(lambda: self._children.pop(key, None))
     
     def run_motor(self, nama, npm, kelompok):
         print("Running DC Motor Modeling and Controller Design")
