@@ -43,7 +43,7 @@ def resource_path(rel: str | Path) -> str:
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi(resource_path("ui/main.ui"), self)
+        uic.loadUi(resource_path("ui_8/main.ui"), self)
 
         self.plantPlot = None
         self.plantTimer = QtCore.QTimer(self)
