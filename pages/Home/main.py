@@ -177,7 +177,7 @@ class MainWindow(QMainWindow):
     
     def run_dcod(self, nama, npm):
         print("Running Discrete Controller and Observer Design")
-        w = exec_DCOD()
+        w = exec_DCOD(nama, npm)
         key = f"Modul8-{npm}"
         self._children[key] = w
         w.destroyed.connect(lambda: self._children.pop(key, None))
