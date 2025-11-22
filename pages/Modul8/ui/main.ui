@@ -109,7 +109,7 @@ QPushButton#btnNext:hover {
 }</string>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -344,11 +344,91 @@ QPushButton:pressed {
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="1" column="2">
-           <widget class="QLineEdit" name="a12">
+          <item row="7" column="0" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="rLabel">
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+    font-family: &quot;Poppins Semibold&quot;;
+    font-size: 16pt;
+    color: #000000;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}</string>
+            </property>
+            <property name="text">
+             <string>R = </string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="lLabel">
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+    font-family: &quot;Poppins Semibold&quot;;
+    font-size: 16pt;
+    color: #000000;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}</string>
+            </property>
+            <property name="text">
+             <string>L = </string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="5" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="nLabel">
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+    font-family: &quot;Poppins Semibold&quot;;
+    font-size: 16pt;
+    color: #000000;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}</string>
+            </property>
+            <property name="text">
+             <string>N = </string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="5" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="matrixBLabel">
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+    font-family: &quot;Poppins Semibold&quot;;
+    font-size: 16pt;
+    color: #000000;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}</string>
+            </property>
+            <property name="text">
+             <string>Bd = </string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="7" column="6">
+           <widget class="QLineEdit" name="n">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>80</width>
               <height>35</height>
              </size>
             </property>
@@ -373,11 +453,69 @@ QLineEdit:focus {
             </property>
            </widget>
           </item>
-          <item row="5" column="2">
-           <widget class="QLineEdit" name="l2">
+          <item row="7" column="2">
+           <widget class="QLineEdit" name="r2">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>80</width>
+              <height>35</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLineEdit {
+    font-family: &quot;Poppins&quot;;
+    font-size: 10pt;
+    color: #333333;
+
+    background-color: #F2F2F2;        /* abu-abu muda elegan */
+    border: 1px solid #D0D0D0;        /* outline halus */
+    border-radius: 6px;
+
+    padding: 6px 8px;
+    qproperty-alignment: 'AlignCenter';
+}
+
+QLineEdit:focus {
+    background-color: #FFFFFF;
+    border: 1px solid #A0A0A0;        /* highlight tipis saat fokus */
+}</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="6">
+           <widget class="QLineEdit" name="b21">
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>35</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLineEdit {
+    font-family: &quot;Poppins&quot;;
+    font-size: 10pt;
+    color: #333333;
+
+    background-color: #F2F2F2;        /* abu-abu muda elegan */
+    border: 1px solid #D0D0D0;        /* outline halus */
+    border-radius: 6px;
+
+    padding: 6px 8px;
+    qproperty-alignment: 'AlignCenter';
+}
+
+QLineEdit:focus {
+    background-color: #FFFFFF;
+    border: 1px solid #A0A0A0;        /* highlight tipis saat fokus */
+}</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLineEdit" name="a12">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
               <height>35</height>
              </size>
             </property>
@@ -406,7 +544,7 @@ QLineEdit:focus {
            <widget class="QLineEdit" name="a11">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>100</width>
               <height>35</height>
              </size>
             </property>
@@ -434,11 +572,27 @@ QLineEdit:focus {
             </property>
            </widget>
           </item>
+          <item row="3" column="2">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
           <item row="2" column="1">
            <widget class="QLineEdit" name="a21">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>100</width>
               <height>35</height>
              </size>
             </property>
@@ -463,27 +617,40 @@ QLineEdit:focus {
             </property>
            </widget>
           </item>
-          <item row="3" column="2">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
           <item row="7" column="1">
            <widget class="QLineEdit" name="r1">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>80</width>
+              <height>35</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLineEdit {
+    font-family: &quot;Poppins&quot;;
+    font-size: 10pt;
+    color: #333333;
+
+    background-color: #F2F2F2;        /* abu-abu muda elegan */
+    border: 1px solid #D0D0D0;        /* outline halus */
+    border-radius: 6px;
+
+    padding: 6px 8px;
+    qproperty-alignment: 'AlignCenter';
+}
+
+QLineEdit:focus {
+    background-color: #FFFFFF;
+    border: 1px solid #A0A0A0;        /* highlight tipis saat fokus */
+}</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QLineEdit" name="l2">
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
               <height>35</height>
              </size>
             </property>
@@ -524,40 +691,11 @@ QLineEdit:focus {
             </property>
            </widget>
           </item>
-          <item row="1" column="7">
-           <widget class="QLineEdit" name="b11">
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>35</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QLineEdit {
-    font-family: &quot;Poppins&quot;;
-    font-size: 10pt;
-    color: #333333;
-
-    background-color: #F2F2F2;        /* abu-abu muda elegan */
-    border: 1px solid #D0D0D0;        /* outline halus */
-    border-radius: 6px;
-
-    padding: 6px 8px;
-    qproperty-alignment: 'AlignCenter';
-}
-
-QLineEdit:focus {
-    background-color: #FFFFFF;
-    border: 1px solid #A0A0A0;        /* highlight tipis saat fokus */
-}</string>
-            </property>
-           </widget>
-          </item>
           <item row="5" column="1">
            <widget class="QLineEdit" name="l1">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>80</width>
               <height>35</height>
              </size>
             </property>
@@ -586,7 +724,7 @@ QLineEdit:focus {
            <widget class="QLineEdit" name="a22">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>100</width>
               <height>35</height>
              </size>
             </property>
@@ -611,11 +749,11 @@ QLineEdit:focus {
             </property>
            </widget>
           </item>
-          <item row="2" column="7">
-           <widget class="QLineEdit" name="b21">
+          <item row="1" column="6">
+           <widget class="QLineEdit" name="b11">
             <property name="maximumSize">
              <size>
-              <width>60</width>
+              <width>100</width>
               <height>35</height>
              </size>
             </property>
@@ -639,176 +777,6 @@ QLineEdit:focus {
 }</string>
             </property>
            </widget>
-          </item>
-          <item row="1" column="9">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="6" column="2">
-           <spacer name="verticalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="7" column="2">
-           <widget class="QLineEdit" name="r2">
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>35</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QLineEdit {
-    font-family: &quot;Poppins&quot;;
-    font-size: 10pt;
-    color: #333333;
-
-    background-color: #F2F2F2;        /* abu-abu muda elegan */
-    border: 1px solid #D0D0D0;        /* outline halus */
-    border-radius: 6px;
-
-    padding: 6px 8px;
-    qproperty-alignment: 'AlignCenter';
-}
-
-QLineEdit:focus {
-    background-color: #FFFFFF;
-    border: 1px solid #A0A0A0;        /* highlight tipis saat fokus */
-}</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="7">
-           <widget class="QLineEdit" name="n">
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>35</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QLineEdit {
-    font-family: &quot;Poppins&quot;;
-    font-size: 10pt;
-    color: #333333;
-
-    background-color: #F2F2F2;        /* abu-abu muda elegan */
-    border: 1px solid #D0D0D0;        /* outline halus */
-    border-radius: 6px;
-
-    padding: 6px 8px;
-    qproperty-alignment: 'AlignCenter';
-}
-
-QLineEdit:focus {
-    background-color: #FFFFFF;
-    border: 1px solid #A0A0A0;        /* highlight tipis saat fokus */
-}</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="lLabel">
-            <property name="styleSheet">
-             <string notr="true">QLabel{
-    font-family: &quot;Poppins Semibold&quot;;
-    font-size: 16pt;
-    color: #000000;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}</string>
-            </property>
-            <property name="text">
-             <string>L = </string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="rLabel">
-            <property name="styleSheet">
-             <string notr="true">QLabel{
-    font-family: &quot;Poppins Semibold&quot;;
-    font-size: 16pt;
-    color: #000000;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}</string>
-            </property>
-            <property name="text">
-             <string>R = </string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="6" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="matrixBLabel">
-            <property name="styleSheet">
-             <string notr="true">QLabel{
-    font-family: &quot;Poppins Semibold&quot;;
-    font-size: 16pt;
-    color: #000000;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}</string>
-            </property>
-            <property name="text">
-             <string>Bd = </string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="6" alignment="Qt::AlignRight">
-           <widget class="QLabel" name="nLabel">
-            <property name="styleSheet">
-             <string notr="true">QLabel{
-    font-family: &quot;Poppins Semibold&quot;;
-    font-size: 16pt;
-    color: #000000;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}</string>
-            </property>
-            <property name="text">
-             <string>N = </string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3">
-           <spacer name="horizontalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>30</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </widget>
@@ -1038,10 +1006,18 @@ QPushButton:disabled {
        </item>
        <item row="3" column="2" alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="label_4">
+         <property name="font">
+          <font>
+           <family>Poppins</family>
+           <pointsize>11</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
          <property name="styleSheet">
           <string notr="true">QLabel {
     font-family: &quot;Poppins&quot;;
-    font-size: 14pt;
+    font-size: 11pt;
     font-weight: 600;          /* medium-bold */
     color: #FFFFFF;
 }</string>
@@ -1176,7 +1152,7 @@ QPushButton:pressed {
 }</string>
          </property>
          <property name="text">
-          <string>Plot Observer and Real States</string>
+          <string>Plot Real and Observed States</string>
          </property>
         </widget>
        </item>
