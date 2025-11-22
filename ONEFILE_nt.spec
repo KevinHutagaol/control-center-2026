@@ -28,6 +28,8 @@ m4_ui       = os.path.join(project_root, "pages", "Modul4",  "ui")
 m5_ui       = os.path.join(project_root, "pages", "Modul5",  "UI5")
 m6_ui       = os.path.join(project_root, "pages", "Modul6",  "UI6")
 m7_ui       = os.path.join(project_root, "pages", "Modul7",  "UI")
+m8_ui       = os.path.join(project_root, "pages", "Modul8",  "ui_8")
+m8_asset    = os.path.join(project_root, "pages", "Modul8", "asset_8")
 m910_asset  = os.path.join(project_root, "pages", "Modul910","asset")
 m910_ui     = os.path.join(project_root, "pages", "Modul910","ui_910")
 
@@ -45,11 +47,13 @@ add_tree(datas, os.path.join(project_root, "public"), "public")
 
 hidden = []
 hidden += collect_submodules('pages')
-hidden += ['pages.Home.resources_rc']
-hidden += ['pages.Modul5.mplwidget']
-hidden += ['pages.Home.Modul5New']
-hidden += ['pages.Home.myQRC']
-hidden += ['pages.Modul6.resource_rc6']
+hidden += ['pages.Home.resources_rc']   
+hidden += ['pages.Modul5.mplwidget']     
+hidden += ['pages.Modul5.Modul5New']    # Tadinya pages.Home.Modul5New, ganti aja klo error
+hidden += ['pages.Modul5.myQRC']        # Tadinya pages.Home.myQRC, ganti aja klo error
+hidden += ['pages.Modul8.gambar_rc']
+hidden += ['pages.Modul8.calc']
+hidden += ['pages.Modul8.plot']
 
 a = Analysis(
     ['pages/Home/main.py'],
