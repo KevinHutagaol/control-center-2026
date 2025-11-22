@@ -53,8 +53,8 @@ class PlotWindow(QtWidgets.QMainWindow):
         self.line_x2, = self.ax2.plot([], [], label="State 2")
 
         if showObserver:
-            self.line_x1hat, = self.ax1.plot([], [], "--", label="State 1 hat")
-            self.line_x2hat, = self.ax2.plot([], [], "--", label="State 2 hat")
+            self.line_x1hat, = self.ax1.plot([], [], "--", label="Estimated State 1")
+            self.line_x2hat, = self.ax2.plot([], [], "--", label="Estimated State 2")
         else:
             self.line_x1hat = None
             self.line_x2hat = None
@@ -98,8 +98,8 @@ class PlotWindow(QtWidgets.QMainWindow):
             self.line_x2hat.set_data([], [])
 
         # X fixed dari 0 sampai x_max (durasi simulasi)
-        self.ax1.set_xlim(-1, self.x_max)
-        self.ax2.set_xlim(-1, self.x_max)
+        self.ax1.set_xlim(0, self.x_max)
+        self.ax2.set_xlim(0, self.x_max)
 
         # initial Y
         self.ax1.set_ylim(-1, 1)
