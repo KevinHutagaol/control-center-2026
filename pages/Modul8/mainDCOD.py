@@ -392,8 +392,8 @@ class MainWindow(QtWidgets.QMainWindow):
         geo.moveCenter(fg)
         window.move(geo.topLeft())
 
-def exec_DCOD():
-    app = QtWidgets.QApplication([])
+def exec_DCOD(nama, npm):
+    app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
 
