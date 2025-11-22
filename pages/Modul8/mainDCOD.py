@@ -74,7 +74,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         unit_map = {
             0: "RPM",
-            1: "Newton",
+            1: "Meter",
             2: "Volt"
         }
         self.unitLabel.setText(unit_map.get(index, ""))
@@ -238,7 +238,7 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(self, "Error", "Mode simulasi tidak dikenal.")
             return
 
-        # ====== PILIH LABEL Y BERDASARKAN PAGE ======
+        # ====== LABEL Y BERDASARKAN PAGE ======
         page_idx = self.stackedWidget.currentIndex()
         if page_idx == 0:
             # Motor
@@ -256,6 +256,18 @@ class MainWindow(QtWidgets.QMainWindow):
             y1_label = "State 1"
             y2_label = "State 2"
 
+        # ====== X MAX (durasi tetap) ======
+        x_max = self.simMaxSteps * self.simTs
+
+        # ====== SETPOINT REFERENCE LINE ======
+        ref_value = getattr(self, "setpointValue", None)
+        if page_idx in (0, 1):
+            ref_axis = 1      # state 1 (grafik atas)
+        elif page_idx == 2:
+            ref_axis = 2      # state 2 (grafik bawah)
+        else:
+            ref_axis = None
+
         # buka / reset window plot
         if self.plantPlot is None or not self.plantPlot.isVisible():
             self.plantPlot = PlotWindow(
@@ -263,7 +275,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 title=title,
                 showObserver=showObserver,
                 y1_label=y1_label,
-                y2_label=y2_label
+                y2_label=y2_label,
+                x_max=x_max,
+                ref_axis=ref_axis,
+                ref_value=ref_value
             )
             self.plantPlot.show()
         else:
@@ -273,13 +288,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 title=title,
                 showObserver=showObserver,
                 y1_label=y1_label,
-                y2_label=y2_label
+                y2_label=y2_label,
+                x_max=x_max,
+                ref_axis=ref_axis,
+                ref_value=ref_value
             )
             self.plantPlot.show()
 
         # start timer (ms)
         self.plantTimer.start(int(self.simTs * 1000))
-
 
     def stepPlantOnly(self):
         rk = getattr(self, "setpointValue", 0.0)
