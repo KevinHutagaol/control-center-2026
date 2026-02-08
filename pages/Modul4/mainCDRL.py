@@ -71,17 +71,17 @@ def resource_path(rel: str | Path) -> str:
     # Fallback: return the first candidate even if missing (caller can handle)
     return str(candidates[0])
 
-
+# TODO: FIX DATABASE
 # === Firestore ===
-try:
-    db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
-
-    print("CDRL: Firebase initialized successfully")
-
-except Exception as e:
-    print("Firebase error:", e)
-    QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
-    sys.exit(1)
+# try:
+#     db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
+#
+#     print("CDRL: Firebase initialized successfully")
+#
+# except Exception as e:
+#     print("Firebase error:", e)
+#     QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
+#     sys.exit(1)
 
 s = symbols('s') 
 
@@ -161,17 +161,18 @@ class Leaderboard(QMainWindow):
         """
         Ambil semua dokumen di collection modul4 dan kembalikan dict {docid: docdict}
         """
-        try:
-            docs = db.collection("Modul4").stream()
-        except Exception as e:
-            print("Error fetching Firestore data:", e)
-            return {}
+        # TODO: FIX DATABASE
+        # try:
+        #     docs = db.collection("Modul4").stream()
+        # except Exception as e:
+        #     print("Error fetching Firestore data:", e)
+        #     return {}
         data = {}
-        for doc in docs:
-            try:
-                data[doc.id] = doc.to_dict()
-            except Exception:
-                data[doc.id] = {}
+        # for doc in docs:
+        #     try:
+        #         data[doc.id] = doc.to_dict()
+        #     except Exception:
+        #         data[doc.id] = {}
         return data
 
     def check_and_update(self, output_csv):
@@ -484,14 +485,16 @@ class MainWindow(QMainWindow):
         error = (error_Kp + error_Ki + error_Kd) / 3
 
         try:
-            doc_ref = db.collection("Modul4").document(str(self.NPM))
-            doc_ref.set({
-                "error_kp": float(error_Kp),
-                "error_ki": float(error_Ki),
-                "error_kd": float(error_Kd),
-                "avg_error": float(error),
-                "nama": str(self.Nama),
-            })
+            # TODO: FIX DATABASE
+            # doc_ref = db.collection("Modul4").document(str(self.NPM))
+            # doc_ref.set({
+            #     "error_kp": float(error_Kp),
+            #     "error_ki": float(error_Ki),
+            #     "error_kd": float(error_Kd),
+            #     "avg_error": float(error),
+            #     "nama": str(self.Nama),
+            # })
+            pass
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to save to Firestore: {e}")
             return
