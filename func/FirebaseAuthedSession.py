@@ -1,6 +1,6 @@
 import time
 import requests
-from firebaseConfig import firebaseConfig
+from appConfig import firebaseConfig
 
 FIREBASE_API_KEY = firebaseConfig["apiKey"]
 
