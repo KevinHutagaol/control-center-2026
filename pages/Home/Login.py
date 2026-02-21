@@ -16,7 +16,7 @@ class Login(QMainWindow):
     def __init__(self):
         super(Login, self).__init__()
         uic.loadUi(resource_path("pages/Home/UI_home/Login.ui"), self)
-        self.setWindowTitle(f"Control Practicum Center {updaterFunc.get_local_version()}")
+        self.setWindowTitle(f"Control Laboratory - Control Center")
         self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
 
         self.Login.clicked.connect(self.loginEmailPassword)
@@ -24,8 +24,6 @@ class Login(QMainWindow):
         self.ChangePass.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.ChangePassPage))
 
         self.Back.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.LoginPage))
-
-        self.Pass.setValidator(self.NoSpaceValidator(self))
 
         self._version_check_scheduled = False
         self.show()
@@ -86,18 +84,6 @@ class Login(QMainWindow):
 
             elif msg.clickedButton() is later_btn:
                 QApplication.quit()
-
-    class NoSpaceValidator(QValidator):
-        def __init__(self, parent=None):
-            super().__init__(parent)
-
-        def validate(self, input_text, pos):
-            if " " in input_text:
-                return (QValidator.Invalid, input_text, pos)
-            return (QValidator.Acceptable, input_text, pos)
-
-        def fixup(self, input_text):
-            return input_text.replace(" ", "")
 
     def loginGoogle(self):
         self.Login.setEnabled(False)

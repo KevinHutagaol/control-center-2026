@@ -7,3 +7,7 @@ firebaseConfig = {
   "messagingSenderId": "830462089202",
   "appId": "1:830462089202:web:caf4e5471de5e8d537fd6b"
 }
+
+oAuthConfig = {
+  "clientId" : "830462089202-tetq9c8ncu05rea2dgeq91qfa72gp1n9.apps.googleusercontent.com",
+}
