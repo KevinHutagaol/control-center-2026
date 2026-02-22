@@ -29,10 +29,10 @@ from google.cloud import firestore
 
 import pages.Modul3.Asset.Resource
 
-from pages.Modul4.ui.ui_MainNoHD import Ui_MainWindow as Ui_MainNoHD
-from pages.Modul4.ui.ui_PIDparam import Ui_MainWindow as Ui_PIDparam
-from pages.Modul4.ui.ui_ReferencePoint import Ui_MainWindow as Ui_ReferencePoint
-from pages.Modul4.ui.ui_TransferFunction import Ui_MainWindow as Ui_TransferFunction
+from pages.Modul3.ui.ui_MainNoHD import Ui_MainWindow as Ui_MainNoHD
+from pages.Modul3.ui.ui_PIDparam import Ui_MainWindow as Ui_PIDparam
+from pages.Modul3.ui.ui_ReferencePoint import Ui_MainWindow as Ui_ReferencePoint
+from pages.Modul3.ui.ui_TransferFunction import Ui_MainWindow as Ui_TransferFunction
 
 def resource_path(rel: str | Path) -> str:
     """

@@ -5,16 +5,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QVBoxLayout, QMessageBox, QDialog, QToolBar, QAction)
-from PyQt5 import uic
 import control as ct
-try:
-    import pages.Modul4.resourcesmodul4
-except ImportError:
-    pass  
-try:
-    import resourcesmodul4
-except ImportError:
-    pass
+import pages.Modul4.resourcesmodul4
+
+from pages.Modul4.ui.ui_MainModul4 import Ui_MainWindow
 
 class FullScreenPlot(QDialog):
     def __init__(self, parent=None, title="Full Screen Plot"):
@@ -67,17 +61,11 @@ class FullScreenPlot(QDialog):
         self.canvas.draw()
 
 
-class MainModul4(QMainWindow):
+class MainModul4(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         
-        # 1. Load File UI
-        ui_file_path = os.path.join(os.path.dirname(__file__), "ui", "MainModul4.ui")
-        try:
-            uic.loadUi(ui_file_path, self)
-        except FileNotFoundError:
-            print(f"Error: File {ui_file_path} tidak ditemukan!")
-            sys.exit(1)
+        self.setupUi(self)
 
         # 2. Setup Grafik Matplotlib
         self.init_matplotlib_canvas()

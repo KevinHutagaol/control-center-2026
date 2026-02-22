@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-import pages.Home.resources_rc
+import pages.Home.resourcesnew
 
 from pages.Home.Login import Login
 
