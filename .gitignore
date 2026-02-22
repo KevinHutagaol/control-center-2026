@@ -5,6 +5,7 @@ __pycache__/
 
 # Virtual environment
 venv/
+.venv/
 
 # Critical information
 .env
@@ -17,6 +18,8 @@ app-config.json
 # UI
 *.qrc
 pages/Home/Asset_home/
+pages/Home/resources_rc.py
+pages/Home/Asset_old/
 
 # npm Dependencies
 functions/node_modules/
@@ -37,8 +40,6 @@ functions/
 # Others
 # /*.txt
 
-# Unfinished Modules
-pages/Modul2
 
 # Test files
 *test*.py

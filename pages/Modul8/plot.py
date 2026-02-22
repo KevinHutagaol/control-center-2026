@@ -1,6 +1,8 @@
-# plot.py
 from PyQt5 import QtWidgets
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg as FigureCanvas,
+    NavigationToolbar2QT as NavigationToolbar,
+)
 from matplotlib.figure import Figure
 
 
@@ -59,26 +61,32 @@ class PlotWindow(QtWidgets.QMainWindow):
             self.line_x1hat = None
             self.line_x2hat = None
 
-        # ====== SETPOINT LINE (REF) ======
+        # ====== SETPOINT STEP LINE ======
+        # akan diisi di resetPlot()
         self.ref_line1 = None
         self.ref_line2 = None
+
         if (self.ref_axis == 1) and (self.ref_value is not None):
-            self.ref_line1 = self.ax1.axhline(
-                self.ref_value, linestyle="--", color="gray", label="Setpoint"
+            self.ref_line1, = self.ax1.plot(
+                [], [], ":", color="gray", label="Setpoint"
             )
         elif (self.ref_axis == 2) and (self.ref_value is not None):
-            self.ref_line2 = self.ax2.axhline(
-                self.ref_value, linestyle="--", color="gray", label="Setpoint"
+            self.ref_line2, = self.ax2.plot(
+                [], [], ":", color="gray", label="Setpoint"
             )
 
         # Legend setelah semua line dibuat
         self.ax1.legend()
         self.ax2.legend()
 
-        # Layout
+        # ====== TOOLBAR (save / zoom / pan) ======
         central = QtWidgets.QWidget()
         layout = QtWidgets.QVBoxLayout(central)
+
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
+
         self.setCentralWidget(central)
 
         self.resetPlot()
@@ -90,20 +98,33 @@ class PlotWindow(QtWidgets.QMainWindow):
         self.x1hat_data.clear()
         self.x2hat_data.clear()
 
-        self.line_x1.set_data([], [])
-        self.line_x2.set_data([], [])
+        # Mulai dengan dummy point di t = -1 supaya transisi dari 0 kelihatan
+        self.line_x1.set_data([-1.0], [0.0])
+        self.line_x2.set_data([-1.0], [0.0])
 
         if self.line_x1hat is not None:
-            self.line_x1hat.set_data([], [])
-            self.line_x2hat.set_data([], [])
+            self.line_x1hat.set_data([-1.0], [0.0])
+            self.line_x2hat.set_data([-1.0], [0.0])
 
-        # X fixed dari 0 sampai x_max (durasi simulasi)
-        self.ax1.set_xlim(0, self.x_max)
-        self.ax2.set_xlim(0, self.x_max)
+        # X fixed dari -1 sampai x_max (durasi simulasi)
+        self.ax1.set_xlim(-1.0, self.x_max)
+        self.ax2.set_xlim(-1.0, self.x_max)
 
-        # initial Y
-        self.ax1.set_ylim(-1, 1)
-        self.ax2.set_ylim(-1, 1)
+        # initial Y (akan di-autoscale setelah data masuk)
+        self.ax1.set_ylim(-1.0, 1.0)
+        self.ax2.set_ylim(-1.0, 1.0)
+
+        # ====== SET DATA STEP SETPOINT ======
+        # bentuk: 0 utk t<0, lalu loncat ke ref_value di t=0
+        if (self.ref_value is not None) and (self.ref_axis in (1, 2)):
+            t_ref = [-1.0, 0.0, 0.0, self.x_max]
+            y0 = 0.0
+            y_ref = [y0, y0, self.ref_value, self.ref_value]
+
+            if self.ref_axis == 1 and self.ref_line1 is not None:
+                self.ref_line1.set_data(t_ref, y_ref)
+            elif self.ref_axis == 2 and self.ref_line2 is not None:
+                self.ref_line2.set_data(t_ref, y_ref)
 
         self.canvas.draw_idle()
 
@@ -126,7 +147,7 @@ class PlotWindow(QtWidgets.QMainWindow):
             self.line_x1hat.set_data(self.t_data, self.x1hat_data)
             self.line_x2hat.set_data(self.t_data, self.x2hat_data)
 
-        # X TIDAK DI-AUTOSCALE lagi, tetap 0..x_max
+        # X TETAP fixed di [-1, x_max]; tidak diubah di sini
 
         # autoscale Y state 1
         y1_vals = self.x1_data.copy()
