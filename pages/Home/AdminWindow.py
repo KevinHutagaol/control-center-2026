@@ -6,9 +6,14 @@ from PyQt5.QtWidgets import QMainWindow
 from matplotlib import pyplot as plt
 
 from pages.Home.installerUtils import resource_path
-from pages.Modul4.mainCDRL import exec_CDRL
+
+from pages.Modul2.MainModul2 import launch_modul2
+from pages.Modul3.mainCDRL import exec_CDRL
+from pages.Modul4.MainModul4 import launch_modul4
 from pages.Modul5.mainCDFR import exec_CDFR
+from pages.Modul6.mainSSM import exec_SSM
 from pages.Modul7.mainCOD import exec_COD
+from pages.Modul8.mainDCOD import exec_DCOD
 from pages.Modul910.mainDMMCD import exec_DMMCD
 
 from pages.Home.UI_home.ui_Admin import Ui_MainWindow
