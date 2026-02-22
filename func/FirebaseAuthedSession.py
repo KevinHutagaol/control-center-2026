@@ -10,11 +10,13 @@ class FirebaseAuthedSession(requests.Session):
         self.api_key = api_key
         self.refresh_token = None
         self.id_token = None
+        self.uid = None
         self.expires_at = 0
 
-    def set_credentials(self, refresh_token: str, id_token: str, expires_in: int = 3600):
+    def set_credentials(self, refresh_token: str, id_token: str, uid: str, expires_in: int = 3600):
         self.refresh_token = refresh_token
         self.id_token = id_token
+        self.uid = uid
         self.expires_at =  time.time() + expires_in - 60
 
     def refresh_id_token(self):
