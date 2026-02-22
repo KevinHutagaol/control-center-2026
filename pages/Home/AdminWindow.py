@@ -1,21 +1,24 @@
 import os
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QMainWindow
 from matplotlib import pyplot as plt
 
-from pages.Home.Login import Login
 from pages.Home.installerUtils import resource_path
 from pages.Modul4.mainCDRL import exec_CDRL
 from pages.Modul5.mainCDFR import exec_CDFR
 from pages.Modul7.mainCOD import exec_COD
 from pages.Modul910.mainDMMCD import exec_DMMCD
 
+from pages.Home.UI_home.ui_Admin import Ui_MainWindow
 
-class AdminWindow(QMainWindow):
+class AdminWindow(QMainWindow, Ui_MainWindow):
+    sig_logout_clicked = pyqtSignal(QMainWindow)
+
     def __init__(self, npm, nama, role):
         super().__init__()
-        uic.loadUi(resource_path("pages/Home/UI_home/Admin.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("Control Practicum Center - Admin")
         self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
         kelompok = 999
@@ -66,7 +69,7 @@ class AdminWindow(QMainWindow):
 
         self._children = {}
 
-        self.LogOut.clicked.connect(self.logout)
+        self.LogOut.clicked.connect(lambda: self.sig_logout_clicked.emit(self))
 
         self.show()
 
@@ -115,60 +118,6 @@ class AdminWindow(QMainWindow):
 
         w.destroyed.connect(lambda: self._children.pop(key, None))
 
-    def logout(self):
-        """Logout the current user: close child windows, clear session variables
-        and show the Login window.
-        """
-        # optional confirmation
-        try:
-            resp = QMessageBox.question(self, "Logout", "Are you sure you want to logout?",
-                                        QMessageBox.Yes | QMessageBox.No)
-            if resp != QMessageBox.Yes:
-                return
-        except Exception:
-            # if QMessageBox fails for some reason, proceed with logout
-            pass
-
-        # Close any child windows we opened
-        try:
-            for key, w in list(self._children.items()):
-                try:
-                    if w is not None:
-                        w.close()
-                except Exception:
-                    pass
-            self._children.clear()
-        except Exception:
-            pass
-
-        # Clear visible labels
-        for attr_name in ("WelcomeText", "WelcomeText2", "Kelompok", "Kelompok2"):
-            try:
-                if hasattr(self, attr_name):
-                    getattr(self, attr_name).setText("")
-            except Exception:
-                pass
-
-        # Clear stored session attributes
-        for a in ("npm", "nama", "role", "kelompok"):
-            if hasattr(self, a):
-                try:
-                    setattr(self, a, None)
-                except Exception:
-                    pass
-
-        # Show login window again
-        try:
-            self.login_window = Login()
-            self.login_window.show()
-        except Exception as e:
-            print("Failed to open Login window on logout:", e)
-
-        # Close this main window
-        try:
-            self.close()
-        except Exception:
-            pass
 
     def generate_charts(self, npm=None, doc_data=None, out_dir="NilaiAdmin"):
         import numpy as np
