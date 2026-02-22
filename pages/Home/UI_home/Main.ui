@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(255, 0, 0);</string>
+    <string notr="true">background-color: rgb(8, 29, 56);</string>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
@@ -33,7 +33,7 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 0, 0);</string>
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -62,8 +62,11 @@
            <height>100</height>
           </size>
          </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
          <property name="styleSheet">
-          <string notr="true">image: url(:/Asset/Asset/Logo Putih.png);</string>
+          <string notr="true">image: url(:/Asset/Asset/Logo Controllab 2026.png);</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
@@ -239,6 +242,9 @@ QPushButton:hover {
        <number>0</number>
       </property>
       <widget class="QWidget" name="PracticumPage">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(8, 29, 56);</string>
+       </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QFrame" name="frame_32">
@@ -270,7 +276,7 @@ QPushButton:hover {
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 0, 0);
+              <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;
 border-top-right-radius: 0px;
 border-bottom-right-radius: 0px;</string>
@@ -313,7 +319,7 @@ font-family: &quot;SF Pro Display&quot;;
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 0, 0);
+              <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;
 border-top-left-radius: 0px;
 border-bottom-left-radius: 0px;</string>
@@ -433,7 +439,7 @@ QPushButton:hover {
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="CDRootLocus">
+                   <widget class="QPushButton" name="FreqResponse">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                       <horstretch>0</horstretch>
@@ -569,7 +575,7 @@ QPushButton:hover {
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="DCOD">
+                   <widget class="QPushButton" name="DiscreteCOD">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                       <horstretch>0</horstretch>
@@ -655,7 +661,7 @@ QPushButton:hover {
               <cursorShape>ArrowCursor</cursorShape>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>2</number>
              </property>
              <widget class="QWidget" name="FirstPage">
               <property name="styleSheet">
@@ -688,7 +694,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_6">
                     <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 0, 0);
+                     <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;</string>
                     </property>
                     <property name="frameShape">
@@ -842,7 +848,7 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/FreqResp.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/VPID.png);</string>
                        </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
@@ -927,7 +933,7 @@ border-radius : 5px;</string>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
- 		background-color: rgba(0, 255, 0, 255);
+ 		background-color: rgba(255, 220, 50, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -943,7 +949,7 @@ border-radius : 5px;</string>
 /* Saat mouse hover */
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
-    background-color: rgba(0, 200, 0, 225);
+    background-color: rgba(222, 191, 42, 225);
 }</string>
                        </property>
                        <property name="text">
@@ -965,7 +971,7 @@ QPushButton:hover {
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="RunFreq">
+                      <widget class="QPushButton" name="RunCDRL">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                          <horstretch>0</horstretch>
@@ -983,7 +989,7 @@ QPushButton:hover {
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
- 		background-color: rgba(0, 255, 0, 255);
+ 		background-color: rgba(255, 220, 50, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -999,7 +1005,7 @@ QPushButton:hover {
 /* Saat mouse hover */
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
-    background-color: rgba(0, 200, 0, 225);
+    background-color: rgba(222, 191, 42, 225);
 }</string>
                        </property>
                        <property name="text">
@@ -1028,7 +1034,7 @@ QPushButton:hover {
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="CDRootLocusPage">
+             <widget class="QWidget" name="FreqResponsePage">
               <layout class="QVBoxLayout" name="verticalLayout_9">
                <item>
                 <widget class="QFrame" name="frame_24">
@@ -1064,7 +1070,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_25">
                     <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 0, 0);
+                     <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;</string>
                     </property>
                     <property name="frameShape">
@@ -1186,7 +1192,7 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/VPID.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/FreqResp.png);</string>
                        </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
@@ -1247,7 +1253,7 @@ border-radius : 5px;</string>
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="RunCDRL">
+                      <widget class="QPushButton" name="RunFreq">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                          <horstretch>0</horstretch>
@@ -1265,7 +1271,7 @@ border-radius : 5px;</string>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
- 		background-color: rgba(0, 255, 0, 255);
+ 		background-color: rgba(255, 220, 50, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -1281,7 +1287,7 @@ border-radius : 5px;</string>
 /* Saat mouse hover */
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
-    background-color: rgba(0, 200, 0, 225);
+    background-color: rgba(222, 191, 42, 225);
 }</string>
                        </property>
                        <property name="text">
@@ -1356,7 +1362,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_37">
                     <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 0, 0);
+                     <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;</string>
                     </property>
                     <property name="frameShape">
@@ -1547,7 +1553,7 @@ border-radius : 5px;</string>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
- 		background-color: rgba(0, 255, 0, 255);
+ 		background-color: rgba(255, 220, 50, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -1563,7 +1569,7 @@ border-radius : 5px;</string>
 /* Saat mouse hover */
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
-    background-color: rgba(0, 200, 0, 225);
+    background-color: rgba(222, 191, 42, 225);
 }</string>
                        </property>
                        <property name="text">
@@ -1592,7 +1598,7 @@ QPushButton:hover {
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="StateSpacePage">
+             <widget class="QWidget" name="StateSpaceModelAndDesignPage">
               <layout class="QVBoxLayout" name="verticalLayout_15">
                <item>
                 <widget class="QFrame" name="frame_52">
@@ -1648,7 +1654,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_55">
                     <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 0, 0);
+                     <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;</string>
                     </property>
                     <property name="frameShape">
@@ -1826,7 +1832,7 @@ border-radius : 5px;</string>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
- 		background-color: rgba(0, 255, 0, 255);
+ 		background-color: rgba(255, 220, 50, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -1842,7 +1848,7 @@ border-radius : 5px;</string>
 /* Saat mouse hover */
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
-    background-color: rgba(0, 200, 0, 225);
+    background-color: rgba(222, 191, 42, 225);
 }</string>
                        </property>
                        <property name="text">
@@ -1871,7 +1877,7 @@ QPushButton:hover {
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="CODPage">
+             <widget class="QWidget" name="ShouldBeEmptyPage">
               <layout class="QVBoxLayout" name="verticalLayout_18">
                <item>
                 <widget class="QFrame" name="frame_65">
@@ -1937,7 +1943,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_68">
                     <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 0, 0);
+                     <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;</string>
                     </property>
                     <property name="frameShape">
@@ -2108,7 +2114,7 @@ border-radius : 5px;</string>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
- 		background-color: rgba(0, 255, 0, 255);
+ 		background-color: rgba(255, 220, 50, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -2124,7 +2130,7 @@ border-radius : 5px;</string>
 /* Saat mouse hover */
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
-    background-color: rgba(0, 200, 0, 225);
+    background-color: rgba(222, 191, 42, 225);
 }</string>
                        </property>
                        <property name="text">
@@ -2153,7 +2159,7 @@ QPushButton:hover {
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="DCODPage">
+             <widget class="QWidget" name="DiscreteCDPage">
               <layout class="QVBoxLayout" name="verticalLayout_21">
                <item>
                 <widget class="QFrame" name="frame_78">
@@ -2229,7 +2235,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_81">
                     <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 0, 0);
+                     <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;</string>
                     </property>
                     <property name="frameShape">
@@ -2390,7 +2396,7 @@ border-radius : 5px;</string>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
- 		background-color: rgba(0, 255, 0, 255);
+ 		background-color: rgba(255, 220, 50, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -2406,7 +2412,7 @@ border-radius : 5px;</string>
 /* Saat mouse hover */
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
-    background-color: rgba(0, 200, 0, 225);
+    background-color: rgba(222, 191, 42, 225);
 }</string>
                        </property>
                        <property name="text">
@@ -2435,7 +2441,7 @@ QPushButton:hover {
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="MotorPage">
+             <widget class="QWidget" name="DCMotorModelAndDesignPage">
               <layout class="QVBoxLayout" name="verticalLayout_24">
                <item>
                 <widget class="QFrame" name="frame_91">
@@ -2521,7 +2527,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_94">
                     <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 0, 0);
+                     <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;</string>
                     </property>
                     <property name="frameShape">
@@ -2672,7 +2678,7 @@ border-radius : 5px;</string>
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QPushButton {
- 		background-color: rgba(0, 255, 0, 255);
+ 		background-color: rgba(255, 220, 50, 255);
 		border-color: rgb(255, 255, 255);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -2688,7 +2694,7 @@ border-radius : 5px;</string>
 /* Saat mouse hover */
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
-    background-color: rgba(0, 200, 0, 225);
+    background-color: rgba(222, 191, 42, 225);
 }</string>
                        </property>
                        <property name="text">
@@ -2762,7 +2768,7 @@ QPushButton:hover {
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 0, 0);
+              <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;
 border-top-right-radius: 0px;
 border-bottom-right-radius: 0px;</string>
@@ -2805,7 +2811,7 @@ font-family: &quot;SF Pro Display&quot;;
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 0, 0);
+              <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;
 border-top-left-radius: 0px;
 border-bottom-left-radius: 0px;</string>
@@ -2926,7 +2932,7 @@ font-family: &quot;SF Pro Display&quot;;
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 0, 0);
+ 		background-color: rgb(8, 29, 56);
 		border-color: rgb(255, 0,0);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -2960,7 +2966,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 0, 0);
+ 		background-color: rgb(8, 29, 56);
 		border-color: rgb(255, 0,0);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -2994,7 +3000,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 0, 0);
+ 		background-color: rgb(8, 29, 56);
 		border-color: rgb(255, 0,0);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -3028,7 +3034,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 0, 0);
+ 		background-color: rgb(8, 29, 56);
 		border-color: rgb(255, 0,0);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -3062,7 +3068,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 0, 0);
+ 		background-color: rgb(8, 29, 56);
 		border-color: rgb(255, 0,0);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -3096,7 +3102,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 0, 0);
+ 		background-color: rgb(8, 29, 56);
 		border-color: rgb(255, 0,0);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -3130,7 +3136,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 0, 0);
+ 		background-color: rgb(8, 29, 56);
 		border-color: rgb(255, 0,0);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -3164,7 +3170,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 0, 0);
+ 		background-color: rgb(8, 29, 56);
 		border-color: rgb(255, 0,0);
 		border-radius : 2px;
 		color: rgb(255, 255, 255);
@@ -3312,7 +3318,7 @@ QPushButton:hover {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
- 		background-color: rgb(255, 0, 0);
+ 		background-color: rgb(8, 29, 56);
 		border-color: rgb(255, 0,0);
 		border-radius : 5px;
 		color: rgb(255, 255, 255);
@@ -3379,7 +3385,7 @@ QPushButton:hover {
   </widget>
  </widget>
  <resources>
-  <include location="../../../../ControlCenter/resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
 </ui>
