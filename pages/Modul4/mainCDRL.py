@@ -12,7 +12,6 @@ import json
 import hashlib
 from pathlib import Path
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QPushButton, QGraphicsDropShadowEffect, QWidget
-from PyQt5 import uic
 from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtGui import QCursor, QColor, QIcon
 import sympy as sp
@@ -29,6 +28,11 @@ from google.cloud import firestore
 
 
 import pages.Modul4.Asset.Resource
+
+from pages.Modul4.ui.ui_MainNoHD import Ui_MainWindow as Ui_MainNoHD
+from pages.Modul4.ui.ui_PIDparam import Ui_MainWindow as Ui_PIDparam
+from pages.Modul4.ui.ui_ReferencePoint import Ui_MainWindow as Ui_ReferencePoint
+from pages.Modul4.ui.ui_TransferFunction import Ui_MainWindow as Ui_TransferFunction
 
 def resource_path(rel: str | Path) -> str:
     """
@@ -132,203 +136,14 @@ class HoverButton(QPushButton):
         super().leaveEvent(event)
 
 
-class Leaderboard(QMainWindow):
-    def __init__(self):
-        super(Leaderboard, self).__init__()
-        screen = QApplication.primaryScreen()
-        screen_rect = screen.geometry()
-        screen_width = screen_rect.width()
-        screen_height = screen_rect.height()
-        ui_file = resource_path("ui/Leaderboard.ui" if screen_width >= 1920 and screen_height >= 1080 else "ui/LeaderboardNoHD.ui")
-        uic.loadUi(ui_file, self)
-        self.setWindowTitle("Root Locus Controller Design")
-        self.setWindowIcon(QIcon(resource_path("Asset/Logo Control.png")))
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-        self.last_data_snapshot = None
-        # buat direktori Hasil jika belum ada
-        if not os.path.exists("Hasil"):
-            os.makedirs("Hasil")
-        self.auto_grade("Hasil/graded_results.csv")
-        self.start_auto_update(output_csv="Hasil/graded_results.csv")
-        self.show()
 
-    def start_auto_update(self, output_csv):
-        self.timer = QTimer()
-        self.timer.timeout.connect(lambda: self.check_and_update(output_csv))
-        self.timer.start(5000)  # Cek setiap 5 detik
-
-    def fetch_firestore_data(self):
-        """
-        Ambil semua dokumen di collection modul4 dan kembalikan dict {docid: docdict}
-        """
-        # TODO: FIX DATABASE
-        # try:
-        #     docs = db.collection("Modul4").stream()
-        # except Exception as e:
-        #     print("Error fetching Firestore data:", e)
-        #     return {}
-        data = {}
-        # for doc in docs:
-        #     try:
-        #         data[doc.id] = doc.to_dict()
-        #     except Exception:
-        #         data[doc.id] = {}
-        return data
-
-    def check_and_update(self, output_csv):
-        new_data = self.fetch_firestore_data()
-        if self.data_changed(new_data):
-            self.last_data_snapshot = new_data
-            self.auto_grade(output_csv)
-
-    def data_changed(self, new_data):
-        if self.last_data_snapshot is None:
-            return True
-        old_hash = hashlib.md5(json.dumps(self.last_data_snapshot, sort_keys=True).encode()).hexdigest()
-        new_hash = hashlib.md5(json.dumps(new_data, sort_keys=True).encode()).hexdigest()
-        return old_hash != new_hash
-
-    def auto_grade(self, output_csv):
-        data = self.fetch_firestore_data()
-        if not data:
-            # kalau kosong, set tampilan default (kosong)
-            print("No data in  Modul collection yet.")
-            return
-
-        extracted_data = []
-        for id_number, details in data.items():
-            if isinstance(details, dict) and ("avg_error" in details or "Avg error" in details):
-                # support both field name variants just in case
-                avg = details.get("avg_error", details.get("Avg error"))
-                extracted_data.append({"NPM": id_number, "Avg error": avg, "Nama": details.get("nama", details.get("Nama", ""))})
-
-        if not extracted_data:
-            print("No valid 'avg_error' fields in modul4 documents.")
-            return
-
-        df = pd.DataFrame(extracted_data)
-        df["Avg error"] = pd.to_numeric(df["Avg error"], errors='coerce')
-        df = df.dropna()
-        if df.empty:
-            print("All avg_error entries invalid.")
-            return
-
-        # --- GRADING ---
-        min_error = df["Avg error"].min()
-        max_error = df["Avg error"].max()
-        if min_error == max_error:
-            df["Grade"] = 100
-        else:
-            df["Grade"] = 60 + (40 * np.exp(-2 * (df["Avg error"] - min_error) / (max_error - min_error)))
-        df["Grade"] = df["Grade"].round(2)
-        df[["NPM", "Grade"]].to_csv(output_csv, index=False)
-
-        # --- COUNT submitted / not submitted ---
-        submitted = len(df)
-        not_submitted = max(TOTAL_STUDENT - submitted, 0)
-
-        # --- DONUT CHART (Submitted vs Not Submitted dari TOTAL_STUDENT tetap) ---
-        percent = (submitted / TOTAL_STUDENT) * 100 if TOTAL_STUDENT > 0 else 0
-        sizes = [submitted, not_submitted]
-        colors = ['white', (0, 0, 0, 0.2)]
-
-        fig, ax = plt.subplots(figsize=(6, 6), facecolor='none')
-        wedges, _ = ax.pie(
-            sizes,
-            labels=None,
-            startangle=90,
-            counterclock=False,
-            colors=colors,
-            wedgeprops=dict(width=0.3, edgecolor='white')
-        )
-
-        ax.text(0, 0, f"{percent:.1f}%",
-                color='white',
-                fontsize=50,
-                fontweight='bold',
-                ha='center',
-                va='center')
-        ax.set_facecolor('none')
-        plt.setp(wedges, linewidth=0)
-        plt.tight_layout()
-        # plt.savefig("Hasil/submission_donut.png", transparent=True)
-
-        # update UI elements (as in original)
-        try:
-            self.Donut.setStyleSheet(f"border-image: url(Hasil/submission_donut.png);")
-            self.Donut.repaint()
-        except Exception:
-            # jika widget tidak ada, abaikan
-            pass
-
-        # --- TOP 10 ---
-        top10 = df.sort_values("Grade", ascending=False).head(10).reset_index(drop=True)
-        colors = ['gold', 'silver', '#cd7f32'] + ['white'] * 7
-        scales = [1.3, 1.2, 1.1] + [1.0] * 7
-        top10 = top10[::-1].reset_index(drop=True)
-        colors = colors[::-1]
-        scales = scales[::-1]
-
-        plt.figure(figsize=(13, 8.3), facecolor='none')
-        spacing = 0.3
-        y_positions = []
-        current_y = 0
-        for scale in scales:
-            y_positions.append(current_y)
-            current_y += scale + spacing
-
-        bars = []
-        for i in range(len(top10)):
-            bar = plt.barh(
-                y=y_positions[i],
-                width=top10["Grade"].iloc[i] - 90,
-                height=scales[i],
-                left=90 + 0.2,
-                color=colors[i]
-            )
-            bars.append(bar[0])
-
-        plt.ylim(-0.5, current_y)
-        plt.xlim(90, 100)
-        ax2 = plt.gca()
-        ax2.set_facecolor('none')
-        for spine in ['top', 'right', 'bottom']:
-            ax2.spines[spine].set_visible(False)
-        ax2.spines['left'].set_color('white')
-        ax2.spines['left'].set_linewidth(5)
-        plt.xticks([])
-        plt.yticks([])
-
-        for i, bar in enumerate(bars):
-            width = bar.get_width()
-            y_center = bar.get_y() + bar.get_height() / 2
-            Nama = top10["Nama"].iloc[i]
-            grade = top10["Grade"].iloc[i]
-            color = 'white' if (9 - i) < 3 else 'black'
-            font_scale = scales[i]
-            plt.text(90 + 0.2 + width - 0.3, y_center,
-                     f'{Nama} - {grade:.2f}',
-                     va='center', ha='right',
-                     color=color, fontsize=10 * font_scale,
-                     fontweight='bold')
-
-        plt.tight_layout()
-        # plt.savefig("Hasil/top10_grades.png", transparent=True)
-
-        try:
-            self.TopTen.setStyleSheet(f"border-image: url(Hasil/top10_grades.png);")
-            self.TopTen.repaint()
-        except Exception:
-            pass
-
-
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Ui_MainNoHD):
     def __init__(self, Nama, NPM):
         super(MainWindow, self).__init__()
 
         # print("Loading UI from:", resource_path("ui/MainNoHD.ui"))
 
-        uic.loadUi(resource_path("ui/MainNoHD.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("Practicum Software : Virtual PID")
         self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
         self.Nama = Nama
@@ -639,10 +454,10 @@ class MainWindow(QMainWindow):
 
 
 
-class PID(QMainWindow):
+class PID(QMainWindow, Ui_PIDparam):
     def __init__(self, main_window):
         super(PID, self).__init__()
-        uic.loadUi(resource_path("ui/PIDparam.ui"), self)
+        self.setupUi(self)
         self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
         self.setWindowTitle("PID Parameter")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
@@ -673,10 +488,10 @@ class PID(QMainWindow):
         self.close()
 
 
-class References(QMainWindow):
+class References(QMainWindow, Ui_ReferencePoint):
     def __init__(self, main_window):
         super(References, self).__init__()
-        uic.loadUi(resource_path("ui/ReferencePoint.ui"), self)
+        self.setupUi(self)
         self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
         self.setWindowTitle("Reference Point")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
@@ -704,10 +519,10 @@ class References(QMainWindow):
         self.close()
 
 
-class TransferFunction(QMainWindow):
+class TransferFunction(QMainWindow, Ui_TransferFunction):
     def __init__(self, main_window):
         super(TransferFunction, self).__init__()
-        uic.loadUi(resource_path("ui/TransferFunction.ui"), self)
+        self.setupUi(self)
         self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
         self.setWindowTitle("System Transfer Function")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
@@ -722,7 +537,7 @@ class TransferFunction(QMainWindow):
 
 def exec_CDRL(nama, npm):
     app = QApplication.instance() or QApplication(sys.argv)
-    window = Leaderboard() if npm == ADMIN_NPM else MainWindow(nama, npm)
+    window = MainWindow(nama, npm)
     window.show()
     
     # do NOT call app.exec_() here when launched from the main app

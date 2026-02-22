@@ -42,3 +42,5 @@ pages/Modul2
 
 # Test files
 *test*.py
+
+serviceAccountKey.json

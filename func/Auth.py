@@ -157,8 +157,8 @@ def getFirebaseId(url, data):
         return False
 
     print("Login Success")
-    print("Firebase ID Token:", data['idToken'])
-    print("Refresh Token:", data['refreshToken'])
+    # print("Firebase ID Token:", data['idToken'])
+    # print("Refresh Token:", data['refreshToken'])
     authed_session.set_credentials(data['refreshToken'], data['idToken'], int(float(data['expiresIn'])))
 
     return True

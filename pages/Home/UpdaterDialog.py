@@ -3,7 +3,7 @@ import time
 from PyQt5.QtWidgets import QDialog, QLabel, QProgressBar, QTextEdit, QPushButton, QHBoxLayout, QVBoxLayout, \
     QApplication
 
-from pages.Home.main import DownloadWorker
+from pages.Home.DownloadWorker import DownloadWorker
 
 
 class UpdaterDialog(QDialog):

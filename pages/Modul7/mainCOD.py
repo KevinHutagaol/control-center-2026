@@ -7,13 +7,20 @@ from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QMainWindow, QMessag
 from PyQt5.QtGui import QIcon
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5 import uic
 from pathlib import Path
 
 from pages.Modul7.problems import problem_set
 from pages.Modul7.session import session
 from pages.Modul7.ss_controller_plot import simulate_and_plot
 import pages.Modul7.UI.resource
+
+from pages.Modul7.UI.ui_Main import Ui_MainWindow as Ui_Main
+from pages.Modul7.UI.ui_Amatrix import Ui_MainWindow as Ui_AMatrix
+from pages.Modul7.UI.ui_Bmatrix import Ui_MainWindow as Ui_BMatrix
+from pages.Modul7.UI.ui_Cmatrix import Ui_MainWindow as Ui_CMatrix
+from pages.Modul7.UI.ui_Dmatrix import Ui_MainWindow as Ui_DMatrix
+from pages.Modul7.UI.ui_Controller import Ui_MainWindow as Ui_Controller
+from pages.Modul7.UI.ui_PreGain import Ui_MainWindow as Ui_PreGain
 
 def resource_path(rel: str) -> str:
     """
@@ -50,7 +57,6 @@ def resource_path(rel: str) -> str:
     # fallback: return the first candidate even if missing (caller can handle)
     return str(candidates[0])
 
-FIREBASE_BASE_URL = "https://state-space-controller-design-default-rtdb.firebaseio.com/"
 
 def center_widget(widget):
     qr = widget.frameGeometry()
@@ -77,50 +83,16 @@ def mae(user_matrix, correct_matrix):
     diff = np.abs(user_matrix - correct_matrix)
     return np.mean(diff)
 
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Ui_Main):
     def __init__(self):
         super(MainWindow, self).__init__()
-        uic.loadUi(resource_path("UI/Main.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("State Space Controller Design")
         self.setMinimumSize(1280, 720)
         self.setMaximumSize(1280, 720)
-        npm = session.get("npm")
-        if npm:
-            npm = npm.strip()
-            print(npm)
-        else:
-            print("No npm variable here!")
-        response = requests.get(FIREBASE_BASE_URL + f"students/{npm}.json")
-        
-        if response.status_code == 200:
-            user_data = response.json()
 
-            if user_data:  # Check if user exists
-                print("User exists! Proceed.")
-                session["npm"] = npm
-
-                # Check if problem_set already exists
-                if "problem_set" not in user_data:
-                    selected_problem = random.randint(1, 10)
-                    update_url = FIREBASE_BASE_URL + f"students/{npm}/problem_set.json"
-                    requests.put(update_url, json=selected_problem)
-                    session["problem_set"] = selected_problem
-                    print(f"Assigned problem set {selected_problem}")
-                else:
-                    existing_problem = user_data["problem_set"]
-                    session["problem_set"] = existing_problem
-                    print(f"User already has problem set: {existing_problem}")
-
-            else:
-                print("User not found!")
-                QMessageBox.warning(None, "Warning", "User not found!")
-
-        else:
-            print("Failed to connect to Firebase!")
-            QMessageBox.critical(None, "Error", "Unable to connect to Firebase.")
-
-        self.label_1.setText(str(problem_set[session["problem_set"]]["spec-1"]))
-        self.label_2.setText(str(problem_set[session["problem_set"]]["spec-2"]))
+        # self.label_1.setText(str(problem_set[session["problem_set"]]["spec-1"]))
+        # self.label_2.setText(str(problem_set[session["problem_set"]]["spec-2"]))
 
         self.open_windows = []  # Keep a list of opened matrix windows
 
@@ -175,27 +147,6 @@ class MainWindow(QMainWindow):
         session["runSim"] = True
         QMessageBox.information(None, "Info", "Successful!")
 
-        if R_user is not None or N_user is not None:
-            if R_user is not None:
-                R_mae = mae(R_user, problem_set[session["problem_set"]]["R"])
-                R_acc = mae_percentage_accuracy(R_user, problem_set[session["problem_set"]]["R"])
-                # Update R_user data in Firebase
-                update_url = FIREBASE_BASE_URL + f"students/{session['npm']}/R_user.json"
-                requests.put(update_url, json=R_user.tolist())
-
-                # Update R_mae and R_acc
-                requests.put(FIREBASE_BASE_URL + f"students/{session['npm']}/R_mae.json", json=R_mae)
-                requests.put(FIREBASE_BASE_URL + f"students/{session['npm']}/R_acc.json", json=R_acc)
-            if N_user is not None:
-                N_mae = mae(np.array(N_user).reshape(-1, 1), problem_set[session["problem_set"]]["N"])
-                N_acc = mae_percentage_accuracy(np.array(N_user).reshape(-1, 1), problem_set[session["problem_set"]]["N"])
-                # Update N_user data in Firebase
-                update_url = FIREBASE_BASE_URL + f"students/{session['npm']}/N_user.json"
-                requests.put(update_url, json=N_user)
-
-                # Update N_mae and N_acc
-                requests.put(FIREBASE_BASE_URL + f"students/{session['npm']}/N_mae.json", json=N_mae)
-                requests.put(FIREBASE_BASE_URL + f"students/{session['npm']}/N_acc.json", json=N_acc)
 
     def run_simulation(self):
         R_user = session.get("R_user")
@@ -207,10 +158,10 @@ class MainWindow(QMainWindow):
         else:
             QMessageBox.warning(None, "Warning", "Please run the simulation.")
 
-class AMatrix(QMainWindow):
+class AMatrix(QMainWindow, Ui_AMatrix):
     def __init__(self):
         super(AMatrix, self).__init__()
-        uic.loadUi(resource_path("UI/Amatrix.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("A Matrix")
         self.setFixedSize(220, 220)
         A = problem_set[session["problem_set"]]["A"]
@@ -224,10 +175,10 @@ class AMatrix(QMainWindow):
         self.a32.setText(str(A[2][1]))
         self.a33.setText(str(A[2][2]))
 
-class BMatrix(QMainWindow):
+class BMatrix(QMainWindow, Ui_BMatrix):
     def __init__(self):
         super(BMatrix, self).__init__()
-        uic.loadUi(resource_path("UI/Bmatrix.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("B Matrix")
         self.setFixedSize(220, 220)
         B = problem_set[session["problem_set"]]["B"]
@@ -235,10 +186,10 @@ class BMatrix(QMainWindow):
         self.b21.setText(str(B[1][0]))
         self.b31.setText(str(B[2][0]))
 
-class CMatrix(QMainWindow):
+class CMatrix(QMainWindow, Ui_CMatrix):
     def __init__(self):
         super(CMatrix, self).__init__()
-        uic.loadUi(resource_path("UI/Cmatrix.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("C Matrix")
         self.setFixedSize(220, 220)
         C = problem_set[session["problem_set"]]["C"]
@@ -246,19 +197,19 @@ class CMatrix(QMainWindow):
         self.c12.setText(str(C[0][1]))
         self.c13.setText(str(C[0][2]))
 
-class DMatrix(QMainWindow):
+class DMatrix(QMainWindow, Ui_DMatrix):
     def __init__(self):
         super(DMatrix, self).__init__()
-        uic.loadUi(resource_path("UI/Dmatrix.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("D Matrix")
         self.setFixedSize(220, 220)
         D = problem_set[session["problem_set"]]["D"]
         self.d.setText(str(D[0][0]))
 
-class Controller(QMainWindow):
+class Controller(QMainWindow, Ui_Controller):
     def __init__(self):
         super(Controller, self).__init__()
-        uic.loadUi(resource_path("UI/Controller.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("Controller")
         self.setFixedSize(548, 207)
 
@@ -296,10 +247,10 @@ class Controller(QMainWindow):
             self.r13.clear()
 
 
-class PreGain(QMainWindow):
+class PreGain(QMainWindow, Ui_PreGain):
     def __init__(self):
         super(PreGain, self).__init__()
-        uic.loadUi(resource_path("UI/PreGain.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("Pre Gain")
         self.setFixedSize(275, 165) 
 
