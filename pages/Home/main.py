@@ -9,11 +9,13 @@ from firebase_admin import firestore
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-import pages.Home.resources_rc as resources_rc
+import pages.Home.resourcesnew as resources_rc
 
 import func.updaterFunc as updaterFunc 
 
-from pages.Modul4.mainCDRL import exec_CDRL
+from pages.Modul2.MainModul2 import launch_modul2
+from pages.Modul3.mainCDRL import exec_CDRL
+from pages.Modul4.MainModul4 import launch_modul4
 from pages.Modul5.mainCDFR import exec_CDFR
 from pages.Modul6.mainSSM import exec_SSM
 from pages.Modul7.mainCOD import exec_COD
@@ -98,22 +100,21 @@ class MainWindow(QMainWindow):
         self.kelompok = kelompok
 
         self.RootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.RootLocusPage))
+        self.FreqResponse.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.FreqResponsePage))
         self.CDFrequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDFreqPage))
-        self.CDRootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDRootLocusPage))
-        self.CDFrequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDFreqPage))
-        self.StateSpace.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.StateSpacePage))
-        self.COD.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CODPage))
-        self.DCOD.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.DCODPage))
-        self.DCMotor.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.MotorPage))
+        self.StateSpace.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.StateSpaceModelAndDesignPage))
+        self.COD.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.ShouldBeEmptyPage))
+        self.DiscreteCOD.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.DiscreteCDPage))
+        self.DCMotor.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.DCMotorModelAndDesignPage))
 
         self.RunRL.clicked.connect(lambda checked, n=nama, p=npm: self.run_root_locus(n, p))
-        self.RunFreq.clicked.connect(lambda checked, n=nama, p=npm: self.run_frequency_response(n, p))
         self.RunCDRL.clicked.connect(lambda checked,n=nama, p=npm: self.run_cd_root_locus(n, p))
+        self.RunFreq.clicked.connect(lambda checked, n=nama, p=npm: self.run_frequency_response(n, p))
         self.RunCDFreq.clicked.connect(lambda checked, n=nama, p=npm: self.run_cd_frequency_response(n, p))
-        self.RunStateSpace.clicked.connect(lambda checked, n=nama, p=npm: self.run_state_space(n, p))
+        self.RunStateSpace.clicked.connect(lambda checked, n=nama, p=npm: self.run_state_space(n, p)) # RunStateSpace dan RunCOD harusnya di gabung karena modul 67
         self.RunCOD.clicked.connect(lambda checked, n=nama, p=npm: self.run_cod(n, p))
-        self.RunDCOD.clicked.connect(lambda checked, n=nama, p=npm, k=kelompok: self.run_motor(n, p, k))
-        self.RunMotor.clicked.connect(lambda checked, n=nama, p=npm: self.run_dcod(n, p))
+        self.RunDCOD.clicked.connect(lambda checked, n=nama, p=npm, : self.run_dcod(n, p))
+        self.RunMotor.clicked.connect(lambda checked, n=nama, p=npm, k=kelompok: self.run_motor(n, p, k) )
 
         # self.WelcomeText.setText(f"Welcome {nama}!")
         # self.Kelompok.setText(kelompok)
@@ -143,13 +144,21 @@ class MainWindow(QMainWindow):
 
     def run_root_locus(self, nama, npm):
         print("Running Root Locus")
-    
-    def run_frequency_response(self, nama, npm):
-        print("Running Frequency Response")
+        w = launch_modul2()
+        key = f"Modul2-{npm}"
+        self._children[key] = w
+        w.destroyed.connect(lambda: self._children.pop(key, None))
     
     def run_cd_root_locus(self, nama, npm):
         print("Running Controller Design: Root Locus")
         w = exec_CDRL(nama, npm)
+        key = f"Modul3-{npm}"
+        self._children[key] = w
+        w.destroyed.connect(lambda: self._children.pop(key, None))
+    
+    def run_frequency_response(self, nama, npm):
+        print("Running Frequency Response")
+        w = launch_modul4()
         key = f"Modul4-{npm}"
         self._children[key] = w
         w.destroyed.connect(lambda: self._children.pop(key, None))
@@ -1298,7 +1307,7 @@ class Login(QMainWindow):
         password = self.Pass.text().strip().replace(' ', '')
 
         if npm == "12345" and password == "admin123":
-            self.main_window = MainWindow(npm=2206055750, nama="anonymous", role="Assisten", kelompok="X")
+            self.main_window = MainWindow(npm="2206055750", nama="anonymous", role="Assisten", kelompok="X")
             self.main_window.show()
             self.close()
             return
