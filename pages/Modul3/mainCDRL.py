@@ -12,7 +12,6 @@ import json
 import hashlib
 from pathlib import Path
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QPushButton, QGraphicsDropShadowEffect, QWidget
-from PyQt5 import uic
 from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtGui import QCursor, QColor, QIcon
 import sympy as sp
@@ -29,6 +28,11 @@ from google.cloud import firestore
 
 
 import pages.Modul3.Asset.Resource
+
+from pages.Modul4.ui.ui_MainNoHD import Ui_MainWindow as Ui_MainNoHD
+from pages.Modul4.ui.ui_PIDparam import Ui_MainWindow as Ui_PIDparam
+from pages.Modul4.ui.ui_ReferencePoint import Ui_MainWindow as Ui_ReferencePoint
+from pages.Modul4.ui.ui_TransferFunction import Ui_MainWindow as Ui_TransferFunction
 
 def resource_path(rel: str | Path) -> str:
     """
@@ -71,17 +75,17 @@ def resource_path(rel: str | Path) -> str:
     # Fallback: return the first candidate even if missing (caller can handle)
     return str(candidates[0])
 
-
+# TODO: FIX DATABASE
 # === Firestore ===
-try:
-    db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
-
-    print("CDRL: Firebase initialized successfully")
-
-except Exception as e:
-    print("Firebase error:", e)
-    QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
-    sys.exit(1)
+# try:
+#     db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
+#
+#     print("CDRL: Firebase initialized successfully")
+#
+# except Exception as e:
+#     print("Firebase error:", e)
+#     QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
+#     sys.exit(1)
 
 s = symbols('s') 
 
@@ -159,7 +163,7 @@ class Leaderboard(QMainWindow):
 
     def fetch_firestore_data(self):
         """
-        Ambil semua dokumen di collection modul3 dan kembalikan dict {docid: docdict}
+        Ambil semua dokumen di collection modul4 dan kembalikan dict {docid: docdict}
         """
         try:
             docs = db.collection("Modul4").stream()
@@ -202,7 +206,7 @@ class Leaderboard(QMainWindow):
                 extracted_data.append({"NPM": id_number, "Avg error": avg, "Nama": details.get("nama", details.get("Nama", ""))})
 
         if not extracted_data:
-            print("No valid 'avg_error' fields in modul3 documents.")
+            print("No valid 'avg_error' fields in modul4 documents.")
             return
 
         df = pd.DataFrame(extracted_data)
@@ -268,66 +272,13 @@ class Leaderboard(QMainWindow):
         colors = colors[::-1]
         scales = scales[::-1]
 
-        plt.figure(figsize=(13, 8.3), facecolor='none')
-        spacing = 0.3
-        y_positions = []
-        current_y = 0
-        for scale in scales:
-            y_positions.append(current_y)
-            current_y += scale + spacing
-
-        bars = []
-        for i in range(len(top10)):
-            bar = plt.barh(
-                y=y_positions[i],
-                width=top10["Grade"].iloc[i] - 90,
-                height=scales[i],
-                left=90 + 0.2,
-                color=colors[i]
-            )
-            bars.append(bar[0])
-
-        plt.ylim(-0.5, current_y)
-        plt.xlim(90, 100)
-        ax2 = plt.gca()
-        ax2.set_facecolor('none')
-        for spine in ['top', 'right', 'bottom']:
-            ax2.spines[spine].set_visible(False)
-        ax2.spines['left'].set_color('white')
-        ax2.spines['left'].set_linewidth(5)
-        plt.xticks([])
-        plt.yticks([])
-
-        for i, bar in enumerate(bars):
-            width = bar.get_width()
-            y_center = bar.get_y() + bar.get_height() / 2
-            Nama = top10["Nama"].iloc[i]
-            grade = top10["Grade"].iloc[i]
-            color = 'white' if (9 - i) < 3 else 'black'
-            font_scale = scales[i]
-            plt.text(90 + 0.2 + width - 0.3, y_center,
-                     f'{Nama} - {grade:.2f}',
-                     va='center', ha='right',
-                     color=color, fontsize=10 * font_scale,
-                     fontweight='bold')
-
-        plt.tight_layout()
-        # plt.savefig("Hasil/top10_grades.png", transparent=True)
-
-        try:
-            self.TopTen.setStyleSheet(f"border-image: url(Hasil/top10_grades.png);")
-            self.TopTen.repaint()
-        except Exception:
-            pass
-
-
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Ui_MainNoHD):
     def __init__(self, Nama, NPM):
         super(MainWindow, self).__init__()
 
         # print("Loading UI from:", resource_path("ui/MainNoHD.ui"))
 
-        uic.loadUi(resource_path("ui/MainNoHD.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("Practicum Software : Virtual PID")
         self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
         self.Nama = Nama
@@ -484,14 +435,16 @@ class MainWindow(QMainWindow):
         error = (error_Kp + error_Ki + error_Kd) / 3
 
         try:
-            doc_ref = db.collection("Modul4").document(str(self.NPM))
-            doc_ref.set({
-                "error_kp": float(error_Kp),
-                "error_ki": float(error_Ki),
-                "error_kd": float(error_Kd),
-                "avg_error": float(error),
-                "nama": str(self.Nama),
-            })
+            # TODO: FIX DATABASE
+            # doc_ref = db.collection("Modul4").document(str(self.NPM))
+            # doc_ref.set({
+            #     "error_kp": float(error_Kp),
+            #     "error_ki": float(error_Ki),
+            #     "error_kd": float(error_Kd),
+            #     "avg_error": float(error),
+            #     "nama": str(self.Nama),
+            # })
+            pass
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to save to Firestore: {e}")
             return
@@ -636,10 +589,10 @@ class MainWindow(QMainWindow):
 
 
 
-class PID(QMainWindow):
+class PID(QMainWindow, Ui_PIDparam):
     def __init__(self, main_window):
         super(PID, self).__init__()
-        uic.loadUi(resource_path("ui/PIDparam.ui"), self)
+        self.setupUi(self)
         self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
         self.setWindowTitle("PID Parameter")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
@@ -670,10 +623,10 @@ class PID(QMainWindow):
         self.close()
 
 
-class References(QMainWindow):
+class References(QMainWindow, Ui_ReferencePoint):
     def __init__(self, main_window):
         super(References, self).__init__()
-        uic.loadUi(resource_path("ui/ReferencePoint.ui"), self)
+        self.setupUi(self)
         self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
         self.setWindowTitle("Reference Point")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
@@ -701,10 +654,10 @@ class References(QMainWindow):
         self.close()
 
 
-class TransferFunction(QMainWindow):
+class TransferFunction(QMainWindow, Ui_TransferFunction):
     def __init__(self, main_window):
         super(TransferFunction, self).__init__()
-        uic.loadUi(resource_path("ui/TransferFunction.ui"), self)
+        self.setupUi(self)
         self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
         self.setWindowTitle("System Transfer Function")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
@@ -719,7 +672,7 @@ class TransferFunction(QMainWindow):
 
 def exec_CDRL(nama, npm):
     app = QApplication.instance() or QApplication(sys.argv)
-    window = Leaderboard() if npm == ADMIN_NPM else MainWindow(nama, npm)
+    window = MainWindow(nama, npm)
     window.show()
     
     # do NOT call app.exec_() here when launched from the main app

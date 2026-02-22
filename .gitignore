@@ -43,3 +43,5 @@ functions/
 
 # Test files
 *test*.py
+
+serviceAccountKey.json

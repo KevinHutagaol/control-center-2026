@@ -1,11 +1,12 @@
 import numpy as np
 import sys
 from pathlib import Path
-from PyQt5 import QtWidgets, uic, QtCore
+from PyQt5 import QtWidgets, QtCore
 
 import pages.Modul8.gambar_rc
 from pages.Modul8.calc import *
 from pages.Modul8.plot import PlotWindow
+from pages.Modul8.ui_8.ui_main import Ui_MainWindow
 
 def resource_path(rel: str | Path) -> str:
     rel_path = Path(rel)
@@ -40,10 +41,10 @@ def resource_path(rel: str | Path) -> str:
     # Fallback: return the first candidate even if missing (caller can handle)
     return str(candidates[0])
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi(resource_path("ui_8/main.ui"), self)
+        self.setupUi(self)
 
         self.plantPlot = None
         self.plantTimer = QtCore.QTimer(self)

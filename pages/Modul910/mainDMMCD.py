@@ -3,7 +3,7 @@ import sys
 import os
 import subprocess
 from datetime import datetime, timezone, timedelta
-from PyQt5 import QtWidgets, uic, QtChart, QtCore, QtGui
+from PyQt5 import QtWidgets, QtChart, QtCore, QtGui
 import numpy as np
 import serial.tools.list_ports
 import matplotlib.pyplot as plt
@@ -16,7 +16,16 @@ import pandas as pd
 import requests
 import time
 
-import pages.Modul910.asset.resources 
+import pages.Modul910.asset.resources
+
+from pages.Modul910.ui_910.ui_main import Ui_MainWindow as Ui_main
+from pages.Modul910.ui_910.ui_sa import Ui_MainWindow as Ui_sa
+from pages.Modul910.ui_910.ui_clc import Ui_MainWindow as Ui_clc
+from pages.Modul910.ui_910.ui_lrc import Ui_MainWindow as Ui_lrc
+from pages.Modul910.ui_910.ui_olc import Ui_MainWindow as Ui_olc
+from pages.Modul910.ui_910.ui_calibration import Ui_MainWindow as Ui_calibration
+from pages.Modul910.ui_910.ui_linlog import Ui_MainWindow as Ui_linlog
+from pages.Modul910.ui_910.ui_progressbar import Ui_Dialog as Ui_progressbar
 
 def resource_path(rel: str | Path) -> str:
     """
@@ -59,240 +68,39 @@ def resource_path(rel: str | Path) -> str:
     # Fallback: return the first candidate even if missing (caller can handle)
     return str(candidates[0])
 
-class FirebaseManager:
-    def __init__(self):
-        """Initialize Firebase connection"""
-        self.is_connected = False
-        self.id_token = None
-        self.refresh_token = None
-        self.expires_in = None
-        self.initialize_firebase()
 
-    def initialize_firebase(self):
-        """Initialize Firebase with service account credentials"""
-        api_key = '***REMOVED***'
-
-        auth_url = f'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={api_key}'
-        body = {'returnSecureToken': True}
-        
-        print("Attempting to connect to the database...")
-        try:
-            r = requests.post(auth_url, data=body, timeout=10)
-            r.raise_for_status()           # raise if HTTP error
-            data = r.json()                # parse JSON
-
-            # NOTE: keys from signUp are camelCase
-            self.id_token = data['idToken']
-            self.refresh_token = data['refreshToken']
-            expires_in = int(data.get('expiresIn', '3600'))  # seconds as string
-
-            # store absolute expiry time (now + expires_in - safety margin)
-            self.token_expiry = time.time() + expires_in - 60  # refresh 1 min early
-            
-            print("Successfully connected to the database")
-            self.is_connected = True
-        except Exception as e:
-            print(e)
-            self.is_connected = False
-
-    def refresh_id_token(self):
-        api_key = '***REMOVED***'
-        refresh_url = f'https://securetoken.googleapis.com/v1/token?key={api_key}'
-
-        body = {
-            'grant_type': 'refresh_token',
-            'refresh_token': self.refresh_token,
-        }
-
-        try:
-            r = requests.post(refresh_url, data=body, timeout=10)
-            r.raise_for_status()
-            data = r.json()
-
-            self.id_token = data['id_token']         # note: key is id_token (underscore)
-            self.refresh_token = data['refresh_token']
-            expires_in = int(data.get('expires_in', '3600'))
-            self.token_expiry = time.time() + expires_in - 60
-
-            print("ID token refreshed")
-        except Exception as e:
-            print("Failed to refresh id_token:", e)
-            # fallback: mark disconnected, or re-run initialize_firebase
-            self.is_connected = False
-
-    def ensure_token_valid(self):
-        import time
-        if not hasattr(self, 'expires_in'):
-            return
-        if time.time() > self.token_expiry:
-            self.refresh_id_token()
-            
-    def upload_student_submission(self, student, student_name, submission_data):
-        if not self.id_token:
-            print("No id_token; user not authenticated")
-            return False
-        
-        self.ensure_token_valid()
-
-        url = (
-            "https://firestore.googleapis.com/v1/"
-            f"projects/control-lab-c4480/databases/(default)/documents/Modul89/{student}"
-        )
-
-        headers = {
-            "Authorization": f"Bearer {self.id_token}",
-            "Content-Type": "application/json",
-        }
-
-        # ---------- Build your data in Python ----------
-        timestamp = datetime.now(timezone(timedelta(hours=7))).isoformat()
-
-        submitted_parameters = {
-            "K_fopdt": submission_data.get("K_fopdt", 0),
-            "tau_fopdt": submission_data.get("tau_fopdt", 0),
-            "L_fopdt": submission_data.get("L_fopdt", 0),
-            "K1": submission_data.get("K1", 0),
-            "K2": submission_data.get("K2", 0),
-            "K3": submission_data.get("K3", 0),
-        }
-
-        true_parameters = {
-            "K_fopdt": submission_data.get("true_K_fopdt", 0),
-            "tau_fopdt": submission_data.get("true_tau_fopdt", 0),
-            "L_fopdt": submission_data.get("true_L_fopdt", 0),
-            "k1": submission_data.get("true_k1", 0),
-            "k2": submission_data.get("true_k2", 0),
-            "k3": submission_data.get("true_k3", 0),
-        }
-
-        scores = {
-            "model_score": submission_data.get("model_score", 0),
-            "control_score": submission_data.get("control_score", 0),
-            "final_score": submission_data.get("final_score", 0),
-        }
-
-        errors = {
-            "K_fopdt_error_percent": submission_data.get("K_fopdt_error_percent", 0),
-            "tau_fopdt_error_percent": submission_data.get("tau_fopdt_error_percent", 0),
-            "L_fopdt_error_percent": submission_data.get("L_fopdt_error_percent", 0),
-            "k1_error_percent": submission_data.get("k1_error_percent", 0),
-            "k2_error_percent": submission_data.get("k2_error_percent", 0),
-            "k3_error_percent": submission_data.get("k3_error_percent", 0),
-        }
-
-        # ---------- Helper converters to Firestore types ----------
-        def num_field(value):
-            return {"doubleValue": float(value)}
-
-        def str_field(value):
-            return {"stringValue": str(value)}
-
-        def map_num_dict(d):
-            return {
-                "mapValue": {
-                    "fields": {k: num_field(v) for k, v in d.items()}
-                }
-            }
-
-        # ---------- Build Firestore document body ----------
-        firestore_doc = {
-            "fields": {
-                "timestamp": {"timestampValue": timestamp},
-                "controller_type": str_field(submission_data.get("controller_type", "Unknown")),
-                "nama": str_field(student_name),
-                "submitted_parameters": map_num_dict(submitted_parameters),
-                "true_parameters": map_num_dict(true_parameters),
-                "scores": map_num_dict(scores),
-                "errors": map_num_dict(errors),
-            }
-        }
-
-        try:
-            resp = requests.patch(url, headers=headers, json=firestore_doc, timeout=10)
-            print("Firestore response status:", resp.status_code)
-            # print("Firestore response body:", resp.text)
-            resp.raise_for_status()
-            return True
-        except requests.exceptions.RequestException as e:
-            print("Error updating submission in Firestore:", e)
-            if getattr(e, "response", None) is not None:
-                print("Response text:", e.response.text)
-            return False
-
-    def find_student(self, group):
-        """Check if a student document exists in Firebase"""
-        if not self.is_connected:
-            return []
-        
-        # print(self.id_token)
-            
-        url = f"https://firestore.googleapis.com/v1/projects/control-lab-c4480/databases/(default)/documents/Account"
-        headers = {"Authorization": f"Bearer {self.id_token}"}
-        
-        try:
-            r = requests.get(url, headers=headers, timeout=10)
-            r.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching collection: {e}")
-            return []
-        
-        docs = r.json().get("documents", [])
-        rows = []
-
-        for doc in docs:
-            fields = doc.get("fields", {})
-
-            kelompok_field = fields.get("Kelompok")
-            if not kelompok_field:
-                continue
-
-            # Firestore REST: one of stringValue / integerValue / doubleValue / etc.
-            kelompok_value = (
-                kelompok_field.get("stringValue")
-                or kelompok_field.get("integerValue")
-                or kelompok_field.get("doubleValue")
-            )
-
-            # Compare as string to be safe
-            if str(kelompok_value) == str(group):
-                rows.append({
-                    "NPM": doc.get("name").split('/')[-1],
-                    "Name": doc.get("fields", {}).get("Nama")
-                })
-
-        print(rows)
-        return rows
         
 
-    def test_upload_student_submission(self):
-        """Test function to upload a sample student submission"""
-        sample_student = "0"
-        sample_submission = {
-            'K_fopdt': 69,
-            'tau_fopdt': 67,
-            'L_fopdt': 420,
-            'K1': 0,
-            'K2': 0,
-            'K3': 0,
-            'true_K_fopdt': 0,
-            'true_tau_fopdt': 0,
-            'true_L_fopdt': 0,
-            'true_k1': 0,
-            'true_k2': 0,
-            'true_k3': 0,
-            'model_score': 0,
-            'control_score': 0,
-            'final_score': 0,
-            'K_fopdt_error_percent': 1,
-            'tau_fopdt_error_percent': 0,
-            'L_fopdt_error_percent': 0,
-            'k1_error_percent': 0,
-            'k2_error_percent': 0,
-            'k3_error_percent': 0,
-            'controller_type': 'PID'
-        }
+def test_upload_student_submission(self):
+    """Test function to upload a sample student submission"""
+    sample_student = "0"
+    sample_submission = {
+        'K_fopdt': 69,
+        'tau_fopdt': 67,
+        'L_fopdt': 420,
+        'K1': 0,
+        'K2': 0,
+        'K3': 0,
+        'true_K_fopdt': 0,
+        'true_tau_fopdt': 0,
+        'true_L_fopdt': 0,
+        'true_k1': 0,
+        'true_k2': 0,
+        'true_k3': 0,
+        'model_score': 0,
+        'control_score': 0,
+        'final_score': 0,
+        'K_fopdt_error_percent': 1,
+        'tau_fopdt_error_percent': 0,
+        'L_fopdt_error_percent': 0,
+        'k1_error_percent': 0,
+        'k2_error_percent': 0,
+        'k3_error_percent': 0,
+        'controller_type': 'PID'
+    }
 
-        self.upload_student_submission("2206055901", "Usamah Hafizh Ammar Za'im", sample_submission)
+    self.upload_student_submission("2206055901", "Usamah Hafizh Ammar Za'im", sample_submission)
+
 class RefreshingComboBox(QtWidgets.QComboBox):
     """QComboBox that refreshes its items whenever opened."""
     def showPopup(self):
@@ -355,13 +163,13 @@ class RefreshingComboBox(QtWidgets.QComboBox):
             self.addItem("No ports available")
             self.setCurrentIndex(0)
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow, Ui_main):
     def __init__(self, kelompok):
         super().__init__()
         
         # print("Loading UI from:", resource_path("ui_910/main.ui"))
 
-        uic.loadUi(resource_path("ui_910/main.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("Practicum Software : Motor SIM Modeling and Control")
         self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
@@ -369,12 +177,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.child_windows = {}
         group = kelompok
 
-        # Initialize Firebase Manager
-        self.firebase_manager = FirebaseManager()
-        self.current_students = self.firebase_manager.find_student(group)  # Example group "A1"
-        QtWidgets.QMessageBox.information(self, "Info", f"Found {len(self.current_students)} students in group {group}.")
-
-        # self.firebase_manager.test_upload_student_submission()
 
         self.olc.clicked.connect(self.olcClicked)
         self.clc.clicked.connect(self.clcClicked)
@@ -564,10 +366,10 @@ class MainWindow(QtWidgets.QMainWindow):
             print(e)
         event.accept()
 
-class Encoder(QtWidgets.QMainWindow):
+class Encoder(QtWidgets.QMainWindow, Ui_calibration):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)  # Pass parent for Qt hierarchy
-        uic.loadUi(resource_path("ui_910/calibration.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("Encoder Calibration")
         self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
@@ -700,19 +502,19 @@ class Encoder(QtWidgets.QMainWindow):
         except Exception as e:
             print("Serial read error:", e)
 
-class ProgressBar(QtWidgets.QDialog):
+class ProgressBar(QtWidgets.QDialog, Ui_progressbar):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi(resource_path("ui_910/progressbar.ui"), self)  
+        self.setupUi(self)
         self.setWindowTitle("Loading ...")
         self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
         self.setWindowModality(QtCore.Qt.ApplicationModal)
 
-class LogWindow(QtWidgets.QMainWindow):
+class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)
-        uic.loadUi(resource_path("ui_910/linlog.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("DC Motor vs PWM Linear Relation")
         self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
@@ -950,10 +752,10 @@ class LogWindow(QtWidgets.QMainWindow):
         except Exception as e:
             print("Serial buffer clear error:", e)
 
-class LRC(QtWidgets.QMainWindow):
+class LRC(QtWidgets.QMainWindow, Ui_lrc):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)
-        uic.loadUi(resource_path("ui_910/lrc.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("Linear Region Limit")
         self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
@@ -1070,10 +872,10 @@ class LRC(QtWidgets.QMainWindow):
         except Exception as e:
             print("Serial buffer clear error:", e)
 
-class olc(QtWidgets.QMainWindow):
+class olc(QtWidgets.QMainWindow, Ui_olc):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)
-        uic.loadUi(resource_path("ui_910/olc.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("DC Motor Open Loop Control")
         self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
@@ -2020,10 +1822,10 @@ class olc(QtWidgets.QMainWindow):
         else:
             QtWidgets.QMessageBox.information(self, "Log", "No data available to plot.")
 
-class clc(QtWidgets.QMainWindow):
+class clc(QtWidgets.QMainWindow, Ui_clc):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)
-        uic.loadUi(resource_path("ui_910/clc.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("DC Motor Closed Loop Control")
         self.setWindowIcon(QtGui.QIcon("asset/Logo Control.png"))
 
@@ -2684,10 +2486,10 @@ class clc(QtWidgets.QMainWindow):
         except Exception as e:
             print("Serial buffer clear error:", e)
               
-class sa(QtWidgets.QMainWindow):
+class sa(QtWidgets.QMainWindow, Ui_sa):
     def __init__(self, serial_conn, main_window=None):
         super().__init__(main_window)
-        uic.loadUi(resource_path("ui_910/sa.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("Submit Answers")
         self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
 
