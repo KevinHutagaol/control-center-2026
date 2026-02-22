@@ -13,6 +13,8 @@ from pathlib import Path
 
 import pages.Modul6.resource_rc6 as resource_rc6
 
+from pages.Modul6.UI6.ui_Main import Ui_MainWindow
+
 def resource_path(rel: str | Path) -> str:
     rel_path = Path(rel)
 
@@ -59,10 +61,10 @@ class MplCanvas(FigureCanvas):
 
 
 # ---------------- Main App ----------------
-class MainApp(QtWidgets.QMainWindow):
+class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi(resource_path("UI6/Main.ui"), self)
+        self.setupUi(self)
         self.setWindowTitle("RLC State Space Simulation (Realtime)")
         self.setWindowIcon(QIcon("Asset/Logo Merah.png"))
 
