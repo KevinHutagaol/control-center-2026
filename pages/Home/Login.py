@@ -1,8 +1,12 @@
+import json
+
 import requests
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QTimer, QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QValidator
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
+from appConfig import firebaseConfig
 from func import updaterFunc as updaterFunc
 from func.Auth import runPasswordAuth, runGoogleAuth, AuthWorker
 from pages.Home.AdminWindow import AdminWindow
@@ -12,6 +16,10 @@ from pages.Home.UI_home.ui_Login import Ui_MainWindow
 from pages.Home.UpdaterDialog import UpdaterDialog
 
 from pages.Home.MainWindow import MainWindow
+
+from func.FirebaseAuthedSession import authed_session
+
+PROJECT_ID = firebaseConfig['projectId']
 
 class Login(QMainWindow, Ui_MainWindow):
     sig_start_google = pyqtSignal()
@@ -58,8 +66,6 @@ class Login(QMainWindow, Ui_MainWindow):
         self.worker.start()
 
     def _on_version_checked(self, outdated, local, remote):
-        # TODO: QUICK FIX FOR CIRCULAR IMPORT, IDEALLY SHOULD IMPLEMENT CONTROLLER CLASS
-
         print(f"{local} (local) <===> {remote} (remote)")
 
         if outdated:
@@ -116,21 +122,34 @@ class Login(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Access Denied", result['msg'])
 
     def proceedToMain(self):
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
+        uid = authed_session.uid
+        url = f"https://firestore.googleapis.com/v1/projects/{PROJECT_ID}/databases/(default)/documents/users/{uid}"
+        response = authed_session.get(url)
 
-        # TODO: User Data (Obviously)
-        curNama, curRole, curKelompok, npm = "Test", "Mahasiswa", "32", "12345"
+        if response.status_code != 200:
+            QMessageBox.warning(self, "Access Denied", f"Error: {response.status_code}, {response.text}")
+            return
 
-        if curRole == 'Mahasiswa':
-            self.main_window = MainWindow(npm, curNama, curRole, curKelompok)
-            self.main_window.sig_logout_clicked.connect(self.logout)
-            self.main_window.show()
-            self.close()
-        elif curRole == 'Assisten':
-            self.main_window = AdminWindow(npm, curNama, curRole)
-            self.main_window.sig_logout_clicked.connect(self.logout)
-            self.main_window.show()
-            self.close()
+        response_fields = response.json().get('fields')
+
+        curNama = response_fields.get('displayName').get('stringValue')
+        curRole = response_fields.get('role').get('stringValue')
+        curKelompok = response_fields.get('group').get('integerValue') # this expects a string
+        npm = response_fields.get('npm').get('stringValue')
+
+        self.main_window = MainWindow(npm, curNama, curRole, curKelompok)
+        self.main_window.sig_logout_clicked.connect(self.logout)
+        self.main_window.show()
+        QtWidgets.QApplication.restoreOverrideCursor()
+        self.close()
+
+        # elif curRole == 'Assisten':
+        #     self.main_window = AdminWindow(npm, curNama, curRole)
+        #     self.main_window.sig_logout_clicked.connect(self.logout)
+        #     self.main_window.show()
+        #     self.close()
 
     @pyqtSlot(QMainWindow)
     def logout(self, mainWindow):
@@ -146,6 +165,8 @@ class Login(QMainWindow, Ui_MainWindow):
         except Exception as e:
             # if QMessageBox fails for some reason, proceed with logout
             print(e)
+
+
 
         # Close any child windows we opened
         try:
@@ -174,6 +195,8 @@ class Login(QMainWindow, Ui_MainWindow):
                     setattr(mainWindow, a, None)
                 except Exception as e:
                     print(e)
+
+        authed_session.set_credentials("", "", "", 0)
 
         # Show login window again
         try:
