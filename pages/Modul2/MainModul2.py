@@ -1,3 +1,4 @@
+import io
 import sys
 import os
 import numpy as np
@@ -9,6 +10,9 @@ import control as ct
 import pages.Modul2.resourcesmodul2
 
 from pages.Modul2.ui.ui_MainModul2 import Ui_MainWindow
+
+
+
 
 
 
@@ -85,6 +89,28 @@ class MainModul(QMainWindow, Ui_MainWindow):
 
         self.setWindowTitle("Control System Analyzer - v1.0")
         self.setFixedSize(1360, 800)
+
+        self.root_locus_open_png_bytes = None
+        self.step_response_open_png_bytes = None
+
+    def grab_figures_as_images(self):
+        rl_buf = io.BytesIO()
+        sr_buf = io.BytesIO()
+
+        self.fig_rl.savefig(rl_buf, format='png', bbox_inches='tight')
+        self.fig_sr.savefig(sr_buf, format='png', bbox_inches='tight')
+
+        self.root_locus_open_png_bytes = rl_buf.getvalue()
+        self.step_response_open_png_bytes = sr_buf.getvalue()
+
+        rl_buf.close()
+        sr_buf.close()
+
+        print("Grabbed Figures as Variables")
+
+        # TODO: This is for testing, remove later
+        with open("saved_root_locus.png", "wb") as f:
+            f.write(self.root_locus_open_png_bytes)
 
     def init_matplotlib_canvas(self):
         # --- Setup Root Locus ---
@@ -200,6 +226,9 @@ class MainModul(QMainWindow, Ui_MainWindow):
 
         # 3. Update Metrics
         self.update_metrics(t, y)
+
+        # TODO: This is for testing, remove later
+        self.grab_figures_as_images()
 
 
     # --- Logic 2: Plot with Controller (CLOSED LOOP) ---
