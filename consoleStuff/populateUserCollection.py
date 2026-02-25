@@ -4,9 +4,11 @@ import pandas as pd
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 
+KKI_DATABASE_ID = "prak-teken-kki-2026"
+
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
-db = firestore.client()
+db = firestore.client(database_id=KKI_DATABASE_ID)
 
 def createUserCollection(email, displayName, npm, regOrKki, year, group, role):
     try:

@@ -11,3 +11,7 @@ firebaseConfig = {
 oAuthConfig = {
   "clientId" : "830462089202-tetq9c8ncu05rea2dgeq91qfa72gp1n9.apps.googleusercontent.com",
 }
+
+firestoreConfig = {
+  "kkiDatabaseId" : "prak-teken-kki-2026"
+}
