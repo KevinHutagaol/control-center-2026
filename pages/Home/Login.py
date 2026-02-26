@@ -6,7 +6,7 @@ from PyQt5.QtCore import QTimer, QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QValidator
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
-from appConfig import firebaseConfig
+from appConfig import firebaseConfig, firestoreConfig
 from func import updaterFunc as updaterFunc
 from func.Auth import runPasswordAuth, runGoogleAuth, AuthWorker
 from pages.Home.AdminWindow import AdminWindow
@@ -20,6 +20,8 @@ from pages.Home.MainWindow import MainWindow
 from func.FirebaseAuthedSession import authed_session
 
 PROJECT_ID = firebaseConfig['projectId']
+
+KKI_DATABASE_ID = firestoreConfig["kkiDatabaseId"]
 
 class Login(QMainWindow, Ui_MainWindow):
     sig_start_google = pyqtSignal()
@@ -125,7 +127,7 @@ class Login(QMainWindow, Ui_MainWindow):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
         uid = authed_session.uid
-        url = f"https://firestore.googleapis.com/v1/projects/{PROJECT_ID}/databases/(default)/documents/users/{uid}"
+        url = f"https://firestore.googleapis.com/v1/projects/{PROJECT_ID}/databases/{KKI_DATABASE_ID}/documents/users/{uid}"
         response = authed_session.get(url)
 
         if response.status_code != 200:
