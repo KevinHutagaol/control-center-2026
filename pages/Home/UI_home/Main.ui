@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1280</width>
-    <height>788</height>
+    <width>1112</width>
+    <height>782</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,8 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(8, 29, 56);</string>
+    <string notr="true">background-color: rgb(8, 29, 56);
+border: none;</string>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
@@ -33,10 +34,11 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);</string>
+       <string notr="true">background-color: rgb(255, 255, 255);
+border: none;</string>
       </property>
       <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+       <enum>QFrame::NoFrame</enum>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
@@ -66,10 +68,11 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="styleSheet">
-          <string notr="true">image: url(:/Asset/Asset/Logo Controllab 2026.png);</string>
+          <string notr="true">image: url(:/Asset/Asset/Logo Controllab 2026.png);
+border: none;</string>
          </property>
          <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+          <enum>QFrame::NoFrame</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
@@ -122,7 +125,8 @@
 
 QPushButton:hover {
 	image: url(:/Asset/Asset/Lampu Idup.png);
-}</string>
+};
+border: none;</string>
          </property>
          <property name="text">
           <string/>
@@ -163,7 +167,8 @@ QPushButton:hover {
 QPushButton:hover {
 	
 	image: url(:/Asset/Asset/Chart isi.png);
-}</string>
+};
+border: none;</string>
          </property>
          <property name="text">
           <string/>
@@ -217,7 +222,8 @@ QPushButton:hover {
 QPushButton:hover {
 	
 	image: url(:/Asset/Asset/Log Out 2.png);
-}</string>
+};
+border: none;</string>
          </property>
          <property name="text">
           <string/>
@@ -236,20 +242,22 @@ QPushButton:hover {
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);</string>
+       <string notr="true">background-color: rgb(255, 255, 255);
+border: none;</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="PracticumPage">
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(8, 29, 56);</string>
+        <string notr="true">background-color: rgb(8, 29, 56);
+border: none;</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QFrame" name="frame_32">
           <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+           <enum>QFrame::NoFrame</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
@@ -279,10 +287,11 @@ QPushButton:hover {
               <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;
 border-top-right-radius: 0px;
-border-bottom-right-radius: 0px;</string>
+border-bottom-right-radius: 0px;
+border: none;</string>
              </property>
              <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
+              <enum>QFrame::NoFrame</enum>
              </property>
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
@@ -297,7 +306,8 @@ font-size: 20px;
 padding:3px;
 font-family: &quot;SF Pro Display&quot;; 
 		font-weight: bold; 
-    	font-style: normal;</string>
+    	font-style: normal;
+border: none;</string>
                 </property>
                 <property name="text">
                  <string>1</string>
@@ -322,10 +332,11 @@ font-family: &quot;SF Pro Display&quot;;
               <string notr="true">background-color: rgb(8, 29, 56);
 border-radius : 5px;
 border-top-left-radius: 0px;
-border-bottom-left-radius: 0px;</string>
+border-bottom-left-radius: 0px;
+border: none;</string>
              </property>
              <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
+              <enum>QFrame::NoFrame</enum>
              </property>
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
@@ -340,7 +351,8 @@ font-size: 20px;
 padding:3px;
 font-family: &quot;SF Pro Display&quot;; 
 		font-weight: bold; 
-    	font-style: normal;</string>
+    	font-style: normal;
+border: none;</string>
                 </property>
                 <property name="text">
                  <string>Welcome Attafahqi Amirtha Dariswan!</string>
@@ -356,7 +368,7 @@ font-family: &quot;SF Pro Display&quot;;
         <item>
          <widget class="QFrame" name="frame_12">
           <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+           <enum>QFrame::NoFrame</enum>
           </property>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
@@ -384,8 +396,8 @@ font-family: &quot;SF Pro Display&quot;;
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1126</width>
-                <height>248</height>
+                <width>966</width>
+                <height>236</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_30">
@@ -398,7 +410,7 @@ font-family: &quot;SF Pro Display&quot;;
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -423,15 +435,16 @@ font-family: &quot;SF Pro Display&quot;;
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
-	image: url(:/Asset/Asset/Modul 23 (Kecil).png);
+	image: url(:/Asset/Asset/Modul 23.png);
 	border: 0px;
 	border-radius : 2px;
 }
 
 
 QPushButton:hover {
-	image: url(:/Asset/Asset/Modul 23.png);
-}</string>
+	padding: 10px;
+};
+border: none;</string>
                     </property>
                     <property name="text">
                      <string/>
@@ -457,15 +470,16 @@ QPushButton:hover {
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
-	image: url(:/Asset/Asset/Modul 4 (Kecil).png);
+	image: url(:/Asset/Asset/Modul 4.png);
 	border: 0px;
 	border-radius : 2px;
 }
 
 
 QPushButton:hover {
-	image: url(:/Asset/Asset/Modul 4.png);
-}</string>
+	padding: 10px;
+};
+border: none;</string>
                     </property>
                     <property name="text">
                      <string/>
@@ -491,49 +505,16 @@ QPushButton:hover {
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
-	image: url(:/Asset/Asset/Modul 5 (Kecil).png);
-	border: 0px;
-	border-radius : 2px;
-}
-
-
-QPushButton:hover {
 	image: url(:/Asset/Asset/Modul 5.png);
-}</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="StateSpace">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>150</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="cursor">
-                     <cursorShape>PointingHandCursor</cursorShape>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">QPushButton {
-	image: url(:/Asset/Asset/Modul 6 (Kecil).png);
 	border: 0px;
 	border-radius : 2px;
 }
 
 
 QPushButton:hover {
-	image: url(:/Asset/Asset/Modul 6.png);
-}</string>
+	padding: 10px;
+};
+border: none;</string>
                     </property>
                     <property name="text">
                      <string/>
@@ -559,15 +540,16 @@ QPushButton:hover {
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
-	image: url(:/Asset/Asset/Modul 7 (Kecil).png);
+	image: url(:/Asset/Asset/Modul 6.png);
 	border: 0px;
 	border-radius : 2px;
 }
 
 
 QPushButton:hover {
-	image: url(:/Asset/Asset/Modul 7.png);
-}</string>
+	padding: 10px;
+};
+border: none;</string>
                     </property>
                     <property name="text">
                      <string/>
@@ -593,15 +575,16 @@ QPushButton:hover {
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
-	image: url(:/Asset/Asset/Modul 8 (Kecil).png);
+	image: url(:/Asset/Asset/Modul 8.png);
 	border: 0px;
 	border-radius : 2px;
 }
 
 
 QPushButton:hover {
-	image: url(:/Asset/Asset/Modul 8.png);
-}</string>
+	padding: 10px;
+};
+border: none;</string>
                     </property>
                     <property name="text">
                      <string/>
@@ -627,15 +610,16 @@ QPushButton:hover {
                     </property>
                     <property name="styleSheet">
                      <string notr="true">QPushButton {
-	image: url(:/Asset/Asset/Modul 910 (Kecil).png);
+	image: url(:/Asset/Asset/Modul 910.png);
 	border: 0px;
 	border-radius : 2px;
 }
 
 
 QPushButton:hover {
-	image: url(:/Asset/Asset/Modul 910.png);
-}</string>
+	padding: 10px;
+};
+border: none;</string>
                     </property>
                     <property name="text">
                      <string/>
@@ -665,7 +649,8 @@ QPushButton:hover {
              </property>
              <widget class="QWidget" name="FirstPage">
               <property name="styleSheet">
-               <string notr="true">image: url(:/Asset/Asset/Header.png);</string>
+               <string notr="true">image: url(:/Asset/Asset/Header.png);
+border: none;</string>
               </property>
              </widget>
              <widget class="QWidget" name="RootLocusPage">
@@ -685,7 +670,7 @@ QPushButton:hover {
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -695,10 +680,11 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_6">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(8, 29, 56);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -708,7 +694,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_11">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -718,7 +704,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_5">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -728,7 +714,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_10">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -738,7 +724,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_8">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -748,7 +734,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_7">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -758,7 +744,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_9">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -771,10 +757,11 @@ border-radius : 5px;</string>
                <item>
                 <widget class="QFrame" name="frame_2">
                  <property name="styleSheet">
-                  <string notr="true"/>
+                  <string notr="true">
+border: none;</string>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -795,10 +782,11 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 23.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 23.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -814,7 +802,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -829,10 +817,11 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/Root Locus.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/Root Locus.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::NoFrame</enum>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Raised</enum>
@@ -848,10 +837,11 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/VPID.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/VPID.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::NoFrame</enum>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Raised</enum>
@@ -895,7 +885,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -950,7 +940,8 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(222, 191, 42, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -1006,7 +997,8 @@ QPushButton:hover {
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(222, 191, 42, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -1051,7 +1043,7 @@ QPushButton:hover {
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -1060,7 +1052,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_26">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1071,10 +1063,11 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_25">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(8, 29, 56);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1084,7 +1077,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_27">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1094,7 +1087,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_28">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1104,7 +1097,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_29">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1114,7 +1107,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_30">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1124,7 +1117,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_31">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1137,7 +1130,7 @@ border-radius : 5px;</string>
                <item>
                 <widget class="QFrame" name="frame_18">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -1158,10 +1151,11 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 4.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 4.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1177,7 +1171,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1192,10 +1186,11 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/FreqResp.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/FreqResp.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::NoFrame</enum>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Raised</enum>
@@ -1233,7 +1228,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1288,7 +1283,8 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(222, 191, 42, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -1333,7 +1329,7 @@ QPushButton:hover {
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -1342,7 +1338,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_36">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1352,7 +1348,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_38">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1363,10 +1359,11 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_37">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(8, 29, 56);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1376,7 +1373,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_39">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1386,7 +1383,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_40">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1396,7 +1393,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_41">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1406,7 +1403,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_42">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1419,7 +1416,7 @@ border-radius : 5px;</string>
                <item>
                 <widget class="QFrame" name="frame_22">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -1440,10 +1437,11 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 5.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 5.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1459,7 +1457,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1474,10 +1472,11 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/CDFreq.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/CDFreq.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::NoFrame</enum>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Raised</enum>
@@ -1515,7 +1514,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1570,7 +1569,8 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(222, 191, 42, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -1615,7 +1615,7 @@ QPushButton:hover {
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -1624,7 +1624,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_53">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1634,7 +1634,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_54">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1644,7 +1644,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_56">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1655,10 +1655,11 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_55">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(8, 29, 56);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1668,7 +1669,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_57">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1678,7 +1679,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_58">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1688,7 +1689,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_59">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1701,7 +1702,7 @@ border-radius : 5px;</string>
                <item>
                 <widget class="QFrame" name="frame_47">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -1721,11 +1722,8 @@ border-radius : 5px;</string>
                       <height>0</height>
                      </size>
                     </property>
-                    <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 6.png);</string>
-                    </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1741,7 +1739,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1756,10 +1754,11 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/SSM.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/SSM.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::NoFrame</enum>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Raised</enum>
@@ -1797,7 +1796,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1849,7 +1848,8 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(222, 191, 42, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -1894,7 +1894,7 @@ QPushButton:hover {
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -1903,7 +1903,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_66">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1913,7 +1913,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_67">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1923,7 +1923,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_69">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1933,7 +1933,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_70">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1944,10 +1944,11 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_68">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(8, 29, 56);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1957,7 +1958,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_71">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1967,7 +1968,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_72">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -1980,7 +1981,7 @@ border-radius : 5px;</string>
                <item>
                 <widget class="QFrame" name="frame_60">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -2001,10 +2002,11 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 7.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 6.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2020,7 +2022,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2035,10 +2037,11 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/Continous.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/Continous.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::NoFrame</enum>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Raised</enum>
@@ -2076,7 +2079,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2131,7 +2134,8 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(222, 191, 42, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -2176,7 +2180,7 @@ QPushButton:hover {
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -2185,7 +2189,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_79">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2195,7 +2199,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_80">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2205,7 +2209,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_82">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2215,7 +2219,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_83">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2225,7 +2229,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_84">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2236,10 +2240,11 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_81">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(8, 29, 56);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2249,7 +2254,7 @@ border-radius : 5px;</string>
                   <item>
                    <widget class="QFrame" name="frame_85">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2262,7 +2267,7 @@ border-radius : 5px;</string>
                <item>
                 <widget class="QFrame" name="frame_73">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -2283,10 +2288,11 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 8.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 8.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2302,7 +2308,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2317,10 +2323,11 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/Discrete.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/Discrete.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::NoFrame</enum>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Raised</enum>
@@ -2358,7 +2365,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2413,7 +2420,8 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(222, 191, 42, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -2458,7 +2466,7 @@ QPushButton:hover {
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -2467,7 +2475,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_92">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2477,7 +2485,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_93">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2487,7 +2495,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_95">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2497,7 +2505,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_96">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2507,7 +2515,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_97">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2517,7 +2525,7 @@ QPushButton:hover {
                   <item>
                    <widget class="QFrame" name="frame_98">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2528,10 +2536,11 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_94">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(8, 29, 56);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2544,7 +2553,7 @@ border-radius : 5px;</string>
                <item>
                 <widget class="QFrame" name="frame_86">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -2565,10 +2574,11 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 910.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 910.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2584,7 +2594,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2599,10 +2609,11 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/Motor.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/Motor.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::NoFrame</enum>
                        </property>
                        <property name="frameShadow">
                         <enum>QFrame::Raised</enum>
@@ -2640,7 +2651,7 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -2695,7 +2706,8 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(222, 191, 42, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -2723,655 +2735,6 @@ QPushButton:hover {
                </item>
               </layout>
              </widget>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="NilaiPage">
-       <layout class="QVBoxLayout" name="verticalLayout_25">
-        <item>
-         <widget class="QFrame" name="frame_99">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>70</height>
-           </size>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_20">
-           <item>
-            <widget class="QFrame" name="frame_100">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>222</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(8, 29, 56);
-border-radius : 5px;
-border-top-right-radius: 0px;
-border-bottom-right-radius: 0px;</string>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_21">
-              <item>
-               <widget class="QLabel" name="Kelompok2">
-                <property name="styleSheet">
-                 <string notr="true">border-radius : 2px;
-color: rgb(255, 255, 255);
-font-size: 20px;
-padding:3px;
-font-family: &quot;SF Pro Display&quot;; 
-		font-weight: bold; 
-    	font-style: normal;</string>
-                </property>
-                <property name="text">
-                 <string>1</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QFrame" name="frame_101">
-             <property name="minimumSize">
-              <size>
-               <width>900</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(8, 29, 56);
-border-radius : 5px;
-border-top-left-radius: 0px;
-border-bottom-left-radius: 0px;</string>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_22">
-              <item>
-               <widget class="QLabel" name="WelcomeText2">
-                <property name="styleSheet">
-                 <string notr="true">border-radius : 2px;
-color: rgb(255, 255, 255);
-font-size: 20px;
-padding:3px;
-font-family: &quot;SF Pro Display&quot;; 
-		font-weight: bold; 
-    	font-style: normal;</string>
-                </property>
-                <property name="text">
-                 <string>Welcome Attafahqi Amirtha Dariswan!</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QFrame" name="frame_106">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_23">
-           <item>
-            <widget class="QFrame" name="frame_102">
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_27">
-              <item>
-               <widget class="QFrame" name="frame_104">
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>200</height>
-                 </size>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true"/>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QHBoxLayout" name="horizontalLayout_26">
-                 <item>
-                  <widget class="QFrame" name="frame_110">
-                   <property name="styleSheet">
-                    <string notr="true">image: url(:/Asset/Asset/Control Board.png);</string>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QFrame" name="TotalNilai">
-                   <property name="styleSheet">
-                    <string notr="true">image: url(:/Nilai/Nilai/TotalNilai.png);</string>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QFrame" name="frame_105">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QHBoxLayout" name="horizontalLayout_24">
-                 <item>
-                  <widget class="QPushButton" name="btn23">
-                   <property name="minimumSize">
-                    <size>
-                     <width>60</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton {
- 		background-color: rgb(8, 29, 56);
-		border-color: rgb(255, 0,0);
-		border-radius : 2px;
-		color: rgb(255, 255, 255);
-		font-size: 15px;
-		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
-			font-weight: bold; 
-    		font-style: normal;
-}
-
-/* Saat mouse hover */
-QPushButton:hover {
-    background-color: rgb(200, 0, 0);
-}</string>
-                   </property>
-                   <property name="text">
-                    <string>2-3</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="btn4">
-                   <property name="minimumSize">
-                    <size>
-                     <width>60</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton {
- 		background-color: rgb(8, 29, 56);
-		border-color: rgb(255, 0,0);
-		border-radius : 2px;
-		color: rgb(255, 255, 255);
-		font-size: 15px;
-		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
-			font-weight: bold; 
-    		font-style: normal;
-}
-
-/* Saat mouse hover */
-QPushButton:hover {
-    background-color: rgb(200, 0, 0);
-}</string>
-                   </property>
-                   <property name="text">
-                    <string>4</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="btn5">
-                   <property name="minimumSize">
-                    <size>
-                     <width>60</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton {
- 		background-color: rgb(8, 29, 56);
-		border-color: rgb(255, 0,0);
-		border-radius : 2px;
-		color: rgb(255, 255, 255);
-		font-size: 15px;
-		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
-			font-weight: bold; 
-    		font-style: normal;
-}
-
-/* Saat mouse hover */
-QPushButton:hover {
-    background-color: rgb(200, 0, 0);
-}</string>
-                   </property>
-                   <property name="text">
-                    <string>5</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="btn6">
-                   <property name="minimumSize">
-                    <size>
-                     <width>60</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton {
- 		background-color: rgb(8, 29, 56);
-		border-color: rgb(255, 0,0);
-		border-radius : 2px;
-		color: rgb(255, 255, 255);
-		font-size: 15px;
-		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
-			font-weight: bold; 
-    		font-style: normal;
-}
-
-/* Saat mouse hover */
-QPushButton:hover {
-    background-color: rgb(200, 0, 0);
-}</string>
-                   </property>
-                   <property name="text">
-                    <string>6</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="btn7">
-                   <property name="minimumSize">
-                    <size>
-                     <width>60</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton {
- 		background-color: rgb(8, 29, 56);
-		border-color: rgb(255, 0,0);
-		border-radius : 2px;
-		color: rgb(255, 255, 255);
-		font-size: 15px;
-		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
-			font-weight: bold; 
-    		font-style: normal;
-}
-
-/* Saat mouse hover */
-QPushButton:hover {
-    background-color: rgb(200, 0, 0);
-}</string>
-                   </property>
-                   <property name="text">
-                    <string>7</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="btn8">
-                   <property name="minimumSize">
-                    <size>
-                     <width>60</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton {
- 		background-color: rgb(8, 29, 56);
-		border-color: rgb(255, 0,0);
-		border-radius : 2px;
-		color: rgb(255, 255, 255);
-		font-size: 15px;
-		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
-			font-weight: bold; 
-    		font-style: normal;
-}
-
-/* Saat mouse hover */
-QPushButton:hover {
-    background-color: rgb(200, 0, 0);
-}</string>
-                   </property>
-                   <property name="text">
-                    <string>8</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="btn910">
-                   <property name="minimumSize">
-                    <size>
-                     <width>60</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton {
- 		background-color: rgb(8, 29, 56);
-		border-color: rgb(255, 0,0);
-		border-radius : 2px;
-		color: rgb(255, 255, 255);
-		font-size: 15px;
-		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
-			font-weight: bold; 
-    		font-style: normal;
-}
-
-/* Saat mouse hover */
-QPushButton:hover {
-    background-color: rgb(200, 0, 0);
-}</string>
-                   </property>
-                   <property name="text">
-                    <string>9-10</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="btn11">
-                   <property name="minimumSize">
-                    <size>
-                     <width>60</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton {
- 		background-color: rgb(8, 29, 56);
-		border-color: rgb(255, 0,0);
-		border-radius : 2px;
-		color: rgb(255, 255, 255);
-		font-size: 15px;
-		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
-			font-weight: bold; 
-    		font-style: normal;
-}
-
-/* Saat mouse hover */
-QPushButton:hover {
-    background-color: rgb(200, 0, 0);
-}</string>
-                   </property>
-                   <property name="text">
-                    <string>11</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QStackedWidget" name="stackedNilai">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true"/>
-                </property>
-                <property name="currentIndex">
-                 <number>0</number>
-                </property>
-                <widget class="QWidget" name="Modul23">
-                 <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_23.png);</string>
-                 </property>
-                </widget>
-                <widget class="QWidget" name="Modul4">
-                 <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_4.png);</string>
-                 </property>
-                </widget>
-                <widget class="QWidget" name="Modul5">
-                 <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_5.png);</string>
-                 </property>
-                </widget>
-                <widget class="QWidget" name="Modul6">
-                 <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_6.png);</string>
-                 </property>
-                </widget>
-                <widget class="QWidget" name="Modul7">
-                 <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_7.png);</string>
-                 </property>
-                </widget>
-                <widget class="QWidget" name="Modul8">
-                 <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_8.png);</string>
-                 </property>
-                </widget>
-                <widget class="QWidget" name="Modul910">
-                 <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_910.png);</string>
-                 </property>
-                </widget>
-                <widget class="QWidget" name="Modul11">
-                 <property name="styleSheet">
-                  <string notr="true">image: url(:/Nilai/Nilai/Modul_11.png);</string>
-                 </property>
-                </widget>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QFrame" name="frame_103">
-             <property name="minimumSize">
-              <size>
-               <width>550</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_26">
-              <item>
-               <widget class="QFrame" name="frame_109">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QHBoxLayout" name="horizontalLayout_25">
-                 <item>
-                  <spacer name="horizontalSpacer_8">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Expanding</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="Refresh">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>30</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton {
- 		background-color: rgb(8, 29, 56);
-		border-color: rgb(255, 0,0);
-		border-radius : 5px;
-		color: rgb(255, 255, 255);
-		font-size: 15px;
-		padding: 3px 15px;
-		image: url(:/Asset/Asset/Refresh 2.png);
-		font-family: &quot;SF Pro Display&quot;;
-			font-weight: bold; 
-    		font-style: normal;
-}
-
-/* Saat mouse hover */
-QPushButton:hover {
-	
-	image: url(:/Asset/Asset/Refresh 1.png);
-    background-color: rgb(200, 0, 0);
-}</string>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QFrame" name="Top10">
-                <property name="styleSheet">
-                 <string notr="true">image: url(:/Nilai/Nilai/Top10.png);</string>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QFrame" name="DetailNilai">
-                <property name="styleSheet">
-                 <string notr="true">image: url(:/Nilai/Nilai/DetailNilai.png);</string>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-               </widget>
-              </item>
-             </layout>
             </widget>
            </item>
           </layout>

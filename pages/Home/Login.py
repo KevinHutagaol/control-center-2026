@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 from appConfig import firebaseConfig, firestoreConfig
 from func import updaterFunc as updaterFunc
 from func.Auth import runPasswordAuth, runGoogleAuth, AuthWorker
-from pages.Home.AdminWindow import AdminWindow
 from pages.Home.installerUtils import resource_path
 
 from pages.Home.UI_home.ui_Login import Ui_MainWindow
