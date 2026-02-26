@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -14,11 +14,13 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">
+border: none;</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(255, 0, 0);</string>
+    <string notr="true">background-color: rgb(255, 0, 0);
+border: none;</string>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
@@ -36,7 +38,8 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 0, 0);</string>
+       <string notr="true">background-color: rgb(255, 0, 0);
+border: none;</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -66,7 +69,8 @@
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">image: url(:/Asset/Asset/Logo Putih.png);</string>
+          <string notr="true">image: url(:/Asset/Asset/Logo Putih.png);
+border: none;</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
@@ -122,10 +126,11 @@
 
 QPushButton:hover {
 	image: url(:/Asset/Asset/Lampu Idup.png);
-}</string>
+};
+border: none;</string>
          </property>
          <property name="text">
-          <string/>
+          <string />
          </property>
         </widget>
        </item>
@@ -163,10 +168,11 @@ QPushButton:hover {
 QPushButton:hover {
 	
 	image: url(:/Asset/Asset/Chart isi.png);
-}</string>
+};
+border: none;</string>
          </property>
          <property name="text">
-          <string/>
+          <string />
          </property>
         </widget>
        </item>
@@ -201,10 +207,11 @@ QPushButton:hover {
 QPushButton:hover {
 	
 	image: url(:/Asset/Asset/Chart isi.png);
-}</string>
+};
+border: none;</string>
          </property>
          <property name="text">
-          <string/>
+          <string />
          </property>
         </widget>
        </item>
@@ -255,10 +262,11 @@ QPushButton:hover {
 QPushButton:hover {
 	
 	image: url(:/Asset/Asset/Log Out 2.png);
-}</string>
+};
+border: none;</string>
          </property>
          <property name="text">
-          <string/>
+          <string />
          </property>
         </widget>
        </item>
@@ -274,7 +282,8 @@ QPushButton:hover {
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);</string>
+       <string notr="true">background-color: rgb(255, 255, 255);
+border: none;</string>
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -302,7 +311,8 @@ QPushButton:hover {
               <string notr="true">background-color: rgb(255, 0, 0);
 border-radius : 5px;
 border-top-left-radius: 0px;
-border-bottom-left-radius: 0px;</string>
+border-bottom-left-radius: 0px;
+border: none;</string>
              </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
@@ -318,9 +328,10 @@ border-bottom-left-radius: 0px;</string>
 color: rgb(255, 255, 255);
 font-size: 20px;
 padding:3px;
-font-family: &quot;SF Pro Display&quot;; 
+font-family: "SF Pro Display"; 
 		font-weight: bold; 
-    	font-style: normal;</string>
+    	font-style: normal;
+border: none;</string>
                 </property>
                 <property name="text">
                  <string>Welcome Attafahqi Amirtha Dariswan!</string>
@@ -411,10 +422,11 @@ font-family: &quot;SF Pro Display&quot;;
 
 QPushButton:hover {
 	image: url(:/Asset/Asset/Modul 23.png);
-}</string>
+};
+border: none;</string>
                     </property>
                     <property name="text">
-                     <string/>
+                     <string />
                     </property>
                    </widget>
                   </item>
@@ -445,10 +457,11 @@ QPushButton:hover {
 
 QPushButton:hover {
 	image: url(:/Asset/Asset/Modul 4.png);
-}</string>
+};
+border: none;</string>
                     </property>
                     <property name="text">
-                     <string/>
+                     <string />
                     </property>
                    </widget>
                   </item>
@@ -479,10 +492,11 @@ QPushButton:hover {
 
 QPushButton:hover {
 	image: url(:/Asset/Asset/Modul 5.png);
-}</string>
+};
+border: none;</string>
                     </property>
                     <property name="text">
-                     <string/>
+                     <string />
                     </property>
                    </widget>
                   </item>
@@ -513,10 +527,11 @@ QPushButton:hover {
 
 QPushButton:hover {
 	image: url(:/Asset/Asset/Modul 6.png);
-}</string>
+};
+border: none;</string>
                     </property>
                     <property name="text">
-                     <string/>
+                     <string />
                     </property>
                    </widget>
                   </item>
@@ -547,10 +562,11 @@ QPushButton:hover {
 
 QPushButton:hover {
 	image: url(:/Asset/Asset/Modul 7.png);
-}</string>
+};
+border: none;</string>
                     </property>
                     <property name="text">
-                     <string/>
+                     <string />
                     </property>
                    </widget>
                   </item>
@@ -581,10 +597,11 @@ QPushButton:hover {
 
 QPushButton:hover {
 	image: url(:/Asset/Asset/Modul 8.png);
-}</string>
+};
+border: none;</string>
                     </property>
                     <property name="text">
-                     <string/>
+                     <string />
                     </property>
                    </widget>
                   </item>
@@ -615,10 +632,11 @@ QPushButton:hover {
 
 QPushButton:hover {
 	image: url(:/Asset/Asset/Modul 910.png);
-}</string>
+};
+border: none;</string>
                     </property>
                     <property name="text">
-                     <string/>
+                     <string />
                     </property>
                    </widget>
                   </item>
@@ -642,7 +660,8 @@ QPushButton:hover {
              </property>
              <widget class="QWidget" name="FirstPage">
               <property name="styleSheet">
-               <string notr="true">image: url(:/Asset/Asset/Header.png);</string>
+               <string notr="true">image: url(:/Asset/Asset/Header.png);
+border: none;</string>
               </property>
              </widget>
              <widget class="QWidget" name="RootLocusPage">
@@ -672,7 +691,8 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_6">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(255, 0, 0);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -748,7 +768,8 @@ border-radius : 5px;</string>
                <item>
                 <widget class="QFrame" name="frame_2">
                  <property name="styleSheet">
-                  <string notr="true"/>
+                  <string notr="true">
+border: none;</string>
                  </property>
                  <property name="frameShape">
                   <enum>QFrame::StyledPanel</enum>
@@ -772,7 +793,8 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 23.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 23.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -806,7 +828,8 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/Root Locus.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/Root Locus.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
@@ -825,7 +848,8 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/FreqResp.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/FreqResp.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
@@ -914,7 +938,7 @@ border-radius : 5px;</string>
 		image: url(:/Asset/Asset/Run1.png);
 		font-size: 40px;
 		padding:7px;
-		font-family: &quot;SF Pro Display&quot;; 
+		font-family: "SF Pro Display"; 
 			font-weight: bold; 
     		font-style: normal;
 
@@ -924,10 +948,11 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(0, 200, 0, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
-                        <string/>
+                        <string />
                        </property>
                       </widget>
                      </item>
@@ -967,7 +992,7 @@ QPushButton:hover {
 		image: url(:/Asset/Asset/Run1.png);
 		font-size: 40px;
 		padding:7px;
-		font-family: &quot;SF Pro Display&quot;; 
+		font-family: "SF Pro Display"; 
 			font-weight: bold; 
     		font-style: normal;
 
@@ -977,10 +1002,11 @@ QPushButton:hover {
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(0, 200, 0, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
-                        <string/>
+                        <string />
                        </property>
                       </widget>
                      </item>
@@ -1042,7 +1068,8 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_25">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(255, 0, 0);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -1129,7 +1156,8 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 4.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 4.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -1163,7 +1191,8 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/VPID.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/VPID.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
@@ -1246,7 +1275,7 @@ border-radius : 5px;</string>
 		image: url(:/Asset/Asset/Run1.png);
 		font-size: 40px;
 		padding:7px;
-		font-family: &quot;SF Pro Display&quot;; 
+		font-family: "SF Pro Display"; 
 			font-weight: bold; 
     		font-style: normal;
 
@@ -1256,10 +1285,11 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(0, 200, 0, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
-                        <string/>
+                        <string />
                        </property>
                       </widget>
                      </item>
@@ -1331,7 +1361,8 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_37">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(255, 0, 0);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -1408,7 +1439,8 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 5.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 5.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -1442,7 +1474,8 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/CDFreq.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/CDFreq.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
@@ -1525,7 +1558,7 @@ border-radius : 5px;</string>
 		image: url(:/Asset/Asset/Run1.png);
 		font-size: 40px;
 		padding:7px;
-		font-family: &quot;SF Pro Display&quot;; 
+		font-family: "SF Pro Display"; 
 			font-weight: bold; 
     		font-style: normal;
 
@@ -1535,10 +1568,11 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(0, 200, 0, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
-                        <string/>
+                        <string />
                        </property>
                       </widget>
                      </item>
@@ -1620,7 +1654,8 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_55">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(255, 0, 0);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -1687,7 +1722,8 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 6.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 6.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -1721,7 +1757,8 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/SSM.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/SSM.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
@@ -1804,7 +1841,7 @@ border-radius : 5px;</string>
 		image: url(:/Asset/Asset/Run1.png);
 		font-size: 40px;
 		padding:7px;
-		font-family: &quot;SF Pro Display&quot;; 
+		font-family: "SF Pro Display"; 
 			font-weight: bold; 
     		font-style: normal;
 
@@ -1814,10 +1851,11 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(0, 200, 0, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
-                        <string/>
+                        <string />
                        </property>
                       </widget>
                      </item>
@@ -1909,7 +1947,8 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_68">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(255, 0, 0);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -1966,7 +2005,8 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 7.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 7.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -2000,7 +2040,8 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/Continous.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/Continous.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
@@ -2083,7 +2124,7 @@ border-radius : 5px;</string>
 		image: url(:/Asset/Asset/Run1.png);
 		font-size: 40px;
 		padding:7px;
-		font-family: &quot;SF Pro Display&quot;; 
+		font-family: "SF Pro Display"; 
 			font-weight: bold; 
     		font-style: normal;
 
@@ -2093,10 +2134,11 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(0, 200, 0, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
-                        <string/>
+                        <string />
                        </property>
                       </widget>
                      </item>
@@ -2198,7 +2240,8 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_81">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(255, 0, 0);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -2245,7 +2288,8 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 8.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 8.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -2279,7 +2323,8 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/Discrete.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/Discrete.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
@@ -2362,7 +2407,7 @@ border-radius : 5px;</string>
 		image: url(:/Asset/Asset/Run1.png);
 		font-size: 40px;
 		padding:7px;
-		font-family: &quot;SF Pro Display&quot;; 
+		font-family: "SF Pro Display"; 
 			font-weight: bold; 
     		font-style: normal;
 
@@ -2372,10 +2417,11 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(0, 200, 0, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
-                        <string/>
+                        <string />
                        </property>
                       </widget>
                      </item>
@@ -2487,7 +2533,8 @@ QPushButton:hover {
                    <widget class="QFrame" name="frame_94">
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(255, 0, 0);
-border-radius : 5px;</string>
+border-radius : 5px;
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -2524,7 +2571,8 @@ border-radius : 5px;</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">image: url(:/Asset/Asset/Modul 910.png);</string>
+                     <string notr="true">image: url(:/Asset/Asset/Modul 910.png);
+border: none;</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -2558,7 +2606,8 @@ border-radius : 5px;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/Motor.png);</string>
+                        <string notr="true">image: url(:/Asset/Asset/Motor.png);
+border: none;</string>
                        </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
@@ -2641,7 +2690,7 @@ border-radius : 5px;</string>
 		image: url(:/Asset/Asset/Run1.png);
 		font-size: 40px;
 		padding:7px;
-		font-family: &quot;SF Pro Display&quot;; 
+		font-family: "SF Pro Display"; 
 			font-weight: bold; 
     		font-style: normal;
 
@@ -2651,10 +2700,11 @@ border-radius : 5px;</string>
 QPushButton:hover {
 	image: url(:/Asset/Asset/Run2.png);
     background-color: rgba(0, 200, 0, 225);
-}</string>
+};
+border: none;</string>
                        </property>
                        <property name="text">
-                        <string/>
+                        <string />
                        </property>
                       </widget>
                      </item>
@@ -2715,7 +2765,8 @@ QPushButton:hover {
               <string notr="true">background-color: rgb(255, 0, 0);
 border-radius : 5px;
 border-top-left-radius: 0px;
-border-bottom-left-radius: 0px;</string>
+border-bottom-left-radius: 0px;
+border: none;</string>
              </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
@@ -2731,9 +2782,10 @@ border-bottom-left-radius: 0px;</string>
 color: rgb(255, 255, 255);
 font-size: 20px;
 padding:3px;
-font-family: &quot;SF Pro Display&quot;; 
+font-family: "SF Pro Display"; 
 		font-weight: bold; 
-    	font-style: normal;</string>
+    	font-style: normal;
+border: none;</string>
                 </property>
                 <property name="text">
                  <string>Welcome Attafahqi Amirtha Dariswan!</string>
@@ -2773,7 +2825,8 @@ font-family: &quot;SF Pro Display&quot;;
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true"/>
+                 <string notr="true">
+border: none;</string>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -2785,7 +2838,8 @@ font-family: &quot;SF Pro Display&quot;;
                  <item>
                   <widget class="QFrame" name="Grade_A">
                    <property name="styleSheet">
-                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_A.png);</string>
+                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_A.png);
+border: none;</string>
                    </property>
                    <property name="frameShape">
                     <enum>QFrame::StyledPanel</enum>
@@ -2798,7 +2852,8 @@ font-family: &quot;SF Pro Display&quot;;
                  <item>
                   <widget class="QFrame" name="Grade_B">
                    <property name="styleSheet">
-                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_B.png);</string>
+                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_B.png);
+border: none;</string>
                    </property>
                    <property name="frameShape">
                     <enum>QFrame::StyledPanel</enum>
@@ -2811,7 +2866,8 @@ font-family: &quot;SF Pro Display&quot;;
                  <item>
                   <widget class="QFrame" name="Grade_C">
                    <property name="styleSheet">
-                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_C.png);</string>
+                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_C.png);
+border: none;</string>
                    </property>
                    <property name="frameShape">
                     <enum>QFrame::StyledPanel</enum>
@@ -2824,7 +2880,8 @@ font-family: &quot;SF Pro Display&quot;;
                  <item>
                   <widget class="QFrame" name="Grade_D">
                    <property name="styleSheet">
-                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_D.png);</string>
+                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_D.png);
+border: none;</string>
                    </property>
                    <property name="frameShape">
                     <enum>QFrame::StyledPanel</enum>
@@ -2837,7 +2894,8 @@ font-family: &quot;SF Pro Display&quot;;
                  <item>
                   <widget class="QFrame" name="Grade_E">
                    <property name="styleSheet">
-                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_E.png);</string>
+                    <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Grade_E.png);
+border: none;</string>
                    </property>
                    <property name="frameShape">
                     <enum>QFrame::StyledPanel</enum>
@@ -2878,7 +2936,7 @@ font-family: &quot;SF Pro Display&quot;;
 		color: rgb(255, 255, 255);
 		font-size: 15px;
 		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
+		font-family: "SF Pro Display";
 			font-weight: bold; 
     		font-style: normal;
 }
@@ -2886,7 +2944,8 @@ font-family: &quot;SF Pro Display&quot;;
 /* Saat mouse hover */
 QPushButton:hover {
     background-color: rgb(200, 0, 0);
-}</string>
+};
+border: none;</string>
                    </property>
                    <property name="text">
                     <string>2-3</string>
@@ -2912,7 +2971,7 @@ QPushButton:hover {
 		color: rgb(255, 255, 255);
 		font-size: 15px;
 		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
+		font-family: "SF Pro Display";
 			font-weight: bold; 
     		font-style: normal;
 }
@@ -2920,7 +2979,8 @@ QPushButton:hover {
 /* Saat mouse hover */
 QPushButton:hover {
     background-color: rgb(200, 0, 0);
-}</string>
+};
+border: none;</string>
                    </property>
                    <property name="text">
                     <string>4</string>
@@ -2946,7 +3006,7 @@ QPushButton:hover {
 		color: rgb(255, 255, 255);
 		font-size: 15px;
 		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
+		font-family: "SF Pro Display";
 			font-weight: bold; 
     		font-style: normal;
 }
@@ -2954,7 +3014,8 @@ QPushButton:hover {
 /* Saat mouse hover */
 QPushButton:hover {
     background-color: rgb(200, 0, 0);
-}</string>
+};
+border: none;</string>
                    </property>
                    <property name="text">
                     <string>5</string>
@@ -2980,7 +3041,7 @@ QPushButton:hover {
 		color: rgb(255, 255, 255);
 		font-size: 15px;
 		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
+		font-family: "SF Pro Display";
 			font-weight: bold; 
     		font-style: normal;
 }
@@ -2988,7 +3049,8 @@ QPushButton:hover {
 /* Saat mouse hover */
 QPushButton:hover {
     background-color: rgb(200, 0, 0);
-}</string>
+};
+border: none;</string>
                    </property>
                    <property name="text">
                     <string>6</string>
@@ -3014,7 +3076,7 @@ QPushButton:hover {
 		color: rgb(255, 255, 255);
 		font-size: 15px;
 		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
+		font-family: "SF Pro Display";
 			font-weight: bold; 
     		font-style: normal;
 }
@@ -3022,7 +3084,8 @@ QPushButton:hover {
 /* Saat mouse hover */
 QPushButton:hover {
     background-color: rgb(200, 0, 0);
-}</string>
+};
+border: none;</string>
                    </property>
                    <property name="text">
                     <string>7</string>
@@ -3048,7 +3111,7 @@ QPushButton:hover {
 		color: rgb(255, 255, 255);
 		font-size: 15px;
 		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
+		font-family: "SF Pro Display";
 			font-weight: bold; 
     		font-style: normal;
 }
@@ -3056,7 +3119,8 @@ QPushButton:hover {
 /* Saat mouse hover */
 QPushButton:hover {
     background-color: rgb(200, 0, 0);
-}</string>
+};
+border: none;</string>
                    </property>
                    <property name="text">
                     <string>8</string>
@@ -3082,7 +3146,7 @@ QPushButton:hover {
 		color: rgb(255, 255, 255);
 		font-size: 15px;
 		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
+		font-family: "SF Pro Display";
 			font-weight: bold; 
     		font-style: normal;
 }
@@ -3090,7 +3154,8 @@ QPushButton:hover {
 /* Saat mouse hover */
 QPushButton:hover {
     background-color: rgb(200, 0, 0);
-}</string>
+};
+border: none;</string>
                    </property>
                    <property name="text">
                     <string>9-10</string>
@@ -3116,7 +3181,7 @@ QPushButton:hover {
 		color: rgb(255, 255, 255);
 		font-size: 15px;
 		padding: 3px 15px;
-		font-family: &quot;SF Pro Display&quot;;
+		font-family: "SF Pro Display";
 			font-weight: bold; 
     		font-style: normal;
 }
@@ -3124,7 +3189,8 @@ QPushButton:hover {
 /* Saat mouse hover */
 QPushButton:hover {
     background-color: rgb(200, 0, 0);
-}</string>
+};
+border: none;</string>
                    </property>
                    <property name="text">
                     <string>11</string>
@@ -3143,52 +3209,61 @@ QPushButton:hover {
                  </sizepolicy>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul23.png);</string>
+                 <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul23.png);
+border: none;</string>
                 </property>
                 <property name="currentIndex">
                  <number>0</number>
                 </property>
                 <widget class="QWidget" name="Modul23">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul23.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul23.png);
+border: none;</string>
                  </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_11"/>
+                 <layout class="QHBoxLayout" name="horizontalLayout_11" />
                 </widget>
                 <widget class="QWidget" name="Modul4">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul4.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul4.png);
+border: none;</string>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_28"/>
+                 <layout class="QVBoxLayout" name="verticalLayout_28" />
                 </widget>
                 <widget class="QWidget" name="Modul5">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul5.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul5.png);
+border: none;</string>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_29"/>
+                 <layout class="QVBoxLayout" name="verticalLayout_29" />
                 </widget>
                 <widget class="QWidget" name="Modul6">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul6.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul6.png);
+border: none;</string>
                  </property>
                 </widget>
                 <widget class="QWidget" name="Modul7">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul7.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul7.png);
+border: none;</string>
                  </property>
                 </widget>
                 <widget class="QWidget" name="Modul8">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul8.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul8.png);
+border: none;</string>
                  </property>
                 </widget>
                 <widget class="QWidget" name="Modul910">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul910.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul910.png);
+border: none;</string>
                  </property>
                 </widget>
                 <widget class="QWidget" name="Modul11">
                  <property name="styleSheet">
-                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul11.png);</string>
+                  <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Modul11.png);
+border: none;</string>
                  </property>
                 </widget>
                </widget>
@@ -3268,7 +3343,7 @@ QPushButton:hover {
 		font-size: 15px;
 		padding: 3px 15px;
 		image: url(:/Asset/Asset/Refresh 2.png);
-		font-family: &quot;SF Pro Display&quot;;
+		font-family: "SF Pro Display";
 			font-weight: bold; 
     		font-style: normal;
 }
@@ -3278,10 +3353,11 @@ QPushButton:hover {
 	
 	image: url(:/Asset/Asset/Refresh 1.png);
     background-color: rgb(200, 0, 0);
-}</string>
+};
+border: none;</string>
                    </property>
                    <property name="text">
-                    <string/>
+                    <string />
                    </property>
                   </widget>
                  </item>
@@ -3291,7 +3367,8 @@ QPushButton:hover {
               <item>
                <widget class="QFrame" name="Top10Total">
                 <property name="styleSheet">
-                 <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Total.png);</string>
+                 <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Top10_Total.png);
+border: none;</string>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -3304,7 +3381,8 @@ QPushButton:hover {
               <item>
                <widget class="QFrame" name="Bottom10Total">
                 <property name="styleSheet">
-                 <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Bottom10_Total.png);</string>
+                 <string notr="true">image: url(:/NilaiAdmin/NilaiAdmin/Bottom10_Total.png);
+border: none;</string>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -3328,7 +3406,7 @@ QPushButton:hover {
   </widget>
  </widget>
  <resources>
-  <include location="../resource.qrc"/>
+  <include location="../resource.qrc" />
  </resources>
- <connections/>
+ <connections />
 </ui>
