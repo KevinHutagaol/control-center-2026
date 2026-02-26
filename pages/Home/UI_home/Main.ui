@@ -2037,7 +2037,7 @@ border: none;</string>
                         </sizepolicy>
                        </property>
                        <property name="styleSheet">
-                        <string notr="true">image: url(:/Asset/Asset/Continous.png);
+                        <string notr="true">image: url(:/Asset/Asset/Continuous.png);
 border: none;</string>
                        </property>
                        <property name="frameShape">
