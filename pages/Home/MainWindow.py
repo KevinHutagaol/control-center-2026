@@ -35,7 +35,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.RootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.RootLocusPage))
         self.FreqResponse.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.FreqResponsePage))
         self.CDFrequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDFreqPage))
-        self.StateSpace.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.StateSpaceModelAndDesignPage))
         self.COD.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.ShouldBeEmptyPage))
         self.DiscreteCOD.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.DiscreteCDPage))
         self.DCMotor.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.DCMotorModelAndDesignPage))
@@ -44,8 +43,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.RunCDRL.clicked.connect(lambda checked, n=nama, p=npm: self.run_cd_root_locus(n, p))
         self.RunFreq.clicked.connect(lambda checked, n=nama, p=npm: self.run_frequency_response(n, p))
         self.RunCDFreq.clicked.connect(lambda checked, n=nama, p=npm: self.run_cd_frequency_response(n, p))
-        self.RunStateSpace.clicked.connect(lambda checked, n=nama, p=npm: self.run_state_space(n,
-                                                                                               p))  # RunStateSpace dan RunCOD harusnya di gabung karena modul 67
         self.RunCOD.clicked.connect(lambda checked, n=nama, p=npm: self.run_cod(n, p))
         self.RunDCOD.clicked.connect(lambda checked, n=nama, p=npm,: self.run_dcod(n, p))
         self.RunMotor.clicked.connect(lambda checked, n=nama, p=npm, k=kelompok: self.run_motor(n, p, k))
@@ -57,15 +54,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Kelompok2_2.setText(kelompok)
 
         self.Practicum.clicked.connect(lambda: self.Stacked.setCurrentWidget(self.PracticumPage))
-
-        self.btn23.clicked.connect(lambda: self.stackedNilai.setCurrentWidget(self.Modul23))
-        self.btn4.clicked.connect(lambda: self.stackedNilai.setCurrentWidget(self.Modul4))
-        self.btn5.clicked.connect(lambda: self.stackedNilai.setCurrentWidget(self.Modul5))
-        self.btn6.clicked.connect(lambda: self.stackedNilai.setCurrentWidget(self.Modul6))
-        self.btn7.clicked.connect(lambda: self.stackedNilai.setCurrentWidget(self.Modul7))
-        self.btn8.clicked.connect(lambda: self.stackedNilai.setCurrentWidget(self.Modul8))
-        self.btn910.clicked.connect(lambda: self.stackedNilai.setCurrentWidget(self.Modul910))
-        self.btn11.clicked.connect(lambda: self.stackedNilai.setCurrentWidget(self.Modul11))
 
         self._children = {}
 
