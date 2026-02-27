@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="Asset">
+    <file>Asset/Continuous.png</file>
     <file>Asset/logo.ico</file>
     <file>Asset/logo old.ico</file>
     <file>Asset/Logo Controllab 2026.png</file>
