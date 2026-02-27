@@ -27,49 +27,6 @@ from pages.Modul910.ui_910.ui_calibration import Ui_MainWindow as Ui_calibration
 from pages.Modul910.ui_910.ui_linlog import Ui_MainWindow as Ui_linlog
 from pages.Modul910.ui_910.ui_progressbar import Ui_Dialog as Ui_progressbar
 
-def resource_path(rel: str | Path) -> str:
-    """
-    Resolve a data file path that works in:
-      - dev (walk up parents so files in project root are found),
-      - PyInstaller --onedir,
-      - PyInstaller --onefile (temp _MEIPASS),
-      - PyInstaller v6 layout (data under _internal).
-    Returns a string path. It does NOT create files.
-    """
-    rel_path = Path(rel)
-
-    # 0) Absolute path: just return it (don’t prepend bases)
-    if rel_path.is_absolute():
-        return str(rel_path)
-
-    candidates: list[Path] = []
-
-    # 1) PyInstaller onefile: temp unpack dir
-    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        base = Path(sys._MEIPASS)
-        candidates += [base / rel_path, base / "_internal" / rel_path]
-
-    # 2) PyInstaller onedir: beside the executable
-    if getattr(sys, "frozen", False):
-        exe_dir = Path(sys.executable).parent
-        candidates += [exe_dir / rel_path, exe_dir / "_internal" / rel_path]
-
-    # 3) Dev: walk upwards so root-level assets can be found from subpackages
-    here = Path(__file__).resolve().parent
-    for parent in [here, *here.parents]:
-        candidates.append(parent / rel_path)
-        candidates.append(parent / "_internal" / rel_path)
-
-    # Pick the first existing candidate
-    for c in candidates:
-        if c.exists():
-            return str(c)
-
-    # Fallback: return the first candidate even if missing (caller can handle)
-    return str(candidates[0])
-
-
-        
 
 def test_upload_student_submission(self):
     """Test function to upload a sample student submission"""
@@ -167,11 +124,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
     def __init__(self, kelompok):
         super().__init__()
         
-        # print("Loading UI from:", resource_path("ui_910/main.ui"))
 
         self.setupUi(self)
         self.setWindowTitle("Practicum Software : Motor SIM Modeling and Control")
-        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon("../../public/Logo Merah.png"))
 
         self.serial_conn = None
         self.child_windows = {}
@@ -371,7 +327,7 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
         super().__init__(main_window)  # Pass parent for Qt hierarchy
         self.setupUi(self)
         self.setWindowTitle("Encoder Calibration")
-        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon("../../public/Logo Merah.png"))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -507,7 +463,7 @@ class ProgressBar(QtWidgets.QDialog, Ui_progressbar):
         super().__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("Loading ...")
-        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon("../../public/Logo Merah.png"))
 
         self.setWindowModality(QtCore.Qt.ApplicationModal)
 
@@ -516,7 +472,7 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
         super().__init__(main_window)
         self.setupUi(self)
         self.setWindowTitle("DC Motor vs PWM Linear Relation")
-        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon("../../public/Logo Merah.png"))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -757,7 +713,7 @@ class LRC(QtWidgets.QMainWindow, Ui_lrc):
         super().__init__(main_window)
         self.setupUi(self)
         self.setWindowTitle("Linear Region Limit")
-        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon("../../public/Logo Merah.png"))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -877,7 +833,7 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
         super().__init__(main_window)
         self.setupUi(self)
         self.setWindowTitle("DC Motor Open Loop Control")
-        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon("../../public/Logo Merah.png"))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
@@ -2491,7 +2447,7 @@ class sa(QtWidgets.QMainWindow, Ui_sa):
         super().__init__(main_window)
         self.setupUi(self)
         self.setWindowTitle("Submit Answers")
-        self.setWindowIcon(QtGui.QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QtGui.QIcon("../../public/Logo Merah.png"))
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window

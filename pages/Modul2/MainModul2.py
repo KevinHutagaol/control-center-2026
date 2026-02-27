@@ -11,11 +11,6 @@ import pages.Modul2.resourcesmodul2
 
 from pages.Modul2.ui.ui_MainModul2 import Ui_MainWindow
 
-
-
-
-
-
 class FullScreenPlot(QDialog):
     def __init__(self, parent=None, title="Full Screen Plot"):
         super().__init__(parent)

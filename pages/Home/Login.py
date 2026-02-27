@@ -1,18 +1,12 @@
-import json
-
-import requests
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import QTimer, QThread, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon, QValidator
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
+from PyQt5.QtCore import  QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
 from appConfig import firebaseConfig, firestoreConfig
-from func import updaterFunc as updaterFunc
-from func.Auth import runPasswordAuth, runGoogleAuth, AuthWorker
-from pages.Home.installerUtils import resource_path
+from func.Auth import AuthWorker
 
 from pages.Home.UI_home.ui_Login import Ui_MainWindow
-from pages.Home.UpdaterDialog import UpdaterDialog
 
 from pages.Home.MainWindow import MainWindow
 
@@ -32,7 +26,7 @@ class Login(QMainWindow, Ui_MainWindow):
         self.main_window = None
         self.setupUi(self)
         self.setWindowTitle(f"Control Laboratory - Control Center")
-        self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
+        self.setWindowIcon(QIcon("public/Logo Merah.png"))
 
         self.Login.clicked.connect(self.loginEmailPassword)
         self.LoginGoogle.clicked.connect(self.loginGoogle)
@@ -40,12 +34,7 @@ class Login(QMainWindow, Ui_MainWindow):
 
         self.Back.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.LoginPage))
 
-        self._version_check_scheduled = False
         self.show()
-
-        if not self._version_check_scheduled:
-            self._version_check_scheduled = True
-            QTimer.singleShot(0, self.checkVersion)
 
         self.auth_worker = AuthWorker()
         self.auth_thread = QThread()
@@ -56,46 +45,6 @@ class Login(QMainWindow, Ui_MainWindow):
 
         self.auth_worker.finished.connect(self.on_auth_finished)
         self.auth_thread.start()
-
-    def checkVersion(self):
-        print("Checking Version (async)...")
-
-        self.worker = updaterFunc.VersionChecker()
-        self.worker.result.connect(self._on_version_checked)
-        self.worker.error.connect(lambda err: QMessageBox.critical(self, "Error: Checking Release Version",
-                                                                   f"Consult to your lab assistant:\n{err}"))
-        self.worker.start()
-
-    def _on_version_checked(self, outdated, local, remote):
-        print(f"{local} (local) <===> {remote} (remote)")
-
-        if outdated:
-            msg = QMessageBox(self)
-            msg.setIcon(QMessageBox.Information)
-            msg.setWindowTitle("Update Available")
-            msg.setText(f"New version in release: {remote}")
-            msg.setInformativeText(
-                "Press update to download the new releases and replace the old files. The update is mandatory for the app.")
-            update_btn = msg.addButton("Update Now", QMessageBox.AcceptRole)
-            later_btn = msg.addButton("Close App", QMessageBox.RejectRole)
-            msg.setDefaultButton(update_btn)
-            msg.exec_()
-
-            if msg.clickedButton() is update_btn:
-                try:
-                    tag, assets = updaterFunc.list_assets()
-                    asset = next((a for a in assets if "NT" in a["name"]), None)
-                    if not asset:
-                        QMessageBox.warning(self, "Tidak ditemukan", "Asset NT tidak ditemukan di rilis ini.")
-                        return
-
-                    dlg = UpdaterDialog(self, asset)
-                    dlg.exec_()
-                except Exception as e:
-                    QMessageBox.critical(self, "Gagal Update", f"Terjadi error saat update:\n{e}")
-
-            elif msg.clickedButton() is later_btn:
-                QApplication.quit()
 
     def loginGoogle(self):
         self.Login.setEnabled(False)

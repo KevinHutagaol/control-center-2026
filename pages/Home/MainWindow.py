@@ -2,8 +2,6 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow
 
-from pages.Home.installerUtils import resource_path
-
 from pages.Modul2.MainModul2 import launch_modul2
 from pages.Modul3.mainCDRL import exec_CDRL
 from pages.Modul4.MainModul4 import launch_modul4
@@ -24,7 +22,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.login_window = None
         self.setupUi(self)
         self.setWindowTitle(f"Control Laboratory - Control Center")
-        self.setWindowIcon(QIcon(resource_path("public/Logo Merah.png")))
+        self.setWindowIcon(QIcon("public/Logo Merah.png"))
 
         # store session info so we can clear them on logout
         self.npm = npm

@@ -10,7 +10,6 @@ import os
 import sys
 import json
 import hashlib
-from pathlib import Path
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QPushButton, QGraphicsDropShadowEffect, QWidget
 from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtGui import QCursor, QColor, QIcon
@@ -24,7 +23,6 @@ import control as ctrl
 import math
 import pandas as pd
 from pathlib import Path
-from google.cloud import firestore
 
 
 import pages.Modul3.Asset.Resource
@@ -34,60 +32,7 @@ from pages.Modul3.ui.ui_PIDparam import Ui_MainWindow as Ui_PIDparam
 from pages.Modul3.ui.ui_ReferencePoint import Ui_MainWindow as Ui_ReferencePoint
 from pages.Modul3.ui.ui_TransferFunction import Ui_MainWindow as Ui_TransferFunction
 
-def resource_path(rel: str | Path) -> str:
-    """
-    Resolve a data file path that works in:
-      - dev (walk up parents so files in project root are found),
-      - PyInstaller --onedir,
-      - PyInstaller --onefile (temp _MEIPASS),
-      - PyInstaller v6 layout (data under _internal).
-    Returns a string path. It does NOT create files.
-    """
-    rel_path = Path(rel)
-
-    # 0) Absolute path: just return it (don’t prepend bases)
-    if rel_path.is_absolute():
-        return str(rel_path)
-
-    candidates: list[Path] = []
-
-    # 1) PyInstaller onefile: temp unpack dir
-    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        base = Path(sys._MEIPASS)
-        candidates += [base / rel_path, base / "_internal" / rel_path]
-
-    # 2) PyInstaller onedir: beside the executable
-    if getattr(sys, "frozen", False):
-        exe_dir = Path(sys.executable).parent
-        candidates += [exe_dir / rel_path, exe_dir / "_internal" / rel_path]
-
-    # 3) Dev: walk upwards so root-level assets can be found from subpackages
-    here = Path(__file__).resolve().parent
-    for parent in [here, *here.parents]:
-        candidates.append(parent / rel_path)
-        candidates.append(parent / "_internal" / rel_path)
-
-    # Pick the first existing candidate
-    for c in candidates:
-        if c.exists():
-            return str(c)
-
-    # Fallback: return the first candidate even if missing (caller can handle)
-    return str(candidates[0])
-
-# TODO: FIX DATABASE
-# === Firestore ===
-# try:
-#     db = firestore.Client.from_service_account_json(resource_path("firebaseAuth.json"))
-#
-#     print("CDRL: Firebase initialized successfully")
-#
-# except Exception as e:
-#     print("Firebase error:", e)
-#     QMessageBox.critical(QWidget(), "Firebase Error", f"Failed to Connect to Firebase. Error: {e}")
-#     sys.exit(1)
-
-s = symbols('s') 
+s = symbols('s')
 
 ADMIN_NPM = "2206817396"
 TOTAL_STUDENT = 149
@@ -143,10 +88,10 @@ class Leaderboard(QMainWindow):
         screen_rect = screen.geometry()
         screen_width = screen_rect.width()
         screen_height = screen_rect.height()
-        ui_file = resource_path("ui/Leaderboard.ui" if screen_width >= 1920 and screen_height >= 1080 else "ui/LeaderboardNoHD.ui")
+        ui_file = ("ui/Leaderboard.ui" if screen_width >= 1920 and screen_height >= 1080 else "ui/LeaderboardNoHD.ui")
         uic.loadUi(ui_file, self)
         self.setWindowTitle("Root Locus Controller Design")
-        self.setWindowIcon(QIcon(resource_path("Asset/Logo Control.png")))
+        self.setWindowIcon(QIcon("Asset/Logo Control.png"))
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.last_data_snapshot = None
         # buat direktori Hasil jika belum ada
@@ -276,11 +221,9 @@ class MainWindow(QMainWindow, Ui_MainNoHD):
     def __init__(self, Nama, NPM):
         super(MainWindow, self).__init__()
 
-        # print("Loading UI from:", resource_path("ui/MainNoHD.ui"))
-
         self.setupUi(self)
         self.setWindowTitle("Practicum Software : Virtual PID")
-        self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QIcon("../../public/Logo Merah.png"))
         self.Nama = Nama
         self.NPM = NPM
         
@@ -593,7 +536,7 @@ class PID(QMainWindow, Ui_PIDparam):
     def __init__(self, main_window):
         super(PID, self).__init__()
         self.setupUi(self)
-        self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QIcon("../../public/Logo Merah.png"))
         self.setWindowTitle("PID Parameter")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
@@ -627,7 +570,7 @@ class References(QMainWindow, Ui_ReferencePoint):
     def __init__(self, main_window):
         super(References, self).__init__()
         self.setupUi(self)
-        self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QIcon("../../public/Logo Merah.png"))
         self.setWindowTitle("Reference Point")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
@@ -658,7 +601,7 @@ class TransferFunction(QMainWindow, Ui_TransferFunction):
     def __init__(self, main_window):
         super(TransferFunction, self).__init__()
         self.setupUi(self)
-        self.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
+        self.setWindowIcon(QIcon("../../public/Logo Merah.png"))
         self.setWindowTitle("System Transfer Function")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 

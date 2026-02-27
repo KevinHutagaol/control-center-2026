@@ -22,42 +22,6 @@ from pages.Modul7.UI.ui_Dmatrix import Ui_MainWindow as Ui_DMatrix
 from pages.Modul7.UI.ui_Controller import Ui_MainWindow as Ui_Controller
 from pages.Modul7.UI.ui_PreGain import Ui_MainWindow as Ui_PreGain
 
-def resource_path(rel: str) -> str:
-    """
-    Resolve a data file path that works in:
-      - dev (run from .py),
-      - PyInstaller --onedir,
-      - PyInstaller --onefile (temp _MEIPASS),
-      - PyInstaller v6 layout (data under _internal).
-    Returns a string path. It does NOT create files.
-    """
-    rel_path = Path(rel)
-
-    candidates = []
-
-    # onefile: temp unpack dir
-    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        base = Path(sys._MEIPASS)
-        candidates += [base / rel_path, base / "_internal" / rel_path]
-
-    # onedir: beside the executable
-    if getattr(sys, "frozen", False):
-        exe_dir = Path(sys.executable).parent
-        candidates += [exe_dir / rel_path, exe_dir / "_internal" / rel_path]
-
-    # dev: beside this source file
-    here = Path(__file__).resolve().parent
-    candidates.append(here / rel_path)
-
-    # pick the first existing candidate
-    for c in candidates:
-        if c.exists():
-            return str(c)
-
-    # fallback: return the first candidate even if missing (caller can handle)
-    return str(candidates[0])
-
-
 def center_widget(widget):
     qr = widget.frameGeometry()
     cp = QDesktopWidget().availableGeometry().center()
@@ -287,7 +251,7 @@ def exec_COD(nama, npm):
     window.show()
     
     widget = QtWidgets.QStackedWidget()
-    widget.setWindowIcon(QIcon(resource_path("../../public/Logo Merah.png")))
+    widget.setWindowIcon(QIcon("../../public/Logo Merah.png"))
     widget.addWidget(window)
     widget.setCurrentWidget(window)
     widget.resize(window.minimumSize())
