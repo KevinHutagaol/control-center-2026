@@ -4,8 +4,12 @@
 PROJECT_DIR=$(pwd)
 DESKTOP_FILE="$HOME/.local/share/applications/control-center.desktop"
 cd "$PROJECT_DIR"
+sudo dnf install python3.11
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 pip install pyinstaller
-# sudo dnf install python3.11 python3.11-devel
+sudo dnf install python3.11 python3.11-devel
 pyinstaller --noconsole --onedir --name ControlCenter pages/Home/main.py
 
 
