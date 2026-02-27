@@ -4,8 +4,12 @@ import secrets
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs, urlencode
-
+import os
+import sys
+import shutil
+import subprocess
 import requests
+
 from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 from pandas.io.sas.sas_constants import column_name_text_subheader_offset
 
@@ -15,6 +19,80 @@ from func.FirebaseAuthedSession import authed_session
 
 FIREBASE_API_KEY = firebaseConfig["apiKey"]
 CLIENT_ID = oAuthConfig["clientId"]
+
+
+def open_incognito(url):
+    browsers = [
+        ('chrome', ['google-chrome', 'chrome', 'google-chrome-stable'], '--incognito'),
+        ('edge', ['msedge', 'microsoft-edge', 'edge'], '-inprivate'),
+        ('firefox', ['firefox'], '-private-window'),
+        ('brave', ['brave-browser', 'brave'], '--incognito'),
+        ('opera', ['opera'], '--private')
+    ]
+
+    if sys.platform == 'darwin':
+        mac_apps = {
+            'Google Chrome': '--incognito',
+            'Microsoft Edge': '-inprivate',
+            'Firefox': '-private-window',
+            'Brave Browser': '--incognito'
+        }
+        for app_name, flag in mac_apps.items():
+            try:
+                cmd = ['open', '-a', app_name, '-n', '--args', flag, url]
+                result = subprocess.run(cmd, capture_output=True)
+                if result.returncode == 0:
+                    return True
+            except Exception:
+                continue
+
+    else:
+        for browser_id, executable_names, flag in browsers:
+            cmd_path = None
+
+            for exe in executable_names:
+                cmd_path = shutil.which(exe)
+                if cmd_path:
+                    break
+
+            if not cmd_path and sys.platform == 'win32':
+                prefixes = [
+                    os.environ.get('PROGRAMFILES', 'C:\\Program Files'),
+                    os.environ.get('PROGRAMFILES(X86)', 'C:\\Program Files (x86)'),
+                    os.environ.get('LOCALAPPDATA', 'C:\\Users\\Default\\AppData\\Local')
+                ]
+
+                suffixes = {
+                    'chrome': [r"Google\Chrome\Application\chrome.exe"],
+                    'edge': [r"Microsoft\Edge\Application\msedge.exe"],
+                    'firefox': [r"Mozilla Firefox\firefox.exe"],
+                    'brave': [r"BraveSoftware\Brave-Browser\Application\brave.exe"]
+                }
+
+                for prefix in prefixes:
+                    for suffix in suffixes.get(browser_id, []):
+                        test_path = os.path.join(prefix, suffix)
+                        if os.path.exists(test_path):
+                            cmd_path = test_path
+                            break
+                    if cmd_path:
+                        break
+
+            if cmd_path:
+                try:
+                    if sys.platform == 'win32':
+                        # DETACHED_PROCESS flag (0x00000008) isolates it from the Python console
+                        subprocess.Popen([cmd_path, flag, url], creationflags=0x00000008)
+                    else:
+                        subprocess.Popen([cmd_path, flag, url], start_new_session=True)
+                    return True
+                except Exception as e:
+                    print(f"Failed to launch {browser_id}: {e}")
+                    continue
+
+    print("Warning: Could not find a supported browser for incognito mode. Falling back to default.")
+    webbrowser.open(url)
+    return False
 
 def generatePKCE():
     verifier = secrets.token_urlsafe(64)
@@ -76,7 +154,7 @@ class OAuthHandler(BaseHTTPRequestHandler):
 
 def getOAuthCode(server, auth_url):
     print("Openning Browser for Login")
-    webbrowser.open(auth_url)
+    open_incognito(auth_url)
     server.handle_request()
     return getattr(server, 'auth_code', None)
 
