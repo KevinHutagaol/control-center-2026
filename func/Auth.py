@@ -11,9 +11,7 @@ import subprocess
 import requests
 
 from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
-from pandas.io.sas.sas_constants import column_name_text_subheader_offset
 
-import func.FirebaseAuthedSession
 from appConfig import firebaseConfig, oAuthConfig
 from func.FirebaseAuthedSession import authed_session
 
@@ -81,7 +79,6 @@ def open_incognito(url):
             if cmd_path:
                 try:
                     if sys.platform == 'win32':
-                        # DETACHED_PROCESS flag (0x00000008) isolates it from the Python console
                         subprocess.Popen([cmd_path, flag, url], creationflags=0x00000008)
                     else:
                         subprocess.Popen([cmd_path, flag, url], start_new_session=True)
