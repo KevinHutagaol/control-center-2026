@@ -5,7 +5,7 @@ PROJECT_DIR=$(pwd)
 DESKTOP_FILE="$HOME/.local/share/applications/control-center.desktop"
 cd "$PROJECT_DIR"
 pip install pyinstaller
-sudo dnf install python3.11 python3.11-devel
+# sudo dnf install python3.11 python3.11-devel
 pyinstaller --noconsole --onedir --name ControlCenter pages/Home/main.py
 
 

@@ -71,7 +71,8 @@ class Ui_MainWindow(object):
         self.label.setSizePolicy(sizePolicy)
         self.label.setStyleSheet("font: 81 30pt \"Poppins\";\n"
 "font-weight: bold; \n"
-"color: rgb(214, 0, 0);\n"
+"color: rgb(206, 1, 1);\n"
+"font-style: italic;\n"
 "border: none;")
         self.label.setObjectName("label")
         self.verticalLayout_3.addWidget(self.label)
@@ -93,7 +94,7 @@ class Ui_MainWindow(object):
         self.LoginGoogle.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.LoginGoogle.setStyleSheet("QPushButton {\n"
 "         \n"
-"        background-color: rgba(214, 0, 0,255);\n"
+"        background-color: rgba(8, 29, 56,255);\n"
 "        border-radius : 5px;\n"
 "        color: rgb(255, 255, 255);\n"
 "        padding-top:5px;\n"
@@ -106,7 +107,7 @@ class Ui_MainWindow(object):
 "\n"
 "/* Saat mouse hover */\n"
 "QPushButton:hover {\n"
-"    background-color: rgba(214, 0, 0,225);\n"
+"    background-color: rgba(8, 29, 56,225);\n"
 "};\n"
 "border: none;")
         self.LoginGoogle.setObjectName("LoginGoogle")
@@ -123,7 +124,8 @@ class Ui_MainWindow(object):
         self.label_3 = QtWidgets.QLabel(self.frame_20)
         self.label_3.setStyleSheet("font: 12pt \"Poppins\";\n"
 "font-weight: bold; \n"
-"color: rgb(214, 0, 0);\n"
+"color: rgb(206, 1, 1);\n"
+"font-style: italic;\n"
 "border: none;")
         self.label_3.setObjectName("label_3")
         self.verticalLayout_10.addWidget(self.label_3)
@@ -148,7 +150,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_6.sizePolicy().hasHeightForWidth())
         self.frame_6.setSizePolicy(sizePolicy)
         self.frame_6.setMinimumSize(QtCore.QSize(70, 40))
-        self.frame_6.setStyleSheet("background-color: rgb(214, 0, 0);\n"
+        self.frame_6.setStyleSheet("background-color: rgb(8, 29, 56);\n"
 "border-top-left-radius: 5px;\n"
 "border-bottom-left-radius: 5px;\n"
 "padding : 2px;\n"
@@ -160,15 +162,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.addWidget(self.frame_6)
         self.Email = QtWidgets.QLineEdit(self.frame_5)
         self.Email.setMinimumSize(QtCore.QSize(0, 40))
-        self.Email.setStyleSheet("background-color: rgba(214, 0, 0,100);\n"
+        self.Email.setStyleSheet("background-color: rgba(8, 29, 56,100);\n"
 "border:none;\n"
 "border-radius: 5px;\n"
 "border-top-left-radius: 0px;\n"
 "border-bottom-left-radius: 0px;\n"
 "color:rgb(255, 255, 255);\n"
-"border-bottom: 2px solid rgb(214, 0, 0);\n"
-"border-right: 2px solid rgb(214, 0, 0);\n"
-"border-top: 2px solid rgb(214, 0, 0);\n"
+"border-bottom: 2px solid rgb(8, 29, 56);\n"
+"border-right: 2px solid rgb(8, 29, 56);\n"
+"border-top: 2px solid rgb(8, 29, 56);\n"
 "padding-top:3px;\n"
 "padding-left:10px;\n"
 "font: 75 12pt \"Poppins\";\n"
@@ -190,8 +192,8 @@ class Ui_MainWindow(object):
         self.label_4 = QtWidgets.QLabel(self.frame_21)
         self.label_4.setStyleSheet("font: 12pt \"Poppins\";\n"
 "font-weight: bold; \n"
-"color: rgb(214, 0, 0);\n"
-"border: none;")
+"color: rgb(206, 1, 1);\n"
+"font-style: italic;")
         self.label_4.setObjectName("label_4")
         self.verticalLayout_11.addWidget(self.label_4)
         self.frame = QtWidgets.QFrame(self.frame_21)
@@ -216,7 +218,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_3.sizePolicy().hasHeightForWidth())
         self.frame_3.setSizePolicy(sizePolicy)
         self.frame_3.setMinimumSize(QtCore.QSize(70, 40))
-        self.frame_3.setStyleSheet("background-color: rgb(214, 0, 0);\n"
+        self.frame_3.setStyleSheet("background-color: rgb(8, 29, 56);\n"
 "border-top-left-radius: 5px;\n"
 "border-bottom-left-radius: 5px;\n"
 "padding : 2px;\n"
@@ -228,15 +230,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addWidget(self.frame_3)
         self.Pass = QtWidgets.QLineEdit(self.frame)
         self.Pass.setMinimumSize(QtCore.QSize(0, 40))
-        self.Pass.setStyleSheet("background-color: rgba(214, 0, 0,100);\n"
+        self.Pass.setStyleSheet("background-color: rgba(8, 29, 56,100);\n"
 "border:none;\n"
 "border-radius: 5px;\n"
 "border-top-left-radius: 0px;\n"
 "border-bottom-left-radius: 0px;\n"
 "color:rgb(255, 255, 255);\n"
-"border-bottom: 2px solid rgb(214, 0, 0);\n"
-"border-right: 2px solid rgb(214, 0, 0);\n"
-"border-top: 2px solid rgb(214, 0, 0);\n"
+"border-bottom: 2px solid rgb(8, 29, 56);\n"
+"border-right: 2px solid rgb(8, 29, 56);\n"
+"border-top: 2px solid rgb(8, 29, 56);\n"
 "padding-top:3px;\n"
 "padding-left:10px;\n"
 "font: 75 12pt \"Poppins\";\n"
@@ -257,7 +259,7 @@ class Ui_MainWindow(object):
         self.Login.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.Login.setStyleSheet("QPushButton {\n"
 "         \n"
-"        background-color: rgba(214, 0, 0,255);\n"
+"        background-color: rgba(8, 29, 56,255);\n"
 "        border-radius : 5px;\n"
 "        color: rgb(255, 255, 255);\n"
 "        padding-top:5px;\n"
@@ -270,7 +272,7 @@ class Ui_MainWindow(object):
 "\n"
 "/* Saat mouse hover */\n"
 "QPushButton:hover {\n"
-"    background-color: rgba(214, 0, 0,225);\n"
+"    background-color: rgba(8, 29, 56,225);\n"
 "};\n"
 "border: none;")
         self.Login.setObjectName("Login")
@@ -283,7 +285,7 @@ class Ui_MainWindow(object):
 "         background-color: rgba(255, 255, 255,0);\n"
 "        border-color: rgb(255, 255, 255);\n"
 "        border-radius : 5px;\n"
-"        color: rgb(214, 0, 0);        \n"
+"        color: rgb(8, 29, 56);        \n"
 "        padding:0px;\n"
 "        font: 8pt \"Poppins\";\n"
 "}\n"
@@ -323,7 +325,7 @@ class Ui_MainWindow(object):
         self.label_2.setSizePolicy(sizePolicy)
         self.label_2.setStyleSheet("font: 81 30pt \"Poppins\";\n"
 "font-weight: bold; \n"
-"color: rgb(214, 0, 0);\n"
+"color: rgb(8, 29, 56);\n"
 "border: none;")
         self.label_2.setObjectName("label_2")
         self.verticalLayout_5.addWidget(self.label_2)
@@ -347,7 +349,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_15.sizePolicy().hasHeightForWidth())
         self.frame_15.setSizePolicy(sizePolicy)
         self.frame_15.setMinimumSize(QtCore.QSize(70, 40))
-        self.frame_15.setStyleSheet("background-color: rgb(214, 0, 0);\n"
+        self.frame_15.setStyleSheet("background-color: rgb(8, 29, 56);\n"
 "border-top-left-radius: 5px;\n"
 "border-bottom-left-radius: 5px;\n"
 "padding : 2px;\n"
@@ -359,15 +361,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.addWidget(self.frame_15)
         self.EmailForgot = QtWidgets.QLineEdit(self.frame_14)
         self.EmailForgot.setMinimumSize(QtCore.QSize(0, 40))
-        self.EmailForgot.setStyleSheet("background-color: rgba(214, 0, 0,100);\n"
+        self.EmailForgot.setStyleSheet("background-color: rgba(8, 29, 56,100);\n"
 "border:none;\n"
 "border-radius: 5px;\n"
 "border-top-left-radius: 0px;\n"
 "border-bottom-left-radius: 0px;\n"
 "color:rgb(255, 255, 255);\n"
-"border-bottom: 2px solid rgb(214, 0, 0);\n"
-"border-right: 2px solid rgb(214, 0, 0);\n"
-"border-top: 2px solid rgb(214, 0, 0);\n"
+"border-bottom: 2px solid rgb(8, 29, 56);\n"
+"border-right: 2px solid rgb(8, 29, 56);\n"
+"border-top: 2px solid rgb(8, 29, 56);\n"
 "padding-top:3px;\n"
 "padding-left:10px;\n"
 "font: 75 12pt \"Poppins\";\n"
@@ -388,7 +390,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_16.sizePolicy().hasHeightForWidth())
         self.frame_16.setSizePolicy(sizePolicy)
         self.frame_16.setMinimumSize(QtCore.QSize(70, 40))
-        self.frame_16.setStyleSheet("background-color: rgb(214, 0, 0);\n"
+        self.frame_16.setStyleSheet("background-color: rgb(8, 29, 56);\n"
 "border-top-left-radius: 5px;\n"
 "border-bottom-left-radius: 5px;\n"
 "padding : 2px;\n"
@@ -400,15 +402,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.addWidget(self.frame_16)
         self.OldPass = QtWidgets.QLineEdit(self.frame_13)
         self.OldPass.setMinimumSize(QtCore.QSize(0, 40))
-        self.OldPass.setStyleSheet("background-color: rgba(214, 0, 0,100);\n"
+        self.OldPass.setStyleSheet("background-color: rgba(8, 29, 56,100);\n"
 "border:none;\n"
 "border-radius: 5px;\n"
 "border-top-left-radius: 0px;\n"
 "border-bottom-left-radius: 0px;\n"
 "color:rgb(255, 255, 255);\n"
-"border-bottom: 2px solid rgb(214, 0, 0);\n"
-"border-right: 2px solid rgb(214, 0, 0);\n"
-"border-top: 2px solid rgb(214, 0, 0);\n"
+"border-bottom: 2px solid rgb(8, 29, 56);\n"
+"border-right: 2px solid rgb(8, 29, 56);\n"
+"border-top: 2px solid rgb(8, 29, 56);\n"
 "padding-top:3px;\n"
 "padding-left:10px;\n"
 "font: 75 12pt \"Poppins\";\n"
@@ -429,7 +431,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_17.sizePolicy().hasHeightForWidth())
         self.frame_17.setSizePolicy(sizePolicy)
         self.frame_17.setMinimumSize(QtCore.QSize(70, 40))
-        self.frame_17.setStyleSheet("background-color: rgb(214, 0, 0);\n"
+        self.frame_17.setStyleSheet("background-color: rgb(8, 29, 56);\n"
 "border-top-left-radius: 5px;\n"
 "border-bottom-left-radius: 5px;\n"
 "padding : 2px;\n"
@@ -441,15 +443,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.frame_17)
         self.NewPass = QtWidgets.QLineEdit(self.frame_4)
         self.NewPass.setMinimumSize(QtCore.QSize(0, 40))
-        self.NewPass.setStyleSheet("background-color: rgba(214, 0, 0,100);\n"
+        self.NewPass.setStyleSheet("background-color: rgba(8, 29, 56,100);\n"
 "border:none;\n"
 "border-radius: 5px;\n"
 "border-top-left-radius: 0px;\n"
 "border-bottom-left-radius: 0px;\n"
 "color:rgb(255, 255, 255);\n"
-"border-bottom: 2px solid rgb(214, 0, 0);\n"
-"border-right: 2px solid rgb(214, 0, 0);\n"
-"border-top: 2px solid rgb(214, 0, 0);\n"
+"border-bottom: 2px solid rgb(8, 29, 56);\n"
+"border-right: 2px solid rgb(8, 29, 56);\n"
+"border-top: 2px solid rgb(8, 29, 56);\n"
 "padding-top:3px;\n"
 "padding-left:10px;\n"
 "font: 75 12pt \"Poppins\";\n"
@@ -470,7 +472,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_18.sizePolicy().hasHeightForWidth())
         self.frame_18.setSizePolicy(sizePolicy)
         self.frame_18.setMinimumSize(QtCore.QSize(70, 40))
-        self.frame_18.setStyleSheet("background-color: rgb(214, 0, 0);\n"
+        self.frame_18.setStyleSheet("background-color: rgb(8, 29, 56);\n"
 "border-top-left-radius: 5px;\n"
 "border-bottom-left-radius: 5px;\n"
 "padding : 2px;\n"
@@ -482,15 +484,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.addWidget(self.frame_18)
         self.ConfirmPass = QtWidgets.QLineEdit(self.frame_9)
         self.ConfirmPass.setMinimumSize(QtCore.QSize(0, 40))
-        self.ConfirmPass.setStyleSheet("background-color: rgba(214, 0, 0,100);\n"
+        self.ConfirmPass.setStyleSheet("background-color: rgba(8, 29, 56,100);\n"
 "border:none;\n"
 "border-radius: 5px;\n"
 "border-top-left-radius: 0px;\n"
 "border-bottom-left-radius: 0px;\n"
 "color:rgb(255, 255, 255);\n"
-"border-bottom: 2px solid rgb(214, 0, 0);\n"
-"border-right: 2px solid rgb(214, 0, 0);\n"
-"border-top: 2px solid rgb(214, 0, 0);\n"
+"border-bottom: 2px solid rgb(8, 29, 56);\n"
+"border-right: 2px solid rgb(8, 29, 56);\n"
+"border-top: 2px solid rgb(8, 29, 56);\n"
 "padding-top:3px;\n"
 "padding-left:10px;\n"
 "font: 75 12pt \"Poppins\";\n"
@@ -508,7 +510,7 @@ class Ui_MainWindow(object):
         self.Change.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.Change.setStyleSheet("QPushButton {\n"
 "         \n"
-"        background-color: rgba(214, 0, 0,255);\n"
+"        background-color: rgba(8, 29, 56,255);\n"
 "        border-radius : 5px;\n"
 "        color: rgb(255, 255, 255);\n"
 "        padding-top:5px;\n"
@@ -519,7 +521,7 @@ class Ui_MainWindow(object):
 "\n"
 "/* Saat mouse hover */\n"
 "QPushButton:hover {\n"
-"    background-color: rgba(214, 0, 0,225);\n"
+"    background-color: rgba(8, 29, 56,225);\n"
 "};\n"
 "border: none;")
         self.Change.setObjectName("Change")
@@ -531,7 +533,7 @@ class Ui_MainWindow(object):
 "         background-color: rgba(255, 255, 255,0);\n"
 "        border-color: rgb(255, 255, 255);\n"
 "        border-radius : 5px;\n"
-"        color: rgb(214, 0, 0);        \n"
+"        color: rgb(8, 29, 56);        \n"
 "        padding:0px;\n"
 "        font: 8pt \"Poppins\";\n"
 "}\n"
