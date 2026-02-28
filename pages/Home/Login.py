@@ -4,7 +4,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
 from appConfig import firebaseConfig, firestoreConfig
-from func.Auth import AuthWorker
+from func.Auth import AuthWorker, logOutGoogleSession
 
 from pages.Home.UI_home.ui_Login import Ui_MainWindow
 
@@ -93,13 +93,22 @@ class Login(QMainWindow, Ui_MainWindow):
         self.main_window.sig_logout_clicked.connect(self.logout)
         self.main_window.show()
         QtWidgets.QApplication.restoreOverrideCursor()
-        self.close()
+        self.hide()
 
-        # elif curRole == 'Assisten':
-        #     self.main_window = AdminWindow(npm, curNama, curRole)
-        #     self.main_window.sig_logout_clicked.connect(self.logout)
-        #     self.main_window.show()
-        #     self.close()
+
+    def closeEvent(self, event):
+        reply = QMessageBox.question(
+            self, 'Exit',
+            "Are you sure you want to close? This will log you out.",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            authed_session.clear_credentials()
+            logOutGoogleSession()
+            event.accept()
+        else:
+            event.ignore()
 
     @pyqtSlot(QMainWindow)
     def logout(self, mainWindow):
@@ -146,7 +155,8 @@ class Login(QMainWindow, Ui_MainWindow):
                 except Exception as e:
                     print(e)
 
-        authed_session.set_credentials("", "", "", 0)
+        authed_session.clear_credentials()
+        logOutGoogleSession()
 
         # Show login window again
         try:
