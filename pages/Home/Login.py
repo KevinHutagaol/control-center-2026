@@ -98,7 +98,8 @@ class Login(QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, event):
         reply = QMessageBox.question(
-            self, 'Exit',
+            # TODO: Check where the inheritance overwrites the styles
+            None, 'Exit',
             "Are you sure you want to close? This will log you out.",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
