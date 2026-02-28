@@ -29,7 +29,9 @@ class FullScreenPlot(QDialog):
         self.layout.addWidget(self.canvas)
         
     def plot_data(self, t, y, title, xlabel, ylabel, plot_type="step", 
-                  poles=None, zeros=None, current_poles=None): 
+                  plant_poles=None, plant_zeros=None, 
+                  ctrl_poles=None, ctrl_zeros=None, 
+                  current_poles=None): 
         self.ax.clear()
         
         if plot_type == "step":
@@ -37,26 +39,34 @@ class FullScreenPlot(QDialog):
             self.ax.grid(True)
             
         elif plot_type == "rlocus":
-            self.ax.plot(t, y, linewidth=1, alpha=1) # Garis RL agak transparan dikit
+            self.ax.plot(t, y, linewidth=1, alpha=1) # Garis lintasan
             
-            # Plot Poles Asli (OL)
-            if poles is not None and len(poles) > 0:
-                self.ax.scatter(np.real(poles), np.imag(poles), 
-                              marker='x', color='red', s=50, label='Open Loop Poles')
+            # --- Plot Plant Poles & Zeros ---
+            if plant_poles is not None and len(plant_poles) > 0:
+                self.ax.scatter(np.real(plant_poles), np.imag(plant_poles), 
+                              marker='x', color='red', s=50, label='Plant Poles')
             
-            # Plot Zeros Asli (OL)
-            if zeros is not None and len(zeros) > 0:
-                self.ax.scatter(np.real(zeros), np.imag(zeros), 
-                              marker='o', color='blue', s=50, label='Open Loop Zeros')
+            if plant_zeros is not None and len(plant_zeros) > 0:
+                self.ax.scatter(np.real(plant_zeros), np.imag(plant_zeros), 
+                              marker='o', color='blue', s=50, label='Plant Zeros')
 
-            # --- BARU: Plot Current Closed-Loop Poles (Akibat Gain) ---
+            # --- Plot Controller Poles & Zeros ---
+            if ctrl_poles is not None and len(ctrl_poles) > 0:
+                self.ax.scatter(np.real(ctrl_poles), np.imag(ctrl_poles), 
+                              marker='x', color='green', s=70, label='Ctrl Poles')
+                
+            if ctrl_zeros is not None and len(ctrl_zeros) > 0:
+                self.ax.scatter(np.real(ctrl_zeros), np.imag(ctrl_zeros), 
+                              marker='o', color='orange', s=70, label='Ctrl Zeros')
+
+            # --- Plot Current Closed-Loop Poles ---
             if current_poles is not None and len(current_poles) > 0:
                 self.ax.scatter(np.real(current_poles), np.imag(current_poles), 
-                              marker='s', color='magenta', s=80, label='CL Poles (Current Gain)', zorder=10)
+                              marker='s', color='magenta', s=80, label='CL Poles (Current)', zorder=10)
 
             self.ax.axhline(0, color='black', lw=1, linestyle='--')
             self.ax.axvline(0, color='black', lw=1, linestyle='--')
-            self.ax.legend() 
+            self.ax.legend(loc='best', fontsize='small') 
             self.ax.grid(True)
             
         self.ax.set_title(title)
@@ -83,7 +93,7 @@ class MainModul(QMainWindow, Ui_MainWindow):
         self.is_closed_loop = False
 
         self.setWindowTitle("Control System Analyzer - v1.0")
-        self.setFixedSize(1360, 800)
+        self.setFixedSize(1360, 750)
 
         self.root_locus_open_png_bytes = None
         self.step_response_open_png_bytes = None
@@ -205,7 +215,7 @@ class MainModul(QMainWindow, Ui_MainWindow):
         self.canvas_rl.draw()
 
         # Simpan data untuk fullscreen
-        self.last_rl_data = (np.real(rlist), np.imag(rlist), poles, zeros, None)
+        self.last_rl_data = (np.real(rlist), np.imag(rlist), poles, zeros, [], [], None)
 
         # 2. Plot Step Response (Open Loop)
         self.ax_sr.clear()
@@ -232,39 +242,40 @@ class MainModul(QMainWindow, Ui_MainWindow):
         if G is None: return
 
         try:
-            # --- 1. Ambil Parameter Controller ---
-            # Default ke 0.0 jika kosong, Gain default 1.0
-            kp = float(self.inputP.text()) if self.inputP.text() else 0.0
-            ki = float(self.inputI.text()) if self.inputI.text() else 0.0
-            kd = float(self.inputD.text()) if self.inputD.text() else 0.0
-            gain = float(self.inputGain.text()) if self.inputGain.text() else 1.0
+            # Fungsi helper kecil untuk membaca input string seperti "-2, -3.5"
+            # dan mengubahnya menjadi list float [-2.0, -3.5]
+            def parse_roots(text):
+                if not text.strip():
+                    return []
+                # Tambahkan tanda minus (-) di depan float()
+                return [-float(x.strip()) for x in text.split(',')]
 
-            # --- 2. Buat Transfer Function Controller (PID Ideal) ---
-            # C(s) = Gain * (Kp + Ki/s + Kd*s)
-            #      = Gain * (Kd*s^2 + Kp*s + Ki) / s
+            # --- 1. Ambil Parameter Controller ---
+            # inputP sekarang jadi Poles, inputI jadi Zeros
+            c_poles = parse_roots(self.inputP.text()) 
+            c_zeros = parse_roots(self.inputI.text()) 
+            gain = float(self.inputGain.text()) if self.inputGain.text() else 1.0
             
-            # Jika user hanya mengisi Gain (P, I, D kosong), kita anggap P-Controller murni tanpa integrator
-            # Tapi untuk standar PID umum:
-            if ki == 0 and kd == 0 and kp == 0:
-                # Kasus khusus: Jika semua 0, anggap controller = 1 (unity feedback)
-                C_total = gain * 1
-            else:
-                # Numerator PID: [Kd, Kp, Ki]
-                num_pid = [kd, kp, ki]
-                den_pid = [1, 0] # s (integrator bawaan rumus PID ideal)
-                
-                C_pid = ct.tf(num_pid, den_pid)
-                C_total = gain * C_pid
+            # inputD diabaikan sesuai request lu
+
+            # --- 2. Buat Transfer Function Controller (Pole-Zero) ---
+            # np.poly([r1, r2]) akan membuat koefisien (s - r1)(s - r2)
+            num_c = np.poly(c_zeros) 
+            den_c = np.poly(c_poles) 
+            
+            # C(s) = Gain * (Zeros / Poles)
+            C_tf = ct.tf(num_c, den_c)
+            C_total = gain * C_tf
 
             # --- 3. Hitung Loop & Closed Loop ---
             # L(s) = C(s) * G(s) -> Open Loop (untuk gambar Root Locus)
             L = ct.series(C_total, G)
 
-            # T(s) = L(s) / (1 + L(s)) -> Closed Loop (untuk Step Response & Posisi Pole Akhir)
+            # T(s) = L(s) / (1 + L(s)) -> Closed Loop (untuk Step Response)
             T = ct.feedback(L, 1)
 
             self.is_closed_loop = True
-            print(f"Plotting Closed Loop T(s) with Gain={gain}...")
+            print(f"Plotting Closed Loop T(s) with Gain={gain}, Poles={c_poles}, Zeros={c_zeros}...")
 
             # =========================================
             # A. PLOT ROOT LOCUS
@@ -275,46 +286,58 @@ class MainModul(QMainWindow, Ui_MainWindow):
             rlist, klist = ct.root_locus(L, plot=False)
             self.ax_rl.plot(np.real(rlist), np.imag(rlist), linewidth=1, alpha=0.5)
             
-            # 2. Gambar Poles & Zeros ASLI (Open Loop L)
-            ol_poles = ct.poles(L)
-            ol_zeros = ct.zeros(L)
-            self.ax_rl.scatter(np.real(ol_poles), np.imag(ol_poles), 
-                             marker='x', color='red', s=50, label='OL Poles (Start)')
-            self.ax_rl.scatter(np.real(ol_zeros), np.imag(ol_zeros), 
-                             marker='o', color='blue', s=50, label='OL Zeros (End)')
+            # 2. Plot Poles & Zeros PLANT (G)
+            p_plant = ct.poles(G)
+            z_plant = ct.zeros(G)
             
-            # 3. Gambar POLES SAAT INI (Closed Loop T) -> Ini fitur yang kamu minta
-            # Ini menunjukkan posisi pole akibat Gain yang sedang aktif
+            if len(p_plant) > 0:
+                self.ax_rl.scatter(np.real(p_plant), np.imag(p_plant), 
+                                 marker='x', color='red', s=50, label='Plant Poles')
+            if len(z_plant) > 0:
+                self.ax_rl.scatter(np.real(z_plant), np.imag(z_plant), 
+                                 marker='o', color='blue', s=50, label='Plant Zeros')
+
+            # 3. Plot Poles & Zeros CONTROLLER (C)
+            # c_poles dan c_zeros diambil langsung dari input text (list of floats)
+            if len(c_poles) > 0:
+                self.ax_rl.scatter(np.real(c_poles), np.imag(c_poles), 
+                                 marker='x', color='green', s=70, label='Ctrl Poles')
+            if len(c_zeros) > 0:
+                # Pakai warna orange/kuning gelap biar beda sama zero plant yang biru
+                self.ax_rl.scatter(np.real(c_zeros), np.imag(c_zeros), 
+                                 marker='o', color='orange', s=70, label='Ctrl Zeros')
+            
+            # 4. Plot POLES SAAT INI (Closed Loop T) akibat Gain
             current_cl_poles = ct.poles(T)
             self.ax_rl.scatter(np.real(current_cl_poles), np.imag(current_cl_poles), 
                                marker='s', color='magenta', s=80, 
                                label=f'CL Poles (Current)', zorder=10)
             
-            # 4. Kosmetik Grafik
+            # 5. Kosmetik Grafik
             self.ax_rl.axhline(0, color='black', lw=1, linestyle='--')
             self.ax_rl.axvline(0, color='black', lw=1, linestyle='--')
             self.ax_rl.set_title("Root Locus (L = C*G)")
             self.ax_rl.grid(True)
+            
+            # Biar legendanya gak nutupin grafik, kita taruh dengan rapi
             self.ax_rl.legend(loc='best', fontsize='small')
             self.canvas_rl.draw()
 
-            # 5. SIMPAN DATA LENGKAP (5 Elemen)
-            # Format: (Garis_Real, Garis_Imag, Poles_Awal, Zeros_Awal, Poles_Akhir_Magenta)
-            self.last_rl_data = (np.real(rlist), np.imag(rlist), ol_poles, ol_zeros, current_cl_poles)
+            # 6. SIMPAN DATA UNTUK FULLSCREEN
+            # Kita tetap simpan poles(L) dan zeros(L) gabungan agar class FullScreenPlot yang 
+            # lama tidak error, karena dia cuma nerima 1 set parameter poles & zeros.
+            self.last_rl_data = (np.real(rlist), np.imag(rlist), p_plant, z_plant, c_poles, c_zeros, current_cl_poles)
 
             # =========================================
             # B. PLOT STEP RESPONSE
             # =========================================
             self.ax_sr.clear()
             
-            # 1. Hitung respon waktu
             t, y = ct.step_response(T)
             
-            # 2. Plotting
             self.ax_sr.plot(t, y, 'r-', linewidth=2, label='Closed Loop')
             self.ax_sr.axhline(1, color='green', linestyle=':', label='Setpoint (1.0)')
             
-            # 3. Kosmetik Grafik
             self.ax_sr.set_title("Step Response (Closed Loop)")
             self.ax_sr.set_xlabel("Time (s)")
             self.ax_sr.set_ylabel("Amplitude")
@@ -322,7 +345,6 @@ class MainModul(QMainWindow, Ui_MainWindow):
             self.ax_sr.legend()
             self.canvas_sr.draw()
             
-            # 4. Simpan Data Step
             self.last_step_data = (t, y)
 
             # =========================================
@@ -331,10 +353,10 @@ class MainModul(QMainWindow, Ui_MainWindow):
             self.update_metrics(t, y)
 
         except ValueError:
-            QMessageBox.warning(self, "Input Error", "Pastikan nilai PID/Gain adalah angka yang valid.")
+            QMessageBox.warning(self, "Input Error", "Pastikan nilai Poles/Zeros/Gain adalah angka yang valid (gunakan koma untuk >1 nilai).")
         except Exception as e:
             QMessageBox.critical(self, "Calculation Error", f"Terjadi kesalahan: {str(e)}")
-            print(e) 
+            print(e)
 
     # --- Fitur Full Screen saat Klik ---
     def on_rl_click(self, event):
@@ -355,10 +377,18 @@ class MainModul(QMainWindow, Ui_MainWindow):
                 
         elif plot_type == "rlocus":
             if self.last_rl_data:
-                real, imag, poles, zeros, current_poles = self.last_rl_data
-
-                dialog.plot_data(real, imag, title, xlabel, ylabel, plot_type, 
-                               poles=poles, zeros=zeros, current_poles=current_poles)
+                # Cek panjang tuple untuk kompatibilitas (Open Loop vs Closed Loop)
+                if len(self.last_rl_data) == 7:
+                    real, imag, p_plant, z_plant, c_poles, c_zeros, current_poles = self.last_rl_data
+                    dialog.plot_data(real, imag, title, xlabel, ylabel, plot_type, 
+                                   plant_poles=p_plant, plant_zeros=z_plant,
+                                   ctrl_poles=c_poles, ctrl_zeros=c_zeros,
+                                   current_poles=current_poles)
+                elif len(self.last_rl_data) == 5: # Fallback untuk Open Loop
+                    real, imag, poles, zeros, current_poles = self.last_rl_data
+                    dialog.plot_data(real, imag, title, xlabel, ylabel, plot_type, 
+                                   plant_poles=poles, plant_zeros=zeros, 
+                                   current_poles=current_poles)
                 
         dialog.exec_()
 

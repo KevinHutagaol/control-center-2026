@@ -293,21 +293,14 @@
        <item>
         <widget class="QLineEdit" name="inputP">
          <property name="placeholderText">
-          <string>P</string>
+          <string>Input Poles</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLineEdit" name="inputI">
          <property name="placeholderText">
-          <string>I</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="inputD">
-         <property name="placeholderText">
-          <string>D</string>
+          <string>Input Zeros</string>
          </property>
         </widget>
        </item>
