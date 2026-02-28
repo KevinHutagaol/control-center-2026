@@ -158,7 +158,6 @@ class BMatrix(QMainWindow, Ui_BMatrix):
         super(BMatrix, self).__init__()
         self.setupUi(self)
         self.setWindowTitle("B Matrix")
-        self.setFixedSize(220, 220)
 
         self.inputs: list[list[QLineEdit]] = [[getattr(self, f"b{x}1")] for x in range(1, 4)]
 
@@ -193,7 +192,6 @@ class CMatrix(QMainWindow, Ui_CMatrix):
         super(CMatrix, self).__init__()
         self.setupUi(self)
         self.setWindowTitle("C Matrix")
-        self.setFixedSize(220, 220)
 
         self.inputs: list[list[QLineEdit]] = [[getattr(self, f"c1{y}") for y in range(1, 4)]]
 
@@ -228,7 +226,6 @@ class DMatrix(QMainWindow, Ui_DMatrix):
         super(DMatrix, self).__init__()
         self.setupUi(self)
         self.setWindowTitle("D Matrix")
-        self.setFixedSize(220, 220)
 
         self.inputs: list[list[QLineEdit]] = [[self.d11]]
 
