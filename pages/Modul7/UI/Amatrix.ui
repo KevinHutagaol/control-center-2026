@@ -2,259 +2,169 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="enabled">
-   <bool>true</bool>
-  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>220</width>
-    <height>220</height>
+    <width>320</width>
+    <height>235</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Matrix Input</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget {
-    border-image: url(:/newPrefix/Amatrix2.png);
-}
-</string>
+   <string notr="true">background-color: rgb(206, 0, 0);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <widget class="QLabel" name="a11">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>36</y>
-      <width>48</width>
-      <height>48</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel {
-    background-color: transparent;
-    color: white;
-    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
-	border-image: none;
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="a11">
+         <property name="styleSheet">
+          <string notr="true">background-color: white; color: rgb(143, 0, 0); border-radius: 5px; padding: 10px; font-size: 16px; font-family: &quot;SF Pro Display&quot;; font-weight: bold;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="a12">
+         <property name="styleSheet">
+          <string notr="true">background-color: white; color: rgb(143, 0, 0); border-radius: 5px; padding: 10px; font-size: 16px; font-family: &quot;SF Pro Display&quot;; font-weight: bold;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLineEdit" name="a13">
+         <property name="styleSheet">
+          <string notr="true">background-color: white; color: rgb(143, 0, 0); border-radius: 5px; padding: 10px; font-size: 16px; font-family: &quot;SF Pro Display&quot;; font-weight: bold;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLineEdit" name="a21">
+         <property name="styleSheet">
+          <string notr="true">background-color: white; color: rgb(143, 0, 0); border-radius: 5px; padding: 10px; font-size: 16px; font-family: &quot;SF Pro Display&quot;; font-weight: bold;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="a22">
+         <property name="styleSheet">
+          <string notr="true">background-color: white; color: rgb(143, 0, 0); border-radius: 5px; padding: 10px; font-size: 16px; font-family: &quot;SF Pro Display&quot;; font-weight: bold;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="a23">
+         <property name="styleSheet">
+          <string notr="true">background-color: white; color: rgb(143, 0, 0); border-radius: 5px; padding: 10px; font-size: 16px; font-family: &quot;SF Pro Display&quot;; font-weight: bold;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLineEdit" name="a31">
+         <property name="styleSheet">
+          <string notr="true">background-color: white; color: rgb(143, 0, 0); border-radius: 5px; padding: 10px; font-size: 16px; font-family: &quot;SF Pro Display&quot;; font-weight: bold;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="a32">
+         <property name="styleSheet">
+          <string notr="true">background-color: white; color: rgb(143, 0, 0); border-radius: 5px; padding: 10px; font-size: 16px; font-family: &quot;SF Pro Display&quot;; font-weight: bold;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="a33">
+         <property name="styleSheet">
+          <string notr="true">background-color: white; color: rgb(143, 0, 0); border-radius: 5px; padding: 10px; font-size: 16px; font-family: &quot;SF Pro Display&quot;; font-weight: bold;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="3">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="4" column="0" colspan="3">
+        <widget class="QPushButton" name="updateA">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">
+QPushButton {
+    background-color: rgb(255, 255, 255);
+    border-radius: 25px;
+    color: rgb(214, 0, 0);
+    font-size: 15px;
+    padding: 12px;
+    font-family: &quot;SF Pro Display&quot;;
+    font-weight: bold;
 }
-</string>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="a12">
-    <property name="geometry">
-     <rect>
-      <x>88</x>
-      <y>36</y>
-      <width>48</width>
-      <height>48</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel {
-    background-color: transparent;
-    color: white;
-    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
-	border-image: none;
+QPushButton:hover {
+    background-color: rgb(235, 235, 235);
 }
-</string>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="a13">
-    <property name="geometry">
-     <rect>
-      <x>136</x>
-      <y>36</y>
-      <width>48</width>
-      <height>48</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel {
-    background-color: transparent;
-    color: white;
-    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
-	border-image: none;
+QPushButton:pressed {
+    background-color: rgb(200, 200, 200);
 }
-</string>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="a21">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>84</y>
-      <width>48</width>
-      <height>48</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel {
-    background-color: transparent;
-    color: white;
-    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
-	border-image: none;
-}
-</string>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="a23">
-    <property name="geometry">
-     <rect>
-      <x>136</x>
-      <y>84</y>
-      <width>48</width>
-      <height>48</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel {
-    background-color: transparent;
-    color: white;
-    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
-	border-image: none;
-}
-</string>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="a22">
-    <property name="geometry">
-     <rect>
-      <x>88</x>
-      <y>84</y>
-      <width>48</width>
-      <height>48</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel {
-    background-color: transparent;
-    color: white;
-    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
-	border-image: none;
-}
-</string>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="a31">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>132</y>
-      <width>48</width>
-      <height>48</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel {
-    background-color: transparent;
-    color: white;
-    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
-	border-image: none;
-}
-</string>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="a33">
-    <property name="geometry">
-     <rect>
-      <x>136</x>
-      <y>132</y>
-      <width>48</width>
-      <height>48</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel {
-    background-color: transparent;
-    color: white;
-    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
-	border-image: none;
-}
-</string>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="a32">
-    <property name="geometry">
-     <rect>
-      <x>88</x>
-      <y>132</y>
-      <width>48</width>
-      <height>48</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel {
-    background-color: transparent;
-    color: white;
-    font: 75 10pt &quot;MS Shell Dlg 2&quot;;
-	border-image: none;
-}
-</string>
-    </property>
-    <property name="text">
-     <string>1</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
+          </string>
+         </property>
+         <property name="text">
+          <string>Update Matrix</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
- <resources>
-  <include location="resource.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
