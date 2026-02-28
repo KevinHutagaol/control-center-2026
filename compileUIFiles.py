@@ -14,10 +14,10 @@ def main():
 
                 subprocess.run(["pyuic5", ui_path, "-o", py_path])
 
-                with open(py_path, "r") as f:
+                with open(py_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
 
-                with open(py_path, "w") as f:
+                with open(py_path, "w", encoding="utf-8") as f:
                     removed_count = 0
                     for line in lines:
                         if not RESOURCE_IMPORT_PATTERN.match(line.strip()):
