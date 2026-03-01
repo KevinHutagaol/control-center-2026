@@ -1,17 +1,13 @@
 import sys
-import os
-import random
 import numpy as np
-import requests
-from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QMainWindow, QMessageBox, QDesktopWidget, QLineEdit
-from PyQt5.QtGui import QIcon, QValidator, QDoubleValidator
+from PyQt5.QtWidgets import QApplication,  QMainWindow, QMessageBox, QDesktopWidget, QLineEdit
+from PyQt5.QtGui import QIcon, QDoubleValidator
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, pyqtSlot
-from pathlib import Path
 
 from pages.Modul7.session import moduleCOD_session
 from pages.Modul7.ss_controller_plot import simulate_and_plot
-import pages.Modul7.UI.resource
+import pages.Modul7.UI.resource # noqa
 
 from pages.Modul7.UI.ui_Main import Ui_MainWindow as Ui_Main
 from pages.Modul7.UI.ui_Amatrix import Ui_MainWindow as Ui_AMatrix

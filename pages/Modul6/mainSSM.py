@@ -1,17 +1,14 @@
 import sys, time, csv
 import numpy as np
-from collections import deque
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtGui import QIcon, QValidator
+from PyQt5.QtGui import QIcon
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from scipy import signal
-import serial, serial.tools.list_ports
-from pathlib import Path
 
 
-import pages.Modul6.resource_rc6 as resource_rc6
+import pages.Modul6.resource_rc6 as resource_rc6 # noqa
 
 from pages.Modul6.UI6.ui_Main import Ui_MainWindow
 

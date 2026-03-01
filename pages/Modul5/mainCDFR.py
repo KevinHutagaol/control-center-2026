@@ -9,7 +9,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 
 from pages.Modul5.Modul5New import Ui_MainWindow
-import pages.Modul5.myQRC
+import pages.Modul5.myQRC # noqa
 
 os.system("cls" if os.name == "nt" else "clear")
 

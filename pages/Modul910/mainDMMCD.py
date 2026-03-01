@@ -1,22 +1,14 @@
-import queue
 import sys
-import os
-import subprocess
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 from PyQt5 import QtWidgets, QtChart, QtCore, QtGui
 import numpy as np
 import serial.tools.list_ports
 import matplotlib.pyplot as plt
 import control as ctrl
-import firebase_admin
-from firebase_admin import credentials, firestore
-from pathlib import Path
 import queue
 import pandas as pd
-import requests
-import time
 
-import pages.Modul910.asset.resources
+import pages.Modul910.asset.resources # noqa
 
 from pages.Modul910.ui_910.ui_main import Ui_MainWindow as Ui_main
 from pages.Modul910.ui_910.ui_sa import Ui_MainWindow as Ui_sa
