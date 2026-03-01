@@ -99,4 +99,8 @@ fi
 
 # --- LAUNCH ---
 echo "[INFO] Starting Application..."
-python3 "$MAIN_SCRIPT"
+python3 $MAIN_SCRIPT
+
+echo "Press Enter to continue . . ."
+# shellcheck disable=SC2162
+read
