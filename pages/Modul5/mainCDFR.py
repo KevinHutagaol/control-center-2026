@@ -279,7 +279,7 @@ class ControlApp(QMainWindow):
                     L = ct.series(GLag, G)
                     T_cmp = ct.feedback(L, 1)
                     t2, y2 = ct.step_response(T_cmp, T=t)
-                    self.ax_atas.plot(t2, y2, label="Lag Compensation", **STEP_STYLES["Lag"])
+                    self.ax_atas.plot(t2, y2, label="Lead Compensation", **STEP_STYLES["Lag"])
 
                 if not leadIsTemplate:
                     Kc = float(self.ui.lineEdit_8.text())
@@ -291,7 +291,7 @@ class ControlApp(QMainWindow):
                     L = ct.series(GLead, G)
                     T_cmp = ct.feedback(L, 1)
                     t2, y2 = ct.step_response(T_cmp, T=t)
-                    self.ax_atas.plot(t2, y2, label="Lead Compensation", **STEP_STYLES["Lead"])
+                    self.ax_atas.plot(t2, y2, label="Lag Compensation", **STEP_STYLES["Lead"])
 
                 if not leadIsTemplate and not lagIsTemplate:
                     Gc = ct.series(GLead, GLag)
