@@ -79,7 +79,7 @@ class MainModul4(QMainWindow, Ui_MainWindow):
         self.is_closed_loop = False
 
         self.setWindowTitle("Control System Analyzer - v1.0")
-        self.setFixedSize(1360, 800)
+        self.setFixedSize(1360, 750)
 
     def init_matplotlib_canvas(self):
         # --- UBAHAN DISINI: Setup Bode Plot (2 Subplots) ---
