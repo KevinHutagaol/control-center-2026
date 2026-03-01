@@ -10,6 +10,37 @@ import pages.Modul2.resourcesmodul2 # noqa
 
 from pages.Modul2.ui.ui_MainModul2 import Ui_MainWindow
 
+def apply_custom_limits(ax, list_of_points):
+    """Fungsi untuk melimit sumbu X dan Y berdasarkan posisi poles dan zeros"""
+    all_pts = []
+    for pts in list_of_points:
+        if pts is not None and len(pts) > 0:
+            # Pastikan pts bisa diiterasi dan tambahkan ke all_pts
+            if isinstance(pts, (list, tuple, np.ndarray)):
+                all_pts.extend(pts)
+            else:
+                all_pts.append(pts)
+    
+    if len(all_pts) > 0:
+        reals = [np.real(p) for p in all_pts]
+        imags = [np.imag(p) for p in all_pts]
+        
+        min_x, max_x = min(reals), max(reals)
+        min_y, max_y = min(imags), max(imags)
+        
+        # Kasih padding/jarak biar marker gak mepet pinggir banget
+        # Minimal padding adalah 2.0 biar gak terlalu nge-zoom kalau titiknya cuma 1
+        pad_x = max(2.0, (max_x - min_x) * 0.3)
+        pad_y = max(2.0, (max_y - min_y) * 0.3)
+        
+        # Set limit, tapi pastikan titik pusat (0,0) minimal tetap kelihatan
+        ax.set_xlim(min(min_x - pad_x, -1), max(max_x + pad_x, 1))
+        ax.set_ylim(min(min_y - pad_y, -1), max(max_y + pad_y, 1))
+    else:
+        # Kalau bener-bener gak ada pole/zero sama sekali
+        ax.set_xlim(-5, 5)
+        ax.set_ylim(-5, 5)
+
 class FullScreenPlot(QDialog):
     def __init__(self, parent=None, title="Full Screen Plot"):
         super().__init__(parent)
@@ -67,6 +98,7 @@ class FullScreenPlot(QDialog):
             self.ax.axvline(0, color='black', lw=1, linestyle='--')
             self.ax.legend(loc='best', fontsize='small') 
             self.ax.grid(True)
+            apply_custom_limits(self.ax, [plant_poles, plant_zeros, ctrl_poles, ctrl_zeros, current_poles])
             
         self.ax.set_title(title)
         self.ax.set_xlabel(xlabel)
@@ -211,6 +243,7 @@ class MainModul(QMainWindow, Ui_MainWindow):
         self.ax_rl.axvline(0, color='black', lw=1, linestyle='--')
         self.ax_rl.set_title("Root Locus (Open Loop Plant)")
         self.ax_rl.grid(True)
+        apply_custom_limits(self.ax_rl, [poles, zeros])
         self.canvas_rl.draw()
 
         # Simpan data untuk fullscreen
@@ -320,6 +353,7 @@ class MainModul(QMainWindow, Ui_MainWindow):
             
             # Biar legendanya gak nutupin grafik, kita taruh dengan rapi
             self.ax_rl.legend(loc='best', fontsize='small')
+            apply_custom_limits(self.ax_rl, [p_plant, z_plant, c_poles, c_zeros, current_cl_poles])
             self.canvas_rl.draw()
 
             # 6. SIMPAN DATA UNTUK FULLSCREEN
