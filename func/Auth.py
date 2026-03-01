@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import json
 import secrets
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -10,8 +11,12 @@ import sys
 import shutil
 import subprocess
 import requests
+import ssl
 
 from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry, PoolManager
+from urllib3.util import ssl_
 
 from appConfig import firebaseConfig, oAuthConfig
 from func.FirebaseAuthedSession import authed_session
@@ -19,11 +24,45 @@ from func.FirebaseAuthedSession import authed_session
 FIREBASE_API_KEY = firebaseConfig["apiKey"]
 CLIENT_ID = oAuthConfig["clientId"]
 
+
+class LegacySSLAdapter(HTTPAdapter):
+    def init_poolmanager(self, connections, maxsize, block=False):
+        ctx = ssl_.create_urllib3_context()
+        try:
+            ctx.options |= 0x4
+            ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+        except AttributeError:
+            pass
+
+        self.poolmanager = PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_context=ctx
+        )
+
+def get_safe_session():
+    session = requests.Session()
+    adapter = LegacySSLAdapter()
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
+
 def openSandboxedBrowser(url):
     app_data_dir =  Path("./browser/.my_app_auth_cache").resolve()
 
     app_data_dir.mkdir(parents=True, exist_ok=True)
     user_data_path = str(app_data_dir)
+
+    subprocess_kwargs = {
+        'start_new_session': True,
+        'stdout': subprocess.DEVNULL,
+        'stderr': subprocess.DEVNULL
+    }
+
+    if sys.platform == 'win32':
+        subprocess_kwargs['creationflags'] = 0x00000008
+        del subprocess_kwargs['start_new_session']
 
     browsers = [
         ('chrome', ['google-chrome', 'chrome', 'google-chrome-stable'], f'--user-data-dir={user_data_path}'),
@@ -113,6 +152,9 @@ def generatePKCE():
 
 
 class OAuthHandler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+        return
+
     def _send_html(self, status_code, title, message, color="#2ecc71", icon="✓"):
         self.send_response(status_code)
         self.send_header("Content-type", "text/html; charset=utf-8")
@@ -174,25 +216,30 @@ def runGoogleAuth():
     code_verifier, code_challenge = generatePKCE()
 
     server = HTTPServer(('127.0.0.1', 0), OAuthHandler)
-    assigned_port = server.server_address[1]
-    dynamic_redirect_uri = f"http://127.0.0.1:{assigned_port}"
+    try:
+        assigned_port = server.server_address[1]
+        dynamic_redirect_uri = f"http://127.0.0.1:{assigned_port}"
 
-    params = {
-        "client_id": CLIENT_ID,
-        "redirect_uri": dynamic_redirect_uri,
-        "response_type": "code",
-        "scope": "openid email profile",
-        "code_challenge": code_challenge,
-        "code_challenge_method": "S256",
-    }
+        params = {
+            "client_id": CLIENT_ID,
+            "redirect_uri": dynamic_redirect_uri,
+            "response_type": "code",
+            "scope": "openid email profile",
+            "code_challenge": code_challenge,
+            "code_challenge_method": "S256",
+        }
 
-    auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?{urlencode(params)}"
+        auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?{urlencode(params)}"
 
-    auth_code = getOAuthCode(server, auth_url)
+        auth_code = getOAuthCode(server, auth_url)
+    finally:
+        server.server_close()
 
     if not auth_code:
         print("Failed to get auth code.")
         return False, "Authentication Failed: Failed to get OAuth code"
+
+    session = get_safe_session()
 
     token_url = "https://oauth2.googleapis.com/token"
     token_data = {
@@ -203,24 +250,28 @@ def runGoogleAuth():
         "redirect_uri": dynamic_redirect_uri
     }
 
-    token_res = requests.post(token_url, data=token_data).json()
-    google_id_token = token_res.get("id_token")
+    try:
+        token_res = session.post(token_url, data=token_data).json()
+        google_id_token = token_res.get("id_token")
 
-    if not google_id_token:
-        print("Unable to get Google ID Token: ", token_res)
-        return False, "Authentication Failed: Unable to get Google ID Token"
+        if not google_id_token:
+            print("Unable to get Google ID Token: ", token_res)
+            return False, "Authentication Failed: Unable to get Google ID Token"
 
-    firebase_auth_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key={FIREBASE_API_KEY}"
-    firebase_auth_payload = {
-        "requestUri": "http://localhost",
-        "postBody": f"id_token={google_id_token}&providerId=google.com",
-        "returnSecureToken": True,
-        "returnIdpCredential": True
-    }
+        firebase_auth_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key={FIREBASE_API_KEY}"
+        firebase_auth_payload = {
+            "requestUri": "http://localhost",
+            "postBody": f"id_token={google_id_token}&providerId=google.com",
+            "returnSecureToken": True,
+            "returnIdpCredential": True
+        }
 
-    success = getFirebaseId(firebase_auth_url, firebase_auth_payload)
+        success = getFirebaseId(firebase_auth_url, firebase_auth_payload)
 
-    return success, "" if success else "Unable to acquire Firebase ID, your Email might not be whitelisted for this application"
+        return success, "" if success else "Unable to acquire Firebase ID, your Email might not be whitelisted for this application"
+    except Exception as e:
+        print(e)
+        return False, str(e)
 
 
 def runPasswordAuth(email, password):
@@ -234,23 +285,51 @@ def runPasswordAuth(email, password):
     return getFirebaseId(auth_url, payload)
 
 
+def configure_session_retries(session):
+    retry_strategy = Retry(
+        total=3,
+        backoff_factor=0.5,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["HEAD", "GET", "OPTIONS", "POST"],
+        raise_on_status=False
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+
+
 def getFirebaseId(url, data):
-    firebase_res = requests.post(url, json=data)
-    data = firebase_res.json()
+    session = get_safe_session()
 
-    if firebase_res.status_code != 200:
-        print("Login Failed:", data.get('error', {}).get('message', 'Unknown error'))
+    try:
+        firebase_res = session.post(url, json=data)
+        res_data = firebase_res.json()
+
+        if firebase_res.status_code != 200:
+            print("Login Failed:", res_data.get('error', {}).get('message', 'Unknown error'))
+            return False
+
+        if res_data.get('idToken') is None:
+            return False
+
+        print("Login Success")
+
+        global_adapter = LegacySSLAdapter()
+        authed_session.mount("https://", global_adapter)
+
+        configure_session_retries(authed_session)
+
+        authed_session.set_credentials(
+            res_data['refreshToken'],
+            res_data['idToken'],
+            res_data['localId'],
+            int(float(res_data['expiresIn']))
+        )
+
+        return True
+    except Exception as e:
+        print(f"Error in getFirebaseId: {e}")
         return False
-
-    if data.get('idToken') is None:
-        return False
-
-    print("Login Success")
-    # print("Firebase ID Token:", data['idToken'])
-    # print("Refresh Token:", data['refreshToken'])
-    authed_session.set_credentials(data['refreshToken'], data['idToken'], data['localId'], int(float(data['expiresIn'])))
-
-    return True
 
 
 class AuthWorker(QObject):
