@@ -1,18 +1,13 @@
 import sys
-import os
-import random
 import numpy as np
-import requests
-from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QMainWindow, QMessageBox, QDesktopWidget
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication,  QMainWindow, QMessageBox, QDesktopWidget, QLineEdit
+from PyQt5.QtGui import QIcon, QDoubleValidator
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
-from pathlib import Path
+from PyQt5.QtCore import Qt, pyqtSlot
 
-from pages.Modul7.problems import problem_set
-from pages.Modul7.session import session
+from pages.Modul7.session import moduleCOD_session
 from pages.Modul7.ss_controller_plot import simulate_and_plot
-import pages.Modul7.UI.resource
+import pages.Modul7.UI.resource # noqa
 
 from pages.Modul7.UI.ui_Main import Ui_MainWindow as Ui_Main
 from pages.Modul7.UI.ui_Amatrix import Ui_MainWindow as Ui_AMatrix
@@ -22,11 +17,13 @@ from pages.Modul7.UI.ui_Dmatrix import Ui_MainWindow as Ui_DMatrix
 from pages.Modul7.UI.ui_Controller import Ui_MainWindow as Ui_Controller
 from pages.Modul7.UI.ui_PreGain import Ui_MainWindow as Ui_PreGain
 
+
 def center_widget(widget):
     qr = widget.frameGeometry()
     cp = QDesktopWidget().availableGeometry().center()
     qr.moveCenter(cp)
     widget.move(qr.topLeft())
+
 
 def mae_percentage_accuracy(user_matrix, correct_matrix):
     diff = np.abs(user_matrix - correct_matrix)
@@ -43,22 +40,20 @@ def mae_percentage_accuracy(user_matrix, correct_matrix):
     accuracy_percentage = 100 - error_percentage
     return max(0.0, min(100.0, accuracy_percentage))  # Clamp between 0 and 100
 
+
 def mae(user_matrix, correct_matrix):
     diff = np.abs(user_matrix - correct_matrix)
     return np.mean(diff)
+
 
 class MainWindow(QMainWindow, Ui_Main):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.setWindowTitle("State Space Controller Design")
-        self.setMinimumSize(1280, 720)
-        self.setMaximumSize(1280, 720)
+        self.setFixedSize(1280, 720)
 
-        # self.label_1.setText(str(problem_set[session["problem_set"]]["spec-1"]))
-        # self.label_2.setText(str(problem_set[session["problem_set"]]["spec-2"]))
-
-        self.open_windows = []  # Keep a list of opened matrix windows
+        self.open_windows = []
 
         self.Abtn.clicked.connect(self.open_amatrix)
         self.Bbtn.clicked.connect(self.open_bmatrix)
@@ -72,7 +67,7 @@ class MainWindow(QMainWindow, Ui_Main):
     def open_amatrix(self):
         amatrix = AMatrix()
         amatrix.show()
-        self.open_windows.append(amatrix)   # Keep reference so it's not garbage collected
+        self.open_windows.append(amatrix)
 
     def open_bmatrix(self):
         bmatrix = BMatrix()
@@ -93,82 +88,163 @@ class MainWindow(QMainWindow, Ui_Main):
         controller = Controller()
         controller.show()
         self.open_windows.append(controller)
-    
+
     def open_pregain(self):
         pregain = PreGain()
         pregain.show()
         self.open_windows.append(pregain)
 
     def submit_data(self):
-        R_user = session.get("R_user")
-        N_user = session.get("N_user")
+        R_user = moduleCOD_session.get("R_user")
+        N_user = moduleCOD_session.get("N_user")
 
         if R_user is None and N_user is not None:
             QMessageBox.warning(None, "Warning", "Please set R values before running the simulation.")
-            session["runSim"] = False
+            moduleCOD_session["runSim"] = False
             return
-        
-        session["runSim"] = True
+
+        moduleCOD_session["runSim"] = True
         QMessageBox.information(None, "Info", "Successful!")
 
-
     def run_simulation(self):
-        R_user = session.get("R_user")
-        N_user = session.get("N_user")
+        R_user = moduleCOD_session.get("R_user")
+        N_user = moduleCOD_session.get("N_user")
 
-        if session["runSim"] is True:
-            simulate_and_plot(session["problem_set"], R_user, N_user)
-            session["runSim"] = False
+        if moduleCOD_session["runSim"] is True:
+            simulate_and_plot(R_user, N_user)
+            moduleCOD_session["runSim"] = False
         else:
             QMessageBox.warning(None, "Warning", "Please run the simulation.")
+
 
 class AMatrix(QMainWindow, Ui_AMatrix):
     def __init__(self):
         super(AMatrix, self).__init__()
         self.setupUi(self)
+
         self.setWindowTitle("A Matrix")
-        self.setFixedSize(220, 220)
-        A = problem_set[session["problem_set"]]["A"]
-        self.a11.setText(str(A[0][0]))
-        self.a12.setText(str(A[0][1]))
-        self.a13.setText(str(A[0][2]))
-        self.a21.setText(str(A[1][0]))
-        self.a22.setText(str(A[1][1]))
-        self.a23.setText(str(A[1][2]))
-        self.a31.setText(str(A[2][0]))
-        self.a32.setText(str(A[2][1]))
-        self.a33.setText(str(A[2][2]))
+        self.inputs: list[list[QLineEdit]] = [[getattr(self, f"a{x}{y}") for y in range(1, 4)] for x in range(1, 4)]
+        validator = QDoubleValidator()
+        for row in self.inputs:
+            for el in row:
+                el.setValidator(validator)
+                el.setPlaceholderText("0.0")
+
+        if moduleCOD_session["A_user"] is not None:
+            A_user = moduleCOD_session["A_user"]
+            for i, row in enumerate(self.inputs):
+                for j, el in enumerate(row):
+                    el.setText(str(A_user[i][j]))
+
+        self.updateA.clicked.connect(self.update_matrix)
+
+    @pyqtSlot()
+    def update_matrix(self):
+        A_vals = [[el.text().strip() for el in row] for row in self.inputs]
+        if any("" in row for row in A_vals):
+            QMessageBox.warning(None, "Input Error", "Missing values of A matrix")
+            return
+        moduleCOD_session["A_user"] = np.array(np.array([[float(num) for num in row] for row in A_vals]))
+        print(moduleCOD_session["A_user"])
+        self.close()
+
 
 class BMatrix(QMainWindow, Ui_BMatrix):
     def __init__(self):
         super(BMatrix, self).__init__()
         self.setupUi(self)
         self.setWindowTitle("B Matrix")
-        self.setFixedSize(220, 220)
-        B = problem_set[session["problem_set"]]["B"]
-        self.b11.setText(str(B[0][0]))
-        self.b21.setText(str(B[1][0]))
-        self.b31.setText(str(B[2][0]))
+
+        self.inputs: list[list[QLineEdit]] = [[getattr(self, f"b{x}1")] for x in range(1, 4)]
+
+        validator = QDoubleValidator()
+        for row in self.inputs:
+            for el in row:
+                el.setValidator(validator)
+                el.setPlaceholderText("0.0")
+
+        if moduleCOD_session.get("B_user") is not None:
+            data = moduleCOD_session["B_user"]
+
+            for i, row in enumerate(self.inputs):
+                for j, el in enumerate(row):
+                    el.setText(str(data[i][j]))
+
+        self.updateB.clicked.connect(self.update_matrix)
+
+    @pyqtSlot()
+    def update_matrix(self):
+        B_vals = [[el.text().strip() for el in row] for row in self.inputs]
+        if any("" in row for row in B_vals):
+            QMessageBox.warning(None, "Input Error", "Missing values of B matrix.")
+            return
+        moduleCOD_session["B_user"] = np.array(np.array([[float(num) for num in row] for row in B_vals]))
+        print(moduleCOD_session["B_user"])
+        self.close()
+
 
 class CMatrix(QMainWindow, Ui_CMatrix):
     def __init__(self):
         super(CMatrix, self).__init__()
         self.setupUi(self)
         self.setWindowTitle("C Matrix")
-        self.setFixedSize(220, 220)
-        C = problem_set[session["problem_set"]]["C"]
-        self.c11.setText(str(C[0][0]))
-        self.c12.setText(str(C[0][1]))
-        self.c13.setText(str(C[0][2]))
+
+        self.inputs: list[list[QLineEdit]] = [[getattr(self, f"c1{y}") for y in range(1, 4)]]
+
+        validator = QDoubleValidator()
+        for row in self.inputs:
+            for el in row:
+                el.setValidator(validator)
+                el.setPlaceholderText("0.0")
+
+        if moduleCOD_session.get("C_user") is not None:
+            data = moduleCOD_session["C_user"]
+
+            for i, row in enumerate(self.inputs):
+                for j, el in enumerate(row):
+                    el.setText(str(data[i][j]))
+
+        self.updateC.clicked.connect(self.update_matrix)
+
+    @pyqtSlot()
+    def update_matrix(self):
+        C_vals = [[el.text().strip() for el in row] for row in self.inputs]
+        if any("" in row for row in C_vals):
+            QMessageBox.warning(None, "Input Error", "Missing values of C matrix.")
+            return
+        moduleCOD_session["C_user"] = np.array([[float(num) for num in row] for row in C_vals])
+        print(moduleCOD_session["C_user"])
+        self.close()
+
 
 class DMatrix(QMainWindow, Ui_DMatrix):
     def __init__(self):
         super(DMatrix, self).__init__()
         self.setupUi(self)
         self.setWindowTitle("D Matrix")
-        self.setFixedSize(220, 220)
-        D = problem_set[session["problem_set"]]["D"]
-        self.d.setText(str(D[0][0]))
+
+        self.inputs: list[list[QLineEdit]] = [[self.d11]]
+
+        self.d11.setValidator(QDoubleValidator())
+        self.d11.setPlaceholderText("0.0")
+
+        if moduleCOD_session.get("D_user") is not None:
+            data = moduleCOD_session["D_user"]
+
+            self.d11.setText(str(data[0][0]))
+
+        self.updateD.clicked.connect(self.update_matrix)
+
+    @pyqtSlot()
+    def update_matrix(self):
+        val = self.d11.text().strip()
+        if not val:
+            QMessageBox.warning(None, "Input Error", "Missing value for D.")
+            return
+        moduleCOD_session["D_user"] = np.array([[float(val)]])
+        print(moduleCOD_session["D_user"])
+        self.close()
+
 
 class Controller(QMainWindow, Ui_Controller):
     def __init__(self):
@@ -177,9 +253,17 @@ class Controller(QMainWindow, Ui_Controller):
         self.setWindowTitle("Controller")
         self.setFixedSize(548, 207)
 
+        validator = QDoubleValidator()
+        self.r11.setValidator(validator)
+        self.r11.setPlaceholderText("0.0")
+        self.r12.setValidator(validator)
+        self.r12.setPlaceholderText("0.0")
+        self.r13.setValidator(validator)
+        self.r13.setPlaceholderText("0.0")
+
         # Pre-fill if R_user was already saved
-        if session["R_user"] is not None:
-            R_user = session["R_user"]
+        if moduleCOD_session["R_user"] is not None:
+            R_user = moduleCOD_session["R_user"]
             self.r11.setText(str(R_user[0][0]))
             self.r12.setText(str(R_user[0][1]))
             self.r13.setText(str(R_user[0][2]))
@@ -192,7 +276,7 @@ class Controller(QMainWindow, Ui_Controller):
         r13 = self.r13.text().strip()
 
         if r11 == "" and r12 == "" and r13 == "":
-            session["R_user"] = None
+            moduleCOD_session["R_user"] = None
             self.close()
             return
 
@@ -202,7 +286,7 @@ class Controller(QMainWindow, Ui_Controller):
             r13 = float(r13)
             R_user = np.array([[r11, r12, r13]])
             print(R_user)
-            session["R_user"] = R_user
+            moduleCOD_session["R_user"] = R_user
             self.close()
         except ValueError:
             QMessageBox.warning(None, "Input Error", "Please enter valid numbers.")
@@ -216,11 +300,14 @@ class PreGain(QMainWindow, Ui_PreGain):
         super(PreGain, self).__init__()
         self.setupUi(self)
         self.setWindowTitle("Pre Gain")
-        self.setFixedSize(275, 165) 
+        self.setFixedSize(275, 165)
+
+        self.N.setValidator(QDoubleValidator())
+        self.N.setPlaceholderText("0.0")
 
         # Pre-fill if N_user was already saved
-        if session["N_user"] is not None:
-            N_user = session["N_user"]
+        if moduleCOD_session["N_user"] is not None:
+            N_user = moduleCOD_session["N_user"]
             self.N.setText(str(N_user))
 
         self.updateN.clicked.connect(self.update_pregain)
@@ -230,26 +317,27 @@ class PreGain(QMainWindow, Ui_PreGain):
 
         if text == "":
             # User wants to clear the pre-gain
-            session["N_user"] = None
+            moduleCOD_session["N_user"] = None
             self.close()
             return
 
         try:
             N_user = float(text)
             print(N_user)
-            session["N_user"] = N_user
+            moduleCOD_session["N_user"] = N_user
             self.close()
         except ValueError:
             QMessageBox.warning(None, "Input Error", "Please enter a valid number.")
             self.N.clear()
 
+
 def exec_COD(nama, npm):
-    session["npm"] = npm
+    moduleCOD_session["npm"] = npm
 
     app = QApplication.instance() or QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    
+
     widget = QtWidgets.QStackedWidget()
     widget.setWindowIcon(QIcon("../../public/Logo Merah.png"))
     widget.addWidget(window)

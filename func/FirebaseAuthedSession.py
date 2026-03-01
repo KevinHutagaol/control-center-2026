@@ -19,6 +19,9 @@ class FirebaseAuthedSession(requests.Session):
         self.uid = uid
         self.expires_at =  time.time() + expires_in - 60
 
+    def clear_credentials(self):
+        self.set_credentials("", "", "", 0)
+
     def refresh_id_token(self):
         url = f"https://securetoken.googleapis.com/v1/token?key={self.api_key}"
         data = {

@@ -22,10 +22,9 @@ import matplotlib.pyplot as plt
 import control as ctrl
 import math
 import pandas as pd
-from pathlib import Path
 
 
-import pages.Modul3.Asset.Resource
+import pages.Modul3.Asset.Resource # noqa
 
 from pages.Modul3.ui.ui_MainNoHD import Ui_MainWindow as Ui_MainNoHD
 from pages.Modul3.ui.ui_PIDparam import Ui_MainWindow as Ui_PIDparam

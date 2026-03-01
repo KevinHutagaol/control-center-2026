@@ -1,12 +1,12 @@
 import sys
-import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QVBoxLayout, QMessageBox, QDialog, QToolBar, QAction)
 import control as ct
-import pages.Modul4.resourcesmodul4
+
+import pages.Modul4.resourcesmodul4 # noqa
 
 from pages.Modul4.ui.ui_MainModul4 import Ui_MainWindow
 

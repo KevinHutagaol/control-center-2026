@@ -1,7 +1,10 @@
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
+from func.Auth import logOutGoogleSession
+from func.FirebaseAuthedSession import authed_session
 from pages.Modul2.MainModul2 import launch_modul2
 from pages.Modul3.mainCDRL import exec_CDRL
 from pages.Modul4.MainModul4 import launch_modul4
@@ -30,6 +33,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.role = role
         self.kelompok = kelompok
 
+        self._is_logging_out = False
+
         self.RootLocus.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.RootLocusPage))
         self.FreqResponse.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.FreqResponsePage))
         self.CDFrequency.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.CDFreqPage))
@@ -55,9 +60,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self._children = {}
 
-        self.LogOut.clicked.connect(lambda: self.sig_logout_clicked.emit(self))
+        self.LogOut.clicked.connect(self.on_logout_button_clicked)
 
         self.show()
+
+    def on_logout_button_clicked(self):
+        self._is_logging_out = True
+        self.sig_logout_clicked.emit(self)
+
+    def closeEvent(self, event):
+        if self._is_logging_out:
+            event.accept()
+            return
+
+        reply = QMessageBox.question(self, 'Exit',
+                                     "Are you sure you want to close? This will log you out.",
+                                     QMessageBox.Yes | QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+
+            authed_session.clear_credentials()
+            logOutGoogleSession()
+
+            QtWidgets.QApplication.restoreOverrideCursor()
+            event.accept()
+            QtWidgets.QApplication.quit()
+        else:
+            event.ignore()
 
     def run_root_locus(self, nama, npm):
         print("Running Root Locus")

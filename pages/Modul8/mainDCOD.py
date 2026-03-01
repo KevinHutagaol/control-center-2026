@@ -1,9 +1,7 @@
-import numpy as np
 import sys
-from pathlib import Path
 from PyQt5 import QtWidgets, QtCore
 
-import pages.Modul8.gambar_rc
+import pages.Modul8.gambar_rc # noqa
 from pages.Modul8.calc import *
 from pages.Modul8.plot import PlotWindow
 from pages.Modul8.ui_8.ui_main import Ui_MainWindow

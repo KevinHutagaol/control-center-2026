@@ -2,8 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import control
 
-
-from pages.Modul7.problems import problem_set
+from pages.Modul7.session import moduleCOD_session
 
 def plot_response(t, y):
     plt.figure(figsize=(10, 5))
@@ -16,11 +15,11 @@ def plot_response(t, y):
     plt.grid(True)
     plt.show()
 
-def simulate_and_plot(no, R_user=None, N_user=None):
-    A = problem_set[no]["A"]
-    B = problem_set[no]["B"]
-    C = problem_set[no]["C"]
-    D = problem_set[no]["D"]
+def simulate_and_plot(R_user=None, N_user=None):
+    A = moduleCOD_session["A_user"]
+    B = moduleCOD_session["B_user"]
+    C = moduleCOD_session["C_user"]
+    D = moduleCOD_session["D_user"]
 
     t = np.linspace(0, 10, 500)
 

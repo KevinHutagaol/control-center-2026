@@ -3,6 +3,7 @@ import hashlib
 import secrets
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
 from urllib.parse import urlparse, parse_qs, urlencode
 import os
 import sys
@@ -18,32 +19,35 @@ from func.FirebaseAuthedSession import authed_session
 FIREBASE_API_KEY = firebaseConfig["apiKey"]
 CLIENT_ID = oAuthConfig["clientId"]
 
+def openSandboxedBrowser(url):
+    app_data_dir =  Path("./browser/.my_app_auth_cache").resolve()
 
-def open_incognito(url):
+    app_data_dir.mkdir(parents=True, exist_ok=True)
+    user_data_path = str(app_data_dir)
+
     browsers = [
-        ('chrome', ['google-chrome', 'chrome', 'google-chrome-stable'], '--incognito'),
-        ('edge', ['msedge', 'microsoft-edge', 'edge'], '-inprivate'),
-        ('firefox', ['firefox'], '-private-window'),
-        ('brave', ['brave-browser', 'brave'], '--incognito'),
-        ('opera', ['opera'], '--private')
+        ('chrome', ['google-chrome', 'chrome', 'google-chrome-stable'], f'--user-data-dir={user_data_path}'),
+        ('edge', ['msedge', 'microsoft-edge', 'edge'], f'--user-data-dir={user_data_path}'),
+        ('brave', ['brave-browser', 'brave'], f'--user-data-dir={user_data_path}'),
+        ('firefox', ['firefox'], '-profile'),
     ]
 
+    # macOS
     if sys.platform == 'darwin':
-        mac_apps = {
-            'Google Chrome': '--incognito',
-            'Microsoft Edge': '-inprivate',
-            'Firefox': '-private-window',
-            'Brave Browser': '--incognito'
-        }
-        for app_name, flag in mac_apps.items():
-            try:
-                cmd = ['open', '-a', app_name, '-n', '--args', flag, url]
-                result = subprocess.run(cmd, capture_output=True)
-                if result.returncode == 0:
-                    return True
-            except Exception:
-                continue
+        candidates = [
+            ("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", f'--user-data-dir={user_data_path}'),
+            ("/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge", f'--user-data-dir={user_data_path}'),
+        ]
 
+        for exe_path, flag in candidates:
+            if os.path.exists(exe_path):
+                try:
+                    subprocess.Popen([exe_path, flag, "--no-first-run", url], start_new_session=True)
+                    return True
+                except Exception:
+                    continue
+
+    #  Windows & Linux
     else:
         for browser_id, executable_names, flag in browsers:
             cmd_path = None
@@ -53,43 +57,53 @@ def open_incognito(url):
                 if cmd_path:
                     break
 
+            # Windows fallback search
             if not cmd_path and sys.platform == 'win32':
                 prefixes = [
                     os.environ.get('PROGRAMFILES', 'C:\\Program Files'),
                     os.environ.get('PROGRAMFILES(X86)', 'C:\\Program Files (x86)'),
                     os.environ.get('LOCALAPPDATA', 'C:\\Users\\Default\\AppData\\Local')
                 ]
-
                 suffixes = {
                     'chrome': [r"Google\Chrome\Application\chrome.exe"],
                     'edge': [r"Microsoft\Edge\Application\msedge.exe"],
-                    'firefox': [r"Mozilla Firefox\firefox.exe"],
                     'brave': [r"BraveSoftware\Brave-Browser\Application\brave.exe"]
+                    # no firefox on win
                 }
-
                 for prefix in prefixes:
                     for suffix in suffixes.get(browser_id, []):
-                        test_path = os.path.join(prefix, suffix)
-                        if os.path.exists(test_path):
-                            cmd_path = test_path
+                        p = os.path.join(prefix, suffix)
+                        if os.path.exists(p):
+                            cmd_path = p
                             break
-                    if cmd_path:
-                        break
 
             if cmd_path:
                 try:
-                    if sys.platform == 'win32':
-                        subprocess.Popen([cmd_path, flag, url], creationflags=0x00000008)
+                    args = [cmd_path]
+
+                    if browser_id == 'firefox':
+                        args.extend(['-profile', user_data_path, '-no-remote', url])
                     else:
-                        subprocess.Popen([cmd_path, flag, url], start_new_session=True)
+                        args.extend([flag, "--no-first-run", "--no-default-browser-check", url])
+
+                    if sys.platform == 'win32':
+                        subprocess.Popen(args, creationflags=0x00000008)
+                    else:
+                        subprocess.Popen(args, start_new_session=True)
                     return True
                 except Exception as e:
-                    print(f"Failed to launch {browser_id}: {e}")
+                    print(f"Error launching {browser_id}: {e}")
                     continue
 
-    print("Warning: Could not find a supported browser for incognito mode. Falling back to default.")
+    print("Could not launch sandboxed browser. Using default.")
     webbrowser.open(url)
     return False
+
+def logOutGoogleSession():
+    logout_url = "https://accounts.google.com/Logout"
+
+    print("Signing out of Google Session...")
+    openSandboxedBrowser(logout_url)
 
 def generatePKCE():
     verifier = secrets.token_urlsafe(64)
@@ -151,7 +165,7 @@ class OAuthHandler(BaseHTTPRequestHandler):
 
 def getOAuthCode(server, auth_url):
     print("Openning Browser for Login")
-    open_incognito(auth_url)
+    openSandboxedBrowser(auth_url)
     server.handle_request()
     return getattr(server, 'auth_code', None)
 

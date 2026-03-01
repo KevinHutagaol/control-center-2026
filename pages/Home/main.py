@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-import pages.Home.resourcesnew
+import pages.Home.resourcesnew # noqa
 
 from pages.Home.Login import Login
 

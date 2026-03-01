@@ -6,7 +6,7 @@ import re
 RESOURCE_IMPORT_PATTERN = re.compile(r"import .*_rc")
 
 def main():
-    for root, dirs, files in os.walk("."):
+    for root, dirs, files in os.walk(".."):
         for file in files:
             if file.endswith(".ui"):
                 ui_path = os.path.join(root, file)
