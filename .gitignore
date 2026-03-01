@@ -46,3 +46,7 @@ functions/
 *test*.py
 
 serviceAccountKey.json
+
+.dev_mode
+.setup_complete
+browser
