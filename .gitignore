@@ -20,6 +20,8 @@ pages/Home/Asset_home/
 pages/Home/resources_rc.py
 pages/Home/Asset_old/
 
+ui_*.py
+
 # npm Dependencies
 functions/node_modules/
 node_modules/
