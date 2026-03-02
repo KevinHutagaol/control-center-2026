@@ -5,7 +5,7 @@ import zipfile
 
 import numpy as np
 import matplotlib.pyplot as plt
-from PyQt5.QtCore import QStandardPaths, QRegExp
+from PyQt5.QtCore import QStandardPaths, QRegExp, Qt
 from PyQt5.QtGui import QDoubleValidator, QRegExpValidator
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -13,6 +13,9 @@ from PyQt5.QtWidgets import (QMainWindow, QApplication, QVBoxLayout, QMessageBox
                              QFileDialog)
 import control as ct
 import pages.Modul2.resourcesmodul2  # noqa
+from func.UserContext import user_context
+from func.saveToZip import saveToZip
+from func.sendWithEmail import create_zip_in_memory, sendWithEmail
 
 from pages.Modul2.ui.ui_MainModul2 import Ui_MainWindow
 
@@ -126,8 +129,8 @@ class MainModul(QMainWindow, Ui_MainWindow):
         # 3. Koneksi Tombol
         self.btnGeneratePlot.clicked.connect(self.run_open_loop)
         self.btnPlotWithController.clicked.connect(self.run_closed_loop)
-        self.btnSaveZip.clicked.connect(self.save_to_zip)
-        self.btnSendEmail.clicked.connect(self.send_email)
+        self.btnSaveZip.clicked.connect(self.onSaveZipBtnClicked)
+        self.btnSendEmail.clicked.connect(self.onSendEmailBtnClicked)
 
         self.last_rl_data = None
         self.last_step_data = None
@@ -521,47 +524,99 @@ class MainModul(QMainWindow, Ui_MainWindow):
 
         return "\n".join(lines)
 
-    def save_to_zip(self):
-        if not (self.root_locus_open_png_bytes or self.root_locus_closed_png_bytes):
-            QMessageBox.warning(self, "No Data", "Please generate at least one plot before saving!")
+    def onSaveZipBtnClicked(self):
+        if not (self.root_locus_open_png_bytes and self.root_locus_closed_png_bytes):
+            QMessageBox.warning(self, "Incomplete System", "Please generate BOTH open loop and closed loop plots before saving!")
             return
 
-        downloads_path = QStandardPaths.writableLocation(QStandardPaths.DownloadLocation)
-        default_file = os.path.join(downloads_path, "System_Analysis_Report.zip")
+        report_txt = self.generate_report_text()
 
-        file_path, _ = QFileDialog.getSaveFileName(
-            self,
-            "Save Zip File",
-            default_file,
-            "ZIP Files (*.zip)"
-        )
+        saveToZip(self, "System_Analysis_Report.zip", [
+            {"file_name": "Open_Loop_Root_Locus.png", "file_data": self.root_locus_open_png_bytes},
+            {"file_name": "Open_Loop_Step_Response.png", "file_data": self.step_response_open_png_bytes},
+            {"file_name": "Closed_Loop_Root_Locus.png", "file_data": self.root_locus_closed_png_bytes},
+            {"file_name": "Closed_Loop_Step_Response.png", "file_data": self.step_response_closed_png_bytes},
+            {"file_name": "System_Details.txt", "file_data": report_txt},
+        ])
 
-        if not file_path:
+    def onSendEmailBtnClicked(self):
+        email = user_context.email
+        if not email:
+            QMessageBox.critical(self, "Auth Error", "User email not found in session.")
             return
+
+        if not (self.root_locus_open_png_bytes and self.root_locus_closed_png_bytes):
+            QMessageBox.warning(self, "Incomplete System",
+                                "Please generate BOTH open loop and closed loop plots before sending!")
+            return
+
+        report_txt = self.generate_report_text()
+
+        files_to_zip = [
+            {"file_name": "Open_Loop_Root_Locus.png", "file_data": self.root_locus_open_png_bytes},
+            {"file_name": "Open_Loop_Step_Response.png", "file_data": self.step_response_open_png_bytes},
+            {"file_name": "Closed_Loop_Root_Locus.png", "file_data": self.root_locus_closed_png_bytes},
+            {"file_name": "Closed_Loop_Step_Response.png", "file_data": self.step_response_closed_png_bytes},
+            {"file_name": "System_Details.txt", "file_data": report_txt.encode('utf-8')},
+        ]
 
         try:
-            with zipfile.ZipFile(file_path, 'w') as zf:
-                if self.root_locus_open_png_bytes:
-                    zf.writestr("Open_Loop_Root_Locus.png", self.root_locus_open_png_bytes)
-                if self.step_response_open_png_bytes:
-                    zf.writestr("Open_Loop_Step_Response.png", self.step_response_open_png_bytes)
-
-                if self.root_locus_closed_png_bytes:
-                    zf.writestr("Closed_Loop_Root_Locus.png", self.root_locus_closed_png_bytes)
-                if self.step_response_closed_png_bytes:
-                    zf.writestr("Closed_Loop_Step_Response.png", self.step_response_closed_png_bytes)
-
-                report_txt = self.generate_report_text()
-                zf.writestr("system_Details.txt", report_txt)
-
-            QMessageBox.information(self, "Success",
-                                    f"All plots and data have been archived successfully to:\n{file_path}")
-
+            zip_bytes = create_zip_in_memory(files_to_zip)
         except Exception as e:
-            QMessageBox.critical(self, "Error Saving", f"An error occurred during save:\n{str(e)}")
+            QMessageBox.critical(self, "Error", f"Failed to compress files: {e}")
+            return
 
-    def send_email(self):
-        QMessageBox.information(self, "Coming Soon", "Email feature is currently being set up. Coming soon!")
+        if len(zip_bytes) > 900 * 1024:
+            print("Warning: Zip file is large. Firestore email might fail due to 1MB limit.")
+
+        formatted_report = report_txt.replace('\n', '<br>')
+        html_content = f"""
+        <html>
+        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;">
+            <div style="background-color: #0078d7; color: white; padding: 20px; text-align: center;">
+                <h2>Control Systems Simulation Report</h2>
+                <p>Module 2 & 3: System Analysis</p>
+            </div>
+            <div style="padding: 20px;">
+                <p>Hello {user_context.display_name},</p>
+                <p>Your simulation has been successfully processed. Attached is the <strong>ZIP file</strong> containing:</p>
+                <ul>
+                    <li>Open/Closed Loop Root Locus Plots</li>
+                    <li>Open/Closed Loop Step Response Plots</li>
+                    <li>Detailed System Parameters (Text File)</li>
+                </ul>
+                <hr style="border: 0; border-top: 1px solid #eee;">
+                <h3>System Summary</h3>
+                <div style="background-color: #f9f9f9; padding: 15px; border-left: 5px solid #0078d7; font-family: monospace; font-size: 12px;">
+                    {formatted_report}
+                </div>
+                <br>
+                <p><em>Control Laboratory 2026</em></p>
+                <p>Departemen Teknik Elektro Universitas Indonesia</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+
+        success, message = sendWithEmail(
+            to_email=email,
+            subject="Lab Report: System Analysis Results",
+            html_body=html_content,
+            text_body=report_txt,
+            attachments=[
+                {"filename": "System_Analysis_Report.zip", "content": zip_bytes}
+            ]
+        )
+
+        # 8. Restore UI
+        QApplication.restoreOverrideCursor()
+
+        if success:
+            QMessageBox.information(self, "Email Sent", f"Report successfully sent to {email}")
+        else:
+            QMessageBox.critical(self, "Sending Failed", f"Could not send email.\nError: {message}")
 
 
 def launch_modul2():

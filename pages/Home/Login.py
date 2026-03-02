@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
 from appConfig import firebaseConfig, firestoreConfig
 from func.Auth import AuthWorker, logOutGoogleSession
+from func.UserContext import user_context
 
 from pages.Home.UI_home.ui_Login import Ui_MainWindow
 
@@ -88,6 +89,13 @@ class Login(QMainWindow, Ui_MainWindow):
         curRole = response_fields.get('role').get('stringValue')
         curKelompok = response_fields.get('group').get('integerValue') # this expects a string
         npm = response_fields.get('npm').get('stringValue')
+        email = response_fields.get('email').get('stringValue')
+        uid = response_fields.get('uid').get('stringValue')
+        reg_or_KKi = response_fields.get('regOrKki').get('stringValue')
+        year = response_fields.get('year').get('integerValue')
+        role = response_fields.get('role').get('stringValue')
+
+        user_context.set_user(email=email, uid=uid, display_name=curNama, student_id=npm, group=int(curKelompok), regOrKKi=reg_or_KKi, year=year, role=role)
 
         self.main_window = MainWindow(npm, curNama, curRole, curKelompok)
         self.main_window.sig_logout_clicked.connect(self.logout)
@@ -107,6 +115,7 @@ class Login(QMainWindow, Ui_MainWindow):
         if reply == QMessageBox.Yes:
             authed_session.clear_credentials()
             logOutGoogleSession()
+            user_context.clear()
             event.accept()
         else:
             event.ignore()
@@ -158,6 +167,7 @@ class Login(QMainWindow, Ui_MainWindow):
 
         authed_session.clear_credentials()
         logOutGoogleSession()
+        user_context.clear()
 
         # Show login window again
         try:
