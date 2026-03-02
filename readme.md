@@ -37,6 +37,20 @@ The application is structured into the following analytical modules:
    * Serial interface with hardware device
    * Real time plotting of physical DC motor variables
    * Closed loop discrete control for DC motor
+  
+<hr/>
+
+## Instalation
+
+Windows:
+```
+git clone https://github.com/KevinHutagaol/control-center-2026.git control-center; cd control-center; run.bat
+```
+
+Linux: 
+```
+git clone https://github.com/KevinHutagaol/control-center-2026.git control-center && cd control-center && chmod +x run.sh && ./run.sh
+```
 
 <hr/>
 
