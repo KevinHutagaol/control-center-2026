@@ -11,7 +11,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QVBoxLayout, QMessageBox, QDialog, QToolBar, QAction,
                              QFileDialog)
-import tkinter as tk
 import control as ct
 import pages.Modul2.resourcesmodul2  # noqa
 from pages.Modul2.ui.ui_MainModul2 import Ui_MainWindow
@@ -134,17 +133,7 @@ class MainModul(QMainWindow, Ui_MainWindow):
         self.is_closed_loop = False
 
         self.setWindowTitle("Control System Analyzer - v1.0")
-        root = tk.Tk()
-        root.withdraw()
-
-        width = root.winfo_screenwidth()
-        height = root.winfo_screenheight()
-
-        # KALO MISALNYA GAK WORKS HAPUS AJA IF ELSE NYA DAN AMBIL YANG 1140 x 700
-        if width <= 1500 or height <= 844:
-            self.setFixedSize(1140, 700)
-        else:
-            self.setFixedSize(1360, 750)
+        self.setFixedSize(1140, 700)
 
         self.root_locus_open_png_bytes = None
         self.step_response_open_png_bytes = None
