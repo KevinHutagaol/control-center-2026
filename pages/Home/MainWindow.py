@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
 from func.Auth import logOutGoogleSession
 from func.FirebaseAuthedSession import authed_session
+from func.UserContext import user_context
 from pages.Modul2.MainModul2 import launch_modul2
 from pages.Modul3.mainCDRL import exec_CDRL
 from pages.Modul4.MainModul4 import launch_modul4
@@ -82,6 +83,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             authed_session.clear_credentials()
             logOutGoogleSession()
+            user_context.clear()
 
             QtWidgets.QApplication.restoreOverrideCursor()
             event.accept()
