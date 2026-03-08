@@ -1,10 +1,19 @@
+import io
+import os
+import zipfile
 import sys
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QVBoxLayout, QMessageBox, QDialog, QToolBar, QAction)
 import control as ct
+from PyQt5.QtCore import QStandardPaths, QRegExp, Qt
+from PyQt5.QtGui import QDoubleValidator, QRegExpValidator
+from func.sendWithEmail import create_zip_in_memory, sendWithEmail
+from func.UserContext import user_context
+from func.saveToZip import saveToZip
 
 import pages.Modul4.resourcesmodul4 # noqa
 
@@ -72,14 +81,75 @@ class MainModul4(QMainWindow, Ui_MainWindow):
 
         # 3. Koneksi Tombol
         self.btnGeneratePlot.clicked.connect(self.run_open_loop)
-        self.btnPlotWithController.clicked.connect(self.run_closed_loop)
+        self.btnSendEmail.clicked.connect(self.onSendEmailBtnClicked)
+        self.btnSaveZip.clicked.connect(self.onSaveZipClicked)
 
         self.last_rl_data = None
         self.last_step_data = None
         self.is_closed_loop = False
 
+        self.system_details = {
+            "plant_G": "", "plant_poles": "", "plant_zeros": "",
+            "ol_step_metrics": None, "ol_bode_metrics": None,
+            "ctrl_P": "", "ctrl_I": "", "ctrl_D": "", "ctrl_gain": "",
+            "cl_poles": "", "cl_step_metrics": None, "cl_bode_metrics": None
+        }
+
         self.setWindowTitle("Control System Analyzer - v1.0")
-        self.setFixedSize(1360, 750)
+        self.setFixedSize(1360, 675)
+
+    def grab_figures_as_images(self, is_closed_loop=False):
+        """Grabs Matplotlib data and generates high-res (fullscreen) images in background"""
+        with io.BytesIO() as bd_buff, io.BytesIO() as sr_buf:
+            
+            # Generate Fullscreen Bode Plot di Background
+            bode_data = getattr(self, 'last_bode_data', None)
+            if bode_data:
+                # Bikin 'kertas' baru ukuran besar (10x8 inch)
+                fig_bode_large = plt.figure(figsize=(10, 8))
+                omega, mag_db, phase_deg = bode_data
+                
+                ax_mag = fig_bode_large.add_subplot(211)
+                ax_mag.semilogx(omega, mag_db, 'b', linewidth=2)
+                ax_mag.set_title("Bode Plot Analysis")
+                ax_mag.set_ylabel("Magnitude (dB)")
+                ax_mag.grid(True, which="both", ls="-")
+                ax_mag.tick_params(labelbottom=False)
+
+                ax_phase = fig_bode_large.add_subplot(212, sharex=ax_mag)
+                ax_phase.semilogx(omega, phase_deg, 'r', linewidth=2)
+                ax_phase.set_xlabel("Frequency (rad/s)")
+                ax_phase.set_ylabel("Phase (deg)")
+                ax_phase.grid(True, which="both", ls="-")
+                
+                # Simpan ke buffer, lalu hancurkan fig_bode_large biar RAM aman
+                fig_bode_large.savefig(bd_buff, format='png', bbox_inches='tight')
+                plt.close(fig_bode_large)
+
+            # Generate Fullscreen Step Response di Background
+            step_data = getattr(self, 'last_step_data', None)
+            if step_data:
+                # Bikin 'kertas' baru ukuran besar
+                fig_sr_large = plt.figure(figsize=(10, 8))
+                t, y, xlabel, ylabel = step_data
+                
+                ax_sr = fig_sr_large.add_subplot(111)
+                ax_sr.plot(t, y, linewidth=2)
+                ax_sr.set_title("Step Response Analysis")
+                ax_sr.set_xlabel(xlabel)
+                ax_sr.set_ylabel(ylabel)
+                ax_sr.grid(True)
+                
+                fig_sr_large.savefig(sr_buf, format='png', bbox_inches='tight')
+                plt.close(fig_sr_large)
+
+            # --- 3. Ekstrak Bytes untuk ZIP / Email ---
+            if not is_closed_loop:
+                self.bod_plot_open_png_bytes = bd_buff.getvalue() if bode_data else None
+                self.step_response_open_png_bytes = sr_buf.getvalue() if step_data else None
+            else:
+                self.bod_plot_closed_png_bytes = bd_buff.getvalue() if bode_data else None
+                self.step_response_closed_png_bytes = sr_buf.getvalue() if step_data else None
 
     def init_matplotlib_canvas(self):
         # --- UBAHAN DISINI: Setup Bode Plot (2 Subplots) ---
@@ -144,22 +214,30 @@ class MainModul4(QMainWindow, Ui_MainWindow):
             ts_val = info['SettlingTime']
             tp_val = info['PeakTime']
 
-            # Fungsi helper buat handle nilai NaN (Not a Number) biar gak error
             def format_val(val, unit=""):
                 if val is None or np.isnan(val) or np.isinf(val):
                     return "N/A"
                 return f"{val:.2f}{unit}"
 
-            # Update Label
-            self.lblOvershoot.setText(f"Overshoot: {format_val(os_val, '%')}")
-            self.lblSettlingTime.setText(f"Settling Time: {format_val(ts_val, 's')}")
-            self.lblPeakTime.setText(f"Peak Time: {format_val(tp_val, 's')}")
+            metrics_dict = {
+                "Overshoot": format_val(os_val, '%'),
+                "Settling Time": format_val(ts_val, 's'),
+                "Peak Time": format_val(tp_val, 's')
+            }
+
+            # Update Label UI
+            self.lblOvershoot.setText(f"Overshoot: {metrics_dict['Overshoot']}")
+            self.lblSettlingTime.setText(f"Settling Time: {metrics_dict['Settling Time']}")
+            self.lblPeakTime.setText(f"Peak Time: {metrics_dict['Peak Time']}")
+
+            return metrics_dict # Return dictionary-nya
 
         except Exception as e:
             self.lblOvershoot.setText("Overshoot: -")
             self.lblSettlingTime.setText("Settling Time: -")
             self.lblPeakTime.setText("Peak Time: -")
             print(f"Metrics Error: {e}")
+            return {"Overshoot": "N/A", "Settling Time": "N/A", "Peak Time": "N/A"}
 
     def run_open_loop(self):
         G = self.get_plant_tf()
@@ -211,7 +289,27 @@ class MainModul4(QMainWindow, Ui_MainWindow):
         # Simpan data Step untuk fullscreen
         self.last_step_data = (t, y, "Time (s)", "Amplitude")
 
-        self.update_metrics(t, y)
+        step_metrics = self.update_metrics(t, y)
+        
+        # Ekstrak Margin dari Bode Plot
+        gm, pm, wg, wp = ct.margin(G)
+        gm_db = 20 * np.log10(gm) if gm > 0 and not np.isinf(gm) else float('inf')
+
+        self.system_details["plant_G"] = str(G).replace('\n', ' ')
+        self.system_details["plant_poles"] = str(np.round(ct.poles(G), 2))
+        self.system_details["plant_zeros"] = str(np.round(ct.zeros(G), 2))
+        self.system_details["ol_step_metrics"] = step_metrics
+        self.system_details["ol_bode_metrics"] = {
+            "Gain Margin": f"{gm_db:.2f} dB" if not np.isinf(gm_db) else "Infinity",
+            "Phase Margin": f"{pm:.2f} deg" if not np.isnan(pm) else "N/A",
+            "Phase Crossover Freq": f"{wg:.2f} rad/s" if not np.isnan(wg) else "N/A",
+            "Gain Crossover Freq": f"{wp:.2f} rad/s" if not np.isnan(wp) else "N/A"
+        }
+
+        self.grab_figures_as_images(is_closed_loop=False)
+        
+        self.lblStatusBasePlant.setText("● Base Plant: Ready")
+        self.lblStatusBasePlant.setStyleSheet("color: green; font-weight: bold;")
 
 
     # --- Logic 2: Plot with Controller (CLOSED LOOP) ---
@@ -321,6 +419,149 @@ class MainModul4(QMainWindow, Ui_MainWindow):
                 dialog.plot_data(self.last_bode_data, title, plot_type="bode")
                 
         dialog.exec_()
+
+    def generate_report_text(self):
+        lines = []
+        lines.append("=" * 50)
+        lines.append("      CONTROL SYSTEM ANALYSIS REPORT (MODUL 4)")
+        lines.append("=" * 50)
+        lines.append("")
+
+        # --- Report Open Loop ---
+        if self.system_details["plant_G"]:
+            lines.append("--- BASE PLANT (OPEN LOOP) ---")
+            lines.append(f"Transfer Function : {self.system_details['plant_G']}")
+            lines.append(f"Plant Poles       : {self.system_details['plant_poles']}")
+            lines.append(f"Plant Zeros       : {self.system_details['plant_zeros']}")
+            
+            if self.system_details["ol_bode_metrics"]:
+                lines.append("\n[Bode Plot Stability Margins]")
+                for k, v in self.system_details["ol_bode_metrics"].items():
+                    lines.append(f"  - {k:<22}: {v}")
+
+            if self.system_details["ol_step_metrics"]:
+                lines.append("\n[Step Response Metrics]")
+                for k, v in self.system_details["ol_step_metrics"].items():
+                    lines.append(f"  - {k:<22}: {v}")
+
+            lines.append("\n\n<i> Semangat mengerjakan borang analisis dan tutam nya nya gaiss :))</i>")
+            lines.append("<i> -Control Lab Assistant 2026</i>")
+                    
+            lines.append("\n" + "=" * 50 + "\n")
+
+        # --- Report Closed Loop ---
+        # if self.system_details["ctrl_gain"]:
+        #     lines.append("--- CONTROLLED PLANT (CLOSED LOOP) ---")
+        #     lines.append(f"PID Parameters : P={self.system_details['ctrl_P']}, I={self.system_details['ctrl_I']}, D={self.system_details['ctrl_D']}")
+        #     lines.append(f"Global Gain    : {self.system_details['ctrl_gain']}")
+        #     lines.append(f"Closed Loop Poles : {self.system_details['cl_poles']}")
+            
+        #     if self.system_details["cl_bode_metrics"]:
+        #         lines.append("\n[Loop Function (L=C*G) Margins]")
+        #         for k, v in self.system_details["cl_bode_metrics"].items():
+        #             lines.append(f"  - {k:<22}: {v}")
+
+        #     if self.system_details["cl_step_metrics"]:
+        #         lines.append("\n[Step Response Metrics]")
+        #         for k, v in self.system_details["cl_step_metrics"].items():
+        #             lines.append(f"  - {k:<22}: {v}")
+                    
+        #     lines.append("\n" + "=" * 50 + "\n")
+
+        return "\n".join(lines)
+
+    def onSaveZipClicked(self):
+        # Pastikan user sudah men-generate plot Open Loop dan Closed Loop
+        if getattr(self, 'bod_plot_open_png_bytes', None) is None:
+            QMessageBox.warning(self, "Incomplete System", "Please generate open loop plots before saving!")
+            return
+
+        report_txt = self.generate_report_text()
+
+        saveToZip(self, "System_Analysis_Report_Modul4.zip", [
+            {"file_name": "Open_Loop_Bode_Plot.png", "file_data": self.bod_plot_open_png_bytes},
+            {"file_name": "Open_Loop_Step_Response.png", "file_data": self.step_response_open_png_bytes},
+            {"file_name": "Closed_Loop_Bode_Plot.png", "file_data": self.bod_plot_closed_png_bytes},
+            {"file_name": "Closed_Loop_Step_Response.png", "file_data": self.step_response_closed_png_bytes},
+            {"file_name": "System_Details.txt", "file_data": report_txt},
+        ])
+
+    def onSendEmailBtnClicked(self):
+        email = user_context.email
+        if not email:
+            QMessageBox.critical(self, "Auth Error", "User email not found in session.")
+            return
+
+        if not (self.bod_plot_open_png_bytes):
+            QMessageBox.warning(self, "Incomplete System",
+                                "Please generate BOTH open loop and closed loop plots before sending!")
+            return
+
+        report_txt = self.generate_report_text()
+
+        files_to_zip = [
+            {"file_name": "Open_Loop_Bode_Plot.png", "file_data": self.bod_plot_open_png_bytes},
+            {"file_name": "Open_Step_Response.png", "file_data": self.step_response_open_png_bytes},
+            {"file_name": "System_Details.txt", "file_data": report_txt.encode('utf-8')},
+        ]
+
+        try:
+            zip_bytes = create_zip_in_memory(files_to_zip)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to compress files: {e}")
+            return
+
+        if len(zip_bytes) > 900 * 1024:
+            print("Warning: Zip file is large. Firestore email might fail due to 1MB limit.")
+
+        formatted_report = report_txt.replace('\n', '<br>')
+        html_content = f"""
+        <html>
+        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;">
+            <div style="background-color: #0078d7; color: white; padding: 20px; text-align: center;">
+                <h2>Control Systems Simulation Report</h2>
+                <p>Module 2 & 3: System Analysis</p>
+            </div>
+            <div style="padding: 20px;">
+                <p>Hello {user_context.display_name},</p>
+                <p>Your simulation has been successfully processed. Attached is the <strong>ZIP file</strong> containing:</p>
+                <ul>
+                    <li>Open/Closed Loop Root Locus Plots</li>
+                    <li>Open/Closed Loop Step Response Plots</li>
+                    <li>Detailed System Parameters (Text File)</li>
+                </ul>
+                <hr style="border: 0; border-top: 1px solid #eee;">
+                <h3>System Summary</h3>
+                <div style="background-color: #f9f9f9; padding: 15px; border-left: 5px solid #0078d7; font-family: monospace; font-size: 12px;">
+                    {formatted_report}
+                </div>
+                <br>
+                <p><em>Control Laboratory 2026</em></p>
+                <p>Departemen Teknik Elektro Universitas Indonesia</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+
+        success, message = sendWithEmail(
+            to_email=email,
+            subject="Lab Report: System Analysis Results",
+            html_body=html_content,
+            text_body=report_txt,
+            attachments=[
+                {"filename": "System_Analysis_Report.zip", "content": zip_bytes}
+            ]
+        )
+
+        # 8. Restore UI
+        QApplication.restoreOverrideCursor()
+
+        if success:
+            QMessageBox.information(self, "Email Sent", f"Report successfully sent to {email}")
+        else:
+            QMessageBox.critical(self, "Sending Failed", f"Could not send email.\nError: {message}")
 
 def launch_modul4():
     window = MainModul4()

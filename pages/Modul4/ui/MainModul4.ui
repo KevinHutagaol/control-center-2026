@@ -117,216 +117,274 @@
       </item>
      </layout>
     </item>
+    
     <item>
-     <widget class="QGroupBox" name="groupTF">
-      <property name="title">
-       <string>Transfer Function Input</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayoutTF">
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="den_s1">
-         <property name="placeholderText">
-          <string>s^1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="num_s1">
-         <property name="placeholderText">
-          <string>s^1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="labelNum">
-         <property name="text">
-          <string>Numerator</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="4">
-        <widget class="QLineEdit" name="num_s0">
-         <property name="placeholderText">
-          <string>s^0</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="labelDen">
-         <property name="text">
-          <string>Denominator</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLineEdit" name="num_s2">
-         <property name="placeholderText">
-          <string>s^2</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5" rowspan="2">
-        <widget class="QPushButton" name="btnGeneratePlot">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Generate Plot</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="num_s3">
-         <property name="placeholderText">
-          <string>s^3</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="den_s2">
-         <property name="placeholderText">
-          <string>s^2</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="den_s3">
-         <property name="placeholderText">
-          <string>s^3</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4">
-        <widget class="QLineEdit" name="den_s0">
-         <property name="placeholderText">
-          <string>s^0</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="plotStatusLayout">
+     <layout class="QHBoxLayout" name="contentLayout" stretch="4,1">
       <item>
-       <widget class="QGroupBox" name="groupPlots">
-        <property name="title">
-         <string>Plots</string>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayoutPlots">
+       <widget class="QWidget" name="left_panel" native="true">
+        <layout class="QVBoxLayout" name="leftLayout">
          <item>
-          <widget class="QWidget" name="BodePlotWidget" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>300</width>
-             <height>250</height>
-            </size>
+          <widget class="QGroupBox" name="groupTF">
+           <property name="title">
+            <string>Transfer Function Input</string>
            </property>
-           <property name="cursor">
-            <cursorShape>WhatsThisCursor</cursorShape>
-           </property>
-           <property name="styleSheet">
-            <string>border: 1px solid rgb(197,218,247);</string>
-           </property>
+           <layout class="QGridLayout" name="gridLayoutTF">
+            <item row="1" column="3">
+             <widget class="QLineEdit" name="den_s1">
+              <property name="placeholderText">
+               <string>s^1</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLineEdit" name="num_s1">
+              <property name="placeholderText">
+               <string>s^1</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelNum">
+              <property name="text">
+               <string>Numerator</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4">
+             <widget class="QLineEdit" name="num_s0">
+              <property name="placeholderText">
+               <string>s^0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="labelDen">
+              <property name="text">
+               <string>Denominator</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLineEdit" name="num_s2">
+              <property name="placeholderText">
+               <string>s^2</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="5" rowspan="2">
+             <widget class="QPushButton" name="btnGeneratePlot">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Generate Plot</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="num_s3">
+              <property name="placeholderText">
+               <string>s^3</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLineEdit" name="den_s2">
+              <property name="placeholderText">
+               <string>s^2</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="den_s3">
+              <property name="placeholderText">
+               <string>s^3</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="4">
+             <widget class="QLineEdit" name="den_s0">
+              <property name="placeholderText">
+               <string>s^0</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
-          <widget class="QWidget" name="stepResponsePlotWidget" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>300</width>
-             <height>250</height>
-            </size>
-           </property>
-           <property name="cursor">
-            <cursorShape>WhatsThisCursor</cursorShape>
-           </property>
-           <property name="styleSheet">
-            <string>border: 1px solid rgb(197,218,247);</string>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="plotStatusLayout">
+           <item>
+            <widget class="QGroupBox" name="groupPlots">
+             <property name="title">
+              <string>Plots</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayoutPlots">
+              <item>
+               <widget class="QWidget" name="BodePlotWidget" native="true">
+                <property name="minimumSize">
+                 <size>
+                  <width>300</width>
+                  <height>250</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>WhatsThisCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string>border: 1px solid rgb(197,218,247);</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="stepResponsePlotWidget" native="true">
+                <property name="minimumSize">
+                 <size>
+                  <width>300</width>
+                  <height>250</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>WhatsThisCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string>border: 1px solid rgb(197,218,247);</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupStatus">
+             <property name="title">
+              <string>System Status</string>
+             </property>
+             <layout class="QFormLayout" name="formLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="lblOvershoot">
+                <property name="text">
+                 <string>Overshoot: -</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="lblSettlingTime">
+                <property name="text">
+                 <string>Settling Time: -</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="lblPeakTime">
+                <property name="text">
+                 <string>Peak Time: -</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
       </item>
+      
       <item>
-       <widget class="QGroupBox" name="groupStatus">
-        <property name="title">
-         <string>System Status</string>
+       <widget class="QWidget" name="right_panel" native="true">
+        <property name="enabled">
+         <bool>true</bool>
         </property>
-        <layout class="QFormLayout" name="formLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="lblOvershoot">
-           <property name="text">
-            <string>Overshoot: -</string>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Export Data</string>
            </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="lblSettlingTime">
-           <property name="text">
-            <string>Settling Time: -</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="lblPeakTime">
-           <property name="text">
-            <string>Peak Time: -</string>
-           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">font-size: 14pt; font-weight: bold;</string>
+              </property>
+              <property name="text">
+               <string>Data Status</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lblStatusBasePlant">
+              <property name="text">
+               <string>○ Base Plant: Not Ready</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line">
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(197, 218, 247); 
+border: none;
+height: 20px; 
+
+margin-top: 8px;
+margin-bottom: 8px;</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnSaveZip">
+              <property name="text">
+               <string>Save to ZIP</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnSendEmail">
+              <property name="text">
+               <string>Send via Email</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>343</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
        </widget>
       </item>
      </layout>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="groupController">
-      <property name="title">
-       <string>Controller Parameters</string>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayoutController">
-       <item>
-        <widget class="QLineEdit" name="inputP">
-         <property name="placeholderText">
-          <string>P</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="inputI">
-         <property name="placeholderText">
-          <string>I</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="inputD">
-         <property name="placeholderText">
-          <string>D</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="inputGain">
-         <property name="placeholderText">
-          <string>Gain</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btnPlotWithController">
-         <property name="text">
-          <string>Plot Response with Controller</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
     </item>
     <item>
      <layout class="QHBoxLayout" name="bottomLayout">
