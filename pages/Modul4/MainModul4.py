@@ -76,6 +76,25 @@ class MainModul4(QMainWindow, Ui_MainWindow):
         
         self.setupUi(self)
 
+        # Validator
+        val_double = QDoubleValidator(-15000.0, 15000.0, 4)
+        val_double.setNotation(QDoubleValidator.StandardNotation)
+
+        # fail safe biar gak crash
+        self.num_s3.setValidator(val_double)
+        self.num_s2.setValidator(val_double)
+        self.num_s1.setValidator(val_double)
+        self.num_s0.setValidator(val_double)
+
+        self.den_s3.setValidator(val_double)
+        self.den_s2.setValidator(val_double)
+        self.den_s1.setValidator(val_double)
+        self.den_s0.setValidator(val_double)
+
+
+        self.bod_plot_open_png_bytes = None
+        self.step_response_open_png_bytes = None
+
         # 2. Setup Grafik Matplotlib
         self.init_matplotlib_canvas()
 
@@ -188,22 +207,31 @@ class MainModul4(QMainWindow, Ui_MainWindow):
         try:
             def get_val(line_edit):
                 txt = line_edit.text().strip()
+                # fail safe jadi ngeganti koma jadi titik, kalo misalnya pake koma desimal
+                txt = txt.replace(',', '.')
                 return float(txt) if txt else 0.0
-
 
             num = [get_val(self.num_s3), get_val(self.num_s2), get_val(self.num_s1), get_val(self.num_s0)]
             den = [get_val(self.den_s3), get_val(self.den_s2), get_val(self.den_s1), get_val(self.den_s0)]
 
+            # Pangkas angka 0 yang tidak penting di depan
             while len(num) > 1 and num[0] == 0: num.pop(0)
             while len(den) > 1 and den[0] == 0: den.pop(0)
 
             if all(v == 0 for v in den):
-                raise ValueError("Denominator cannot be zero!")
+                raise ValueError("Denominator tidak boleh nol semua!")
+            
+            if all(v == 0 for v in num):
+                raise ValueError("Numerator (pembilang) tidak boleh nol semua!")
+
+            # fail safe kalo order num > dari denum
+            if len(num) > len(den):
+                raise ValueError("Orde Numerator tidak boleh lebih besar dari orde Denominator!\n(Sistem tidak proper).")
 
             G = ct.tf(num, den)
             return G
         except ValueError as e:
-            QMessageBox.warning(self, "Input Error", f"Check inputs: {e}")
+            QMessageBox.warning(self, "Input Error", f"Periksa input Anda:\n{e}")
             return None
 
     def update_metrics(self, t, y):
@@ -422,11 +450,7 @@ class MainModul4(QMainWindow, Ui_MainWindow):
 
     def generate_report_text(self):
         lines = []
-        lines.append("=" * 50)
-        lines.append("      CONTROL SYSTEM ANALYSIS REPORT (MODUL 4)")
-        lines.append("=" * 50)
-        lines.append("")
-
+        lines = ["=" * 40, "   CONTROL SYSTEM ANALYSIS REPORT", "=" * 40, ""]
         # --- Report Open Loop ---
         if self.system_details["plant_G"]:
             lines.append("--- BASE PLANT (OPEN LOOP) ---")
@@ -444,8 +468,11 @@ class MainModul4(QMainWindow, Ui_MainWindow):
                 for k, v in self.system_details["ol_step_metrics"].items():
                     lines.append(f"  - {k:<22}: {v}")
 
-            lines.append("\n\n<i> Semangat mengerjakan borang analisis dan tutam nya nya gaiss :))</i>")
-            lines.append("<i> -Control Lab Assistant 2026</i>")
+            
+            lines.append("\nNOTE: GRAFIK STEP RESPONSE TIDAK DI PAKI DI MODUL INI")    
+
+            lines.append("\n\n<i> Semangat mengerjakan borang analisis dan tutam nya nya gaiss :))!!!</i>")
+            lines.append("<i>-Control Lab Assistant 2026</i>")
                     
             lines.append("\n" + "=" * 50 + "\n")
 
@@ -471,9 +498,9 @@ class MainModul4(QMainWindow, Ui_MainWindow):
         return "\n".join(lines)
 
     def onSaveZipClicked(self):
-        # Pastikan user sudah men-generate plot Open Loop dan Closed Loop
-        if getattr(self, 'bod_plot_open_png_bytes', None) is None:
-            QMessageBox.warning(self, "Incomplete System", "Please generate open loop plots before saving!")
+        if not self.bod_plot_open_png_bytes or not self.step_response_open_png_bytes:
+            QMessageBox.warning(self, "Incomplete System",
+                                "Please generate open loop plots before saving as ZIP!")
             return
 
         report_txt = self.generate_report_text()
@@ -481,20 +508,14 @@ class MainModul4(QMainWindow, Ui_MainWindow):
         saveToZip(self, "System_Analysis_Report_Modul4.zip", [
             {"file_name": "Open_Loop_Bode_Plot.png", "file_data": self.bod_plot_open_png_bytes},
             {"file_name": "Open_Loop_Step_Response.png", "file_data": self.step_response_open_png_bytes},
-            {"file_name": "Closed_Loop_Bode_Plot.png", "file_data": self.bod_plot_closed_png_bytes},
-            {"file_name": "Closed_Loop_Step_Response.png", "file_data": self.step_response_closed_png_bytes},
             {"file_name": "System_Details.txt", "file_data": report_txt},
         ])
 
     def onSendEmailBtnClicked(self):
-        email = user_context.email
-        if not email:
-            QMessageBox.critical(self, "Auth Error", "User email not found in session.")
-            return
 
-        if not (self.bod_plot_open_png_bytes):
+        if not self.bod_plot_open_png_bytes or not self.step_response_open_png_bytes:
             QMessageBox.warning(self, "Incomplete System",
-                                "Please generate BOTH open loop and closed loop plots before sending!")
+                                "Please generate open loop plots before sending!")
             return
 
         report_txt = self.generate_report_text()
@@ -546,7 +567,6 @@ class MainModul4(QMainWindow, Ui_MainWindow):
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
 
         success, message = sendWithEmail(
-            to_email=email,
             subject="Lab Report: System Analysis Results",
             html_body=html_content,
             text_body=report_txt,
@@ -559,7 +579,7 @@ class MainModul4(QMainWindow, Ui_MainWindow):
         QApplication.restoreOverrideCursor()
 
         if success:
-            QMessageBox.information(self, "Email Sent", f"Report successfully sent to {email}")
+            QMessageBox.information(self, "Email Sent", message)
         else:
             QMessageBox.critical(self, "Sending Failed", f"Could not send email.\nError: {message}")
 
