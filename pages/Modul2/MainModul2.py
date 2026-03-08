@@ -1,16 +1,13 @@
 import io
-import os
 import sys
-import zipfile
 
 import numpy as np
 import matplotlib.pyplot as plt
-from PyQt5.QtCore import QStandardPaths, QRegExp, Qt
+from PyQt5.QtCore import QRegExp, Qt
 from PyQt5.QtGui import QDoubleValidator, QRegExpValidator
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PyQt5.QtWidgets import (QMainWindow, QApplication, QVBoxLayout, QMessageBox, QDialog, QToolBar, QAction,
-                             QFileDialog)
+from PyQt5.QtWidgets import (QMainWindow, QApplication, QVBoxLayout, QMessageBox, QDialog)
 import control as ct
 import pages.Modul2.resourcesmodul2  # noqa
 from func.UserContext import user_context
@@ -492,11 +489,7 @@ class MainModul(QMainWindow, Ui_MainWindow):
         dialog.exec_()
 
     def generate_report_text(self):
-        lines = []
-        lines.append("=" * 40)
-        lines.append("   CONTROL SYSTEM ANALYSIS REPORT")
-        lines.append("=" * 40)
-        lines.append("")
+        lines = ["=" * 40, "   CONTROL SYSTEM ANALYSIS REPORT", "=" * 40, ""]
 
         if self.system_details["plant_G"]:
             lines.append("--- BASE PLANT (OPEN LOOP) ---")
@@ -540,11 +533,6 @@ class MainModul(QMainWindow, Ui_MainWindow):
         ])
 
     def onSendEmailBtnClicked(self):
-        email = user_context.email
-        if not email:
-            QMessageBox.critical(self, "Auth Error", "User email not found in session.")
-            return
-
         if not (self.root_locus_open_png_bytes and self.root_locus_closed_png_bytes):
             QMessageBox.warning(self, "Incomplete System",
                                 "Please generate BOTH open loop and closed loop plots before sending!")
@@ -601,7 +589,6 @@ class MainModul(QMainWindow, Ui_MainWindow):
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
 
         success, message = sendWithEmail(
-            to_email=email,
             subject="Lab Report: System Analysis Results",
             html_body=html_content,
             text_body=report_txt,
@@ -610,11 +597,10 @@ class MainModul(QMainWindow, Ui_MainWindow):
             ]
         )
 
-        # 8. Restore UI
         QApplication.restoreOverrideCursor()
 
         if success:
-            QMessageBox.information(self, "Email Sent", f"Report successfully sent to {email}")
+            QMessageBox.information(self, "Email Sent", message)
         else:
             QMessageBox.critical(self, "Sending Failed", f"Could not send email.\nError: {message}")
 

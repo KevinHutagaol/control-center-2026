@@ -2,8 +2,11 @@ import base64
 import io
 import zipfile
 
+from PyQt5.QtWidgets import QMessageBox
+
 from appConfig import firebaseConfig, firestoreConfig
 from func.FirebaseAuthedSession import authed_session
+from func.UserContext import user_context
 
 PROJECT_ID = firebaseConfig["projectId"]
 COLLECTION_NAME = "mail"
@@ -17,7 +20,12 @@ def create_zip_in_memory(files_data):
     return zip_buffer.getvalue()
 
 
-def sendWithEmail(to_email, subject, html_body, text_body, attachments=None):
+def sendWithEmail(subject, html_body, text_body, attachments=None):
+    to_email = user_context.email
+    if not to_email:
+        QMessageBox.critical(None, "Auth Error", "User email not found in session.")
+        return
+
     if attachments is None:
         attachments = []
 
@@ -64,8 +72,9 @@ def sendWithEmail(to_email, subject, html_body, text_body, attachments=None):
     try:
         response = authed_session.post(url, json=firestore_payload)
         response.raise_for_status()
-        return True, "Email queued successfully!"
+        return True, f"Email sent successfully to {to_email}!"
     except Exception as e:
         if 'response' in locals() and hasattr(response, 'text'):
             print("Firestore Error Response:", response.text)
         return False, str(e)
+
