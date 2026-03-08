@@ -541,7 +541,7 @@ class MainModul4(QMainWindow, Ui_MainWindow):
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;">
             <div style="background-color: #0078d7; color: white; padding: 20px; text-align: center;">
                 <h2>Control Systems Simulation Report</h2>
-                <p>Module 2 & 3: System Analysis</p>
+                <p>Module 4: System Analysis</p>
             </div>
             <div style="padding: 20px;">
                 <p>Hello {user_context.display_name},</p>
