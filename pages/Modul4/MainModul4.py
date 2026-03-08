@@ -469,7 +469,7 @@ class MainModul4(QMainWindow, Ui_MainWindow):
                     lines.append(f"  - {k:<22}: {v}")
 
             
-            lines.append("\nNOTE: GRAFIK STEP RESPONSE TIDAK DI PAKI DI MODUL INI")    
+            lines.append("\nNOTE: GRAFIK STEP RESPONSE TIDAK DI PAKAI DI MODUL INI")    
 
             lines.append("\n\n<i> Semangat mengerjakan borang analisis dan tutam nya nya gaiss :))!!!</i>")
             lines.append("<i>-Control Lab Assistant 2026</i>")
