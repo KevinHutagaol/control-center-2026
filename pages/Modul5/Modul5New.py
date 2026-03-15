@@ -429,6 +429,8 @@ class Ui_MainWindow(object):
         spacerItem5 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.inputArea.addItem(spacerItem5)
         self.horizontalLayout_2.addLayout(self.inputArea)
+        
+        # Area Plot
         self.plotArea = QtWidgets.QWidget(self.frame)
         self.plotArea.setObjectName("plotArea")
         self.gridLayout_7 = QtWidgets.QGridLayout(self.plotArea)
@@ -458,6 +460,52 @@ class Ui_MainWindow(object):
         self.plot_bawah.setStyleSheet("")
         self.plot_bawah.setObjectName("plot_bawah")
         self.verticalLayout_5.addWidget(self.plot_bawah)
+        
+        # --- PERUBAHAN: TAMBAH TOMBOL DI BAWAH GRAFIK ---
+        # Spacer kecil antara grafik dan tombol biar ga nempel
+        spacerItem_buttons = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        self.verticalLayout_5.addItem(spacerItem_buttons)
+        
+        self.horizontalLayout_action_btns = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_action_btns.setObjectName("horizontalLayout_action_btns")
+        
+        # Spacer di kiri biar tombolnya rapat ke kanan (kalau mau di tengah, tambahin satu lagi spacer di kanan)
+        spacerItem_btn_left = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_action_btns.addItem(spacerItem_btn_left)
+        
+        button_style = """
+        QPushButton {
+            background-color: #ffffff; 
+            color: #000000; 
+            padding: 8px 16px; 
+            border-radius: 4px; 
+            font-weight: bold;
+            border: 2px solid transparent;
+        }
+        QPushButton:hover {
+            background-color: #e0e0e0;
+            border: 2px solid #aaaaaa;
+        }
+        QPushButton:pressed {
+            background-color: #c0c0c0;
+            padding-top: 10px;
+            padding-bottom: 6px;
+        }
+        """
+        
+        self.btnSaveZip = QtWidgets.QPushButton(self.plotArea)
+        self.btnSaveZip.setStyleSheet(button_style)
+        self.btnSaveZip.setObjectName("btnSaveZip")
+        self.horizontalLayout_action_btns.addWidget(self.btnSaveZip)
+        
+        self.btnSendEmail = QtWidgets.QPushButton(self.plotArea)
+        self.btnSendEmail.setStyleSheet(button_style)
+        self.btnSendEmail.setObjectName("btnSendEmail")
+        self.horizontalLayout_action_btns.addWidget(self.btnSendEmail)
+        
+        self.verticalLayout_5.addLayout(self.horizontalLayout_action_btns)
+        # --- SELESAI PENAMBAHAN TOMBOL ---
+
         self.gridLayout_7.addLayout(self.verticalLayout_5, 1, 1, 1, 1)
         self.horizontalLayout_2.addWidget(self.plotArea)
         self.horizontalLayout.addLayout(self.horizontalLayout_2)
@@ -494,6 +542,10 @@ class Ui_MainWindow(object):
         self.lagCompensatorButton.setText(_translate("MainWindow", "Lag Compensated Response"))
         self.leadCompensatorButton.setText(_translate("MainWindow", "Lead Compensated Response"))
         self.lagleadCompensatorButton.setText(_translate("MainWindow", "Lag-Lead Compensated Response"))
+        
+        # --- PERUBAHAN: Set Text untuk tombol ---
+        self.btnSaveZip.setText(_translate("MainWindow", "Save as zip"))
+        self.btnSendEmail.setText(_translate("MainWindow", "Send to email"))
 
 from pages.Modul5.UI5.mplwidget import MplWidget
 
