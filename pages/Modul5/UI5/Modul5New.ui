@@ -56,8 +56,8 @@
       <property name="styleSheet">
        <string notr="true">QFrame#frame{
     qproperty-autoFillBackground: true; /* ensure it paints its own background */
-	
-	border-image: url(:/Background/Background_Leader_Page_5.png)
+    
+    border-image: url(:/Background/Background_Leader_Page_5.png)
 }
 </string>
       </property>
@@ -817,12 +817,12 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QRadioButton" name="nyquistButton">
+                    <widget class="QPushButton" name="btnSaveZip">
                      <property name="styleSheet">
-                      <string notr="true">color: white;</string>
+                      <string notr="true">background-color: white; color: black; padding: 5px; border-radius: 3px; font-weight: bold;</string>
                      </property>
                      <property name="text">
-                      <string>Nyquist Plot</string>
+                      <string>Save as zip</string>
                      </property>
                     </widget>
                    </item>
@@ -851,12 +851,12 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QRadioButton" name="lagleadCompensatorButton">
+                    <widget class="QPushButton" name="btnSendEmail">
                      <property name="styleSheet">
-                      <string notr="true">color: white;</string>
+                      <string notr="true">background-color: white; color: black; padding: 5px; border-radius: 3px; font-weight: bold;</string>
                      </property>
                      <property name="text">
-                      <string>Lag-Lead Compensated Response</string>
+                      <string>Send to email</string>
                      </property>
                     </widget>
                    </item>
