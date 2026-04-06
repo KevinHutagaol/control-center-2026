@@ -2,6 +2,7 @@ import io
 import numpy as np
 import matplotlib.pyplot as plt
 import control
+from PyQt5.QtWidgets import QMessageBox # <-- Jangan lupa import ini
 
 from pages.Modul7.session import moduleCOD_session
 
@@ -25,10 +26,46 @@ def plot_response(t, y, title="Step Response"):
     return img_bytes # Kembalikan bytes gambarnya
 
 def simulate_and_plot(ui, R_user=None, N_user=None):
-    A = moduleCOD_session["A_user"]
-    B = moduleCOD_session["B_user"]
-    C = moduleCOD_session["C_user"]
-    D = moduleCOD_session["D_user"]
+    # Pake .get() biar aman dari KeyError
+    A = moduleCOD_session.get("A_user")
+    B = moduleCOD_session.get("B_user")
+    C = moduleCOD_session.get("C_user")
+    D = moduleCOD_session.get("D_user")
+
+    if A is None or B is None or C is None or D is None:
+        err_box = QMessageBox(None)
+        err_box.setIcon(QMessageBox.Warning)
+        err_box.setWindowTitle("Data Tidak Lengkap")
+        err_box.setText("Gagal menjalankan simulasi!\nPastikan Matriks A, B, C, dan D sudah diisi semua.")
+        
+        err_box.setStyleSheet("""
+            QMessageBox, QMessageBox * {
+                border-image: none !important;
+                background-image: none !important;
+            }
+            QMessageBox {
+                background-color: #ffffff;
+            }
+            QMessageBox QLabel {
+                color: #000000;
+                background: transparent;
+                font-size: 13px;
+            }
+            QMessageBox QPushButton {
+                background-color: #e0e0e0;
+                color: #000000;
+                border: 1px solid #b0b0b0;
+                padding: 6px 15px;
+                border-radius: 4px;
+                font-weight: bold;
+                min-width: 60px;
+            }
+            QMessageBox QPushButton:hover {
+                background-color: #d0d0d0;
+            }
+        """)
+        err_box.exec_()
+        return 
 
     t = np.linspace(0, 10, 500)
 
