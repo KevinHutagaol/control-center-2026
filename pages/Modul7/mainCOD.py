@@ -154,7 +154,7 @@ class MainWindow(QMainWindow, Ui_Main):
 
     def send_email(self):
         if not hasattr(self, 'generated_plots') or not self.generated_plots:
-            QMessageBox.warning(self, "Belum Ada Grafik", "Belum ada grafik yang di-generate. Silakan Run Simulation terlebih dahulu!")
+            QMessageBox.warning(None, "Belum Ada Grafik", "Belum ada grafik yang di-generate. Silakan Run Simulation terlebih dahulu!")
             return
 
         file_list = "\n".join([f"• {k}" for k in self.generated_plots.keys()])
