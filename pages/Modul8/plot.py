@@ -1,3 +1,4 @@
+import io
 from PyQt5 import QtWidgets
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
@@ -127,6 +128,12 @@ class PlotWindow(QtWidgets.QMainWindow):
                 self.ref_line2.set_data(t_ref, y_ref)
 
         self.canvas.draw_idle()
+
+    def get_figure_as_bytes(self):
+        """Returns the matplotlib figure as PNG bytes"""
+        with io.BytesIO() as buf:
+            self.fig.savefig(buf, format='png', bbox_inches='tight')
+            return buf.getvalue()
 
     def appendSample(self, t, x1, x2, x1_hat=None, x2_hat=None):
         # simpan data

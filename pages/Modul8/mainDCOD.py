@@ -1,15 +1,25 @@
+import io
 import sys
+import numpy as np
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QDoubleValidator
 
 import pages.Modul8.gambar_rc # noqa
 from pages.Modul8.calc import *
 from pages.Modul8.plot import PlotWindow
 from pages.Modul8.ui_8.ui_main import Ui_MainWindow
 
+from func.UserContext import user_context
+from func.saveToZip import saveToZip
+from func.sendWithEmail import create_zip_in_memory, sendWithEmail
+
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        
+        self.setupValidators()
 
         self.plantPlot = None
         self.plantTimer = QtCore.QTimer(self)
@@ -30,9 +40,56 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.plantwctrl.clicked.connect(self.plotPlantWithController)
         self.plantwobsvwctrl.clicked.connect(self.plotPlantWithObserverAndController)
 
+        self.btnSaveZip.clicked.connect(self.onSaveZipBtnClicked)
+        self.btnSendEmail.clicked.connect(self.onSendEmailBtnClicked)
+
+        self.plant_png_bytes = None
+        self.plant_obs_png_bytes = None
+        self.plant_ctrl_png_bytes = None
+        self.plant_obs_ctrl_png_bytes = None
+
+        self.sim_data = {
+            "plant": {"time": [], "x1": [], "x2": []},
+            "plant_obs": {"time": [], "x1": [], "x2": [], "x1_hat": [], "x2_hat": []},
+            "plant_ctrl": {"time": [], "x1": [], "x2": []},
+            "plant_obs_ctrl": {"time": [], "x1": [], "x2": []}
+        }
+
+        self.stats_data = {
+            "plant": {},
+            "plant_obs": {},
+            "plant_ctrl": {},
+            "plant_obs_ctrl": {}
+        }
+
+        self.fig_export = None
+
         self.setPage(0)
         self.setupStackedNavigation()
         self.setupModelButtons()
+        self.setupValidators()
+
+
+    def setupValidators(self):
+        val_double = QDoubleValidator()
+        val_double.setNotation(QDoubleValidator.StandardNotation)
+        
+        self.a11.setValidator(val_double)
+        self.a12.setValidator(val_double)
+        self.a21.setValidator(val_double)
+        self.a22.setValidator(val_double)
+        
+        self.b11.setValidator(val_double)
+        self.b21.setValidator(val_double)
+        
+        self.l1.setValidator(val_double)
+        self.l2.setValidator(val_double)
+        
+        self.r1.setValidator(val_double)
+        self.r2.setValidator(val_double)
+        
+        self.n.setValidator(val_double)
+        self.setpoint.setValidator(val_double)
 
 
     def setPage(self, index: int):
@@ -109,6 +166,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             setpoint = self.readNumber(self.setpoint)
 
+            if np.linalg.matrix_rank(B) == 0:
+                QtWidgets.QMessageBox.warning(
+                    self,
+                    "Invalid Matrix",
+                    "Matrix B tidak valid (tidak bisa nol semua)."
+                )
+                return
+
+            if R.shape[1] != A.shape[0]:
+                QtWidgets.QMessageBox.warning(
+                    self,
+                    "Invalid Matrix",
+                    f"Dimension mismatch: R harus berukuran {A.shape[0]}x{A.shape[0]}."
+                )
+                return
+
             print("A:", A)
             print("B:", B)
             print("L:", L)
@@ -177,6 +250,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.simXHat = np.array([[0.5],
                                  [0.0]])
         self.simStep = 0
+        
+        # reset simulation data for current mode
+        mode_key = mode
+        if mode_key == "plant_obs":
+            self.sim_data[mode_key] = {"time": [], "x1": [], "x2": [], "x1_hat": [], "x2_hat": []}
+        elif mode_key in self.sim_data:
+            self.sim_data[mode_key] = {"time": [], "x1": [], "x2": []}
 
         # pilih fungsi step + judul
         if mode == "plant":
@@ -302,10 +382,65 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def updatePlantSimulation(self):
         if self.simStep >= self.simMaxSteps or self.stepFunc is None:
             self.plantTimer.stop()
+            
+            try:
+                setpoint = getattr(self, "setpointValue", 1.0)
+                
+                if self.currentMode == "plant":
+                    time_data = self.sim_data["plant"]["time"]
+                    x1_data = self.sim_data["plant"]["x1"]
+                    if len(x1_data) > 0:
+                        self.stats_data["plant"] = calculate_statistics(time_data, x1_data, setpoint)
+                        
+                elif self.currentMode == "plant_obs":
+                    time_data = self.sim_data["plant_obs"]["time"]
+                    x1_data = self.sim_data["plant_obs"]["x1"]
+                    if len(x1_data) > 0:
+                        self.stats_data["plant_obs"] = calculate_statistics(time_data, x1_data, setpoint)
+                        
+                elif self.currentMode == "plant_ctrl":
+                    time_data = self.sim_data["plant_ctrl"]["time"]
+                    x1_data = self.sim_data["plant_ctrl"]["x1"]
+                    if len(x1_data) > 0:
+                        self.stats_data["plant_ctrl"] = calculate_statistics(time_data, x1_data, setpoint)
+                        
+                elif self.currentMode == "plant_obs_ctrl":
+                    time_data = self.sim_data["plant_obs_ctrl"]["time"]
+                    x1_data = self.sim_data["plant_obs_ctrl"]["x1"]
+                    if len(x1_data) > 0:
+                        self.stats_data["plant_obs_ctrl"] = calculate_statistics(time_data, x1_data, setpoint)
+            except Exception as e:
+                print(f"Statistics calculation error: {e}")
+
+            if self.plantPlot is not None:
+                png_bytes = self.plantPlot.get_figure_as_bytes()
+                
+                if self.currentMode == "plant":
+                    self.plant_png_bytes = png_bytes
+                    self.lblStatusPlant.setText("● Plant: Ready")
+                    self.lblStatusPlant.setStyleSheet("color: #00FF00; font-weight: bold;")
+                elif self.currentMode == "plant_obs":
+                    self.plant_obs_png_bytes = png_bytes
+                    self.lblStatusObserver.setText("● Observer: Ready")
+                    self.lblStatusObserver.setStyleSheet("color: #00FF00; font-weight: bold;")
+                elif self.currentMode == "plant_ctrl":
+                    self.plant_ctrl_png_bytes = png_bytes
+                    self.lblStatusController.setText("● Controller: Ready")
+                    self.lblStatusController.setStyleSheet("color: #00FF00; font-weight: bold;")
+                elif self.currentMode == "plant_obs_ctrl":
+                    self.plant_obs_ctrl_png_bytes = png_bytes
+                    self.lblStatusController.setText("● Observer+Controller: Ready")
+                    self.lblStatusController.setStyleSheet("color: #00FF00; font-weight: bold;")
+            
             return
 
         # jalankan 1 step sesuai mode (pakai fungsi-fungsi di calc.py)
-        self.stepFunc()
+        try:
+            self.stepFunc()
+        except Exception as e:
+            self.plantTimer.stop()
+            QtWidgets.QMessageBox.critical(self, "Simulation Error", f"Simulation crashed: {str(e)}")
+            return
 
         # waktu dalam detik
         t = self.simStep * self.simTs
@@ -320,6 +455,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             if self.plantPlot is not None:
                 self.plantPlot.appendSample(t, x1, x2, x1_hat, x2_hat)
+            
+            self.sim_data["plant_obs"]["time"].append(t)
+            self.sim_data["plant_obs"]["x1"].append(x1)
+            self.sim_data["plant_obs"]["x2"].append(x2)
+            self.sim_data["plant_obs"]["x1_hat"].append(x1_hat)
+            self.sim_data["plant_obs"]["x2_hat"].append(x2_hat)
 
         elif self.currentMode == "plant_obs_ctrl":
             # untuk mode observer+controller, kamu minta gunakan x observer,
@@ -329,6 +470,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             if self.plantPlot is not None:
                 self.plantPlot.appendSample(t, x1_hat, x2_hat)
+            
+            self.sim_data["plant_obs_ctrl"]["time"].append(t)
+            self.sim_data["plant_obs_ctrl"]["x1"].append(x1_hat)
+            self.sim_data["plant_obs_ctrl"]["x2"].append(x2_hat)
 
         else:
             # mode "plant" dan "plant_ctrl": pakai x sebenarnya
@@ -337,6 +482,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             if self.plantPlot is not None:
                 self.plantPlot.appendSample(t, x1, x2)
+            
+            if self.currentMode == "plant":
+                self.sim_data["plant"]["time"].append(t)
+                self.sim_data["plant"]["x1"].append(x1)
+                self.sim_data["plant"]["x2"].append(x2)
+            elif self.currentMode == "plant_ctrl":
+                self.sim_data["plant_ctrl"]["time"].append(t)
+                self.sim_data["plant_ctrl"]["x1"].append(x1)
+                self.sim_data["plant_ctrl"]["x2"].append(x2)
 
         self.simStep += 1
 
@@ -357,6 +511,209 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         geo = window.frameGeometry()
         geo.moveCenter(fg)
         window.move(geo.topLeft())
+
+    def generate_report_text(self):
+        lines = ["=" * 50, "   DISCRETE CONTROL SYSTEM REPORT", "=" * 50, ""]
+
+        if hasattr(self, 'A') and hasattr(self, 'B'):
+            lines.append("--- MODEL MATRICES ---")
+            lines.append(f"A = [{self.A[0,0]:.4f}  {self.A[0,1]:.4f}]")
+            lines.append(f"    [{self.A[1,0]:.4f}  {self.A[1,1]:.4f}]")
+            lines.append(f"B = [{self.B[0,0]:.4f}]")
+            lines.append(f"    [{self.B[1,0]:.4f}]")
+            if hasattr(self, 'L'):
+                lines.append(f"L = [{self.L[0,0]:.4f}, {self.L[1,0]:.4f}]")
+            if hasattr(self, 'R'):
+                lines.append(f"R = [{self.R[0,0]:.4f}, {self.R[0,1]:.4f}]")
+            if hasattr(self, 'N'):
+                lines.append(f"N = [{self.N[0,0]:.4f}]")
+            if hasattr(self, 'setpointValue'):
+                lines.append(f"Setpoint: {self.setpointValue}")
+            lines.append("")
+        
+        lines.append("--- SIMULATION STATISTICS ---")
+        
+        def format_stats(stats_dict, name):
+            if not stats_dict:
+                return f"  {name}: No data"
+            return (f"  {name}: "
+                    f"Overshoot={stats_dict.get('overshoot_after', 'N/A')}, "
+                    f"Settling={stats_dict.get('settling_time_after', 'N/A')}, "
+                    f"Peak Time={stats_dict.get('peak_time_after', 'N/A')}, "
+                    f"SS Error={stats_dict.get('steady_state_error', 'N/A')}")
+        
+        lines.append(format_stats(self.stats_data.get("plant", {}), "Plant Only"))
+        lines.append(format_stats(self.stats_data.get("plant_obs", {}), "Plant + Observer"))
+        lines.append(format_stats(self.stats_data.get("plant_ctrl", {}), "Plant + Controller"))
+        lines.append(format_stats(self.stats_data.get("plant_obs_ctrl", {}), "Plant + Observer + Controller"))
+        
+        lines.append("\n" + "=" * 50 + "\n")
+
+        return "\n".join(lines)
+
+    def get_html_matrices(self):
+        def fmt(val):
+            return f"{val:.4f}"
+        
+        html = "<table style='border-collapse: collapse; width: auto;'>"
+        
+        html += "<tr><td style='padding: 4px; font-weight: bold;'>A =</td><td style='padding: 4px;'>"
+        html += f"[{fmt(self.A[0,0])}  {fmt(self.A[0,1])}]<br>[{fmt(self.A[1,0])}  {fmt(self.A[1,1])}]"
+        html += "</td></tr>"
+        
+        html += "<tr><td style='padding: 4px; font-weight: bold;'>B =</td><td style='padding: 4px;'>"
+        html += f"[{fmt(self.B[0,0])}]<br>[{fmt(self.B[1,0])}]"
+        html += "</td></tr>"
+        
+        if hasattr(self, 'L'):
+            html += "<tr><td style='padding: 4px; font-weight: bold;'>L =</td><td style='padding: 4px;'>"
+            html += f"[{fmt(self.L[0,0])}, {fmt(self.L[1,0])}]"
+            html += "</td></tr>"
+        
+        if hasattr(self, 'R'):
+            html += "<tr><td style='padding: 4px; font-weight: bold;'>R =</td><td style='padding: 4px;'>"
+            html += f"[{fmt(self.R[0,0])}, {fmt(self.R[0,1])}]"
+            html += "</td></tr>"
+        
+        if hasattr(self, 'N'):
+            html += "<tr><td style='padding: 4px; font-weight: bold;'>N =</td><td style='padding: 4px;'>"
+            html += f"[{fmt(self.N[0,0])}]"
+            html += "</td></tr>"
+        
+        if hasattr(self, 'setpointValue'):
+            html += f"<tr><td style='padding: 4px; font-weight: bold;'>Setpoint</td><td style='padding: 4px;'>{fmt(self.setpointValue)}</td></tr>"
+        
+        html += "</table>"
+        return html
+
+    def get_html_statistics(self):
+        html = "<table style='border-collapse: collapse; width: 100%; margin-top: 10px;'>"
+        html += "<tr style='background-color: #0078d7; color: white;'><th style='padding: 8px;'>Simulation Mode</th><th style='padding: 8px;'>Overshoot</th><th style='padding: 8px;'>Settling Time</th><th style='padding: 8px;'>Peak Time</th><th style='padding: 8px;'>SS Error</th></tr>"
+        
+        def add_row(name, stats):
+            if not stats:
+                return f"<tr><td style='padding: 6px;'>{name}</td><td colspan='4' style='padding: 6px;'>No data</td></tr>"
+            overshoot = stats.get('overshoot_after', 'N/A')
+            settling = stats.get('settling_time_after', 'N/A')
+            peak = stats.get('peak_time_after', 'N/A')
+            ss_err = stats.get('steady_state_error', 'N/A')
+            return f"<tr><td style='padding: 6px;'>{name}</td><td style='padding: 6px;'>{overshoot}</td><td style='padding: 6px;'>{settling}</td><td style='padding: 6px;'>{peak}</td><td style='padding: 6px;'>{ss_err}</td></tr>"
+        
+        html += add_row("Plant Only", self.stats_data.get("plant", {}))
+        html += add_row("Plant + Observer", self.stats_data.get("plant_obs", {}))
+        html += add_row("Plant + Controller", self.stats_data.get("plant_ctrl", {}))
+        html += add_row("Plant + Observer + Controller", self.stats_data.get("plant_obs_ctrl", {}))
+        
+        html += "</table>"
+        return html
+
+    def onSaveZipBtnClicked(self):
+        if not (self.plant_png_bytes or self.plant_obs_png_bytes or 
+                self.plant_ctrl_png_bytes or self.plant_obs_ctrl_png_bytes):
+            QtWidgets.QMessageBox.warning(self, "Incomplete System", 
+                                          "Please generate at least one plot before saving!")
+            return
+
+        files_to_zip = []
+
+        if self.plant_png_bytes:
+            files_to_zip.append({"file_name": "Plant_Response.png", "file_data": self.plant_png_bytes})
+        if self.plant_obs_png_bytes:
+            files_to_zip.append({"file_name": "Plant_With_Observer.png", "file_data": self.plant_obs_png_bytes})
+        if self.plant_ctrl_png_bytes:
+            files_to_zip.append({"file_name": "Plant_With_Controller.png", "file_data": self.plant_ctrl_png_bytes})
+        if self.plant_obs_ctrl_png_bytes:
+            files_to_zip.append({"file_name": "Plant_With_Observer_Controller.png", "file_data": self.plant_obs_ctrl_png_bytes})
+
+        report_txt = self.generate_report_text()
+        files_to_zip.append({"file_name": "System_Details.txt", "file_data": report_txt.encode('utf-8')})
+
+        saveToZip(self, "Discrete_Control_Report.zip", files_to_zip)
+
+    def onSendEmailBtnClicked(self):
+        if not (self.plant_png_bytes or self.plant_obs_png_bytes or 
+                self.plant_ctrl_png_bytes or self.plant_obs_ctrl_png_bytes):
+            QtWidgets.QMessageBox.warning(self, "Incomplete System", 
+                                          "Please generate at least one plot before sending!")
+            return
+
+        files_to_zip = []
+
+        if self.plant_png_bytes:
+            files_to_zip.append({"file_name": "Plant_Response.png", "file_data": self.plant_png_bytes})
+        if self.plant_obs_png_bytes:
+            files_to_zip.append({"file_name": "Plant_With_Observer.png", "file_data": self.plant_obs_png_bytes})
+        if self.plant_ctrl_png_bytes:
+            files_to_zip.append({"file_name": "Plant_With_Controller.png", "file_data": self.plant_ctrl_png_bytes})
+        if self.plant_obs_ctrl_png_bytes:
+            files_to_zip.append({"file_name": "Plant_With_Observer_Controller.png", "file_data": self.plant_obs_ctrl_png_bytes})
+
+        report_txt = self.generate_report_text()
+        files_to_zip.append({"file_name": "System_Details.txt", "file_data": report_txt.encode('utf-8')})
+
+        try:
+            zip_bytes = create_zip_in_memory(files_to_zip)
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"Failed to compress files: {e}")
+            return
+
+        if len(zip_bytes) > 900 * 1024:
+            print("Warning: Zip file is large. Email might fail due to 1MB limit.")
+
+        matrices_html = self.get_html_matrices() if hasattr(self, 'A') else "No matrices available"
+        stats_html = self.get_html_statistics()
+        
+        html_content = f"""
+        <html>
+        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;">
+            <div style="background-color: #0078d7; color: white; padding: 20px; text-align: center;">
+                <h2>Discrete Control Systems Simulation Report</h2>
+                <p>Module 8: State-Space Control & Observer</p>
+            </div>
+            <div style="padding: 20px;">
+                <p>Hello {user_context.display_name},</p>
+                <p>Your simulation has been successfully processed. Attached is the <strong>ZIP file</strong> containing:</p>
+                <ul>
+                    <li>Plant Response Plots</li>
+                    <li>Plant with Observer Plots</li>
+                    <li>Plant with Controller Plots</li>
+                    <li>Plant with Observer and Controller Plots</li>
+                    <li>System Parameters (Text File)</li>
+                </ul>
+                <hr style="border: 0; border-top: 1px solid #eee;">
+                <h3>Model Matrices</h3>
+                <div style="background-color: #f9f9f9; padding: 15px; border-left: 5px solid #0078d7; font-family: monospace; font-size: 12px;">
+                    {matrices_html}
+                </div>
+                <h3>Simulation Statistics</h3>
+                <div style="background-color: #f9f9f9; padding: 15px; border-left: 5px solid #0078d7;">
+                    {stats_html}
+                </div>
+                <br>
+                <p><em>Control Laboratory 2026</em></p>
+                <p>Departemen Teknik Elektro Universitas Indonesia</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        QtWidgets.QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+
+        success, message = sendWithEmail(
+            subject="Lab Report: Discrete Control System Results",
+            html_body=html_content,
+            text_body=report_txt,
+            attachments=[
+                {"filename": "Discrete_Control_Report.zip", "content": zip_bytes}
+            ]
+        )
+
+        QtWidgets.QApplication.restoreOverrideCursor()
+
+        if success:
+            QtWidgets.QMessageBox.information(self, "Email Sent", message)
+        else:
+            QtWidgets.QMessageBox.critical(self, "Sending Failed", f"Could not send email.\nError: {message}")
 
 def exec_DCOD(nama, npm):
     app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
