@@ -8,14 +8,20 @@ class Esp32Protocol:
     def parse_status_response(lines: list) -> dict:
         """Parse STATUS response lines into dict.
         Looks for 'SC,<value>' to get speedConstant (PPR calibration).
-        Returns: {'speed_constant': float}
+        Looks for 'MX,<value>' to get max RPM.
+        Returns: {'speed_constant': float, 'max_rpm': float}
         """
-        result = {'speed_constant': None}
+        result = {'speed_constant': None, 'max_rpm': None}
         for line in lines:
             line = line.strip()
             if line.startswith('SC,'):
                 try:
                     result['speed_constant'] = float(line.split(',')[1])
+                except (ValueError, IndexError):
+                    pass
+            elif line.startswith('MX,'):
+                try:
+                    result['max_rpm'] = float(line.split(',')[1])
                 except (ValueError, IndexError):
                     pass
         return result

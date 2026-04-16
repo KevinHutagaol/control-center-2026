@@ -225,7 +225,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
                 self.ppr.setText(f"{parsed['speed_constant']:.0f}")
             else:
                 self.ppr.setText("--")
-            self.maxRPM.setText("--")
+            if parsed.get('max_rpm') is not None:
+                self.maxRPM.setText(f"{parsed['max_rpm']:.0f}")
+            else:
+                self.maxRPM.setText("--")
 
         except Exception as e:
             print("Motor info read error:", e)
@@ -397,7 +400,7 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
         try:
             self.timer.stop()  # Stop polling timer
             if self.serial_conn and self.serial_conn.is_open:
-                self.serial_conn.write(b"4")
+                self.serial_conn.write(b"4\n")
                 self.serial_conn.flush()
                 self.clear_serial_buffers()
                 
@@ -418,7 +421,7 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
             print("Serial buffer clear error:", e)
 
     def requestTicks(self):
-        self.safe_write(b"2")   # Ask ESP for ticks
+        self.safe_write(b"2\n")   # Ask ESP for ticks
         self.readSerial()
 
     def readSerial(self):
@@ -485,14 +488,14 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
 
     # Setup recursive function that will retry until data is available
     def try_read_motor_char(self, retry_count=0):
-        if retry_count >= 10:  # Limit retries to avoid infinite loop
-            QtWidgets.QMessageBox.information(self, "Log", "No motor characteristic data found.")
+        if retry_count >= 10:
+            self.newGraphClicked()
             return
         
         if retry_count == 0:
             # Clear stale data on first attempt, then send request
             self.clear_serial_buffers()
-            self.serial_conn.write(b"2")
+            self.serial_conn.write(b"2\n")
             self.serial_conn.flush()
             # Wait a bit for first response
             QtCore.QTimer.singleShot(300, lambda: self.try_read_motor_char(retry_count + 1))
@@ -504,12 +507,12 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
                 self.load_and_plot(self.pwm, self.speed)
             else:
                 # Data was empty or returned None, retry
-                self.serial_conn.write(b"2")
+                self.serial_conn.write(b"2\n")
                 self.serial_conn.flush()
                 QtCore.QTimer.singleShot(200, lambda: self.try_read_motor_char(retry_count + 1))
         else:
             # No data yet, resend request and try again
-            self.serial_conn.write(b"2")
+            self.serial_conn.write(b"2\n")
             self.serial_conn.flush()
             QtCore.QTimer.singleShot(200, lambda: self.try_read_motor_char(retry_count + 1))
 
@@ -531,6 +534,8 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
             # Set axis ranges
             self.chart.axisX().setRange(min(pwm), max(pwm))
             self.chart.axisY().setRange(0, max(speed) * 1.1)  # Add 10% margin
+
+            self.apply_linear_region(pwm, speed)
         else:
             QtWidgets.QMessageBox.information(self, "Log", "No motor characteristic file found.")
 
@@ -586,6 +591,120 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
             print(f"Error reading motor characteristic: {e}")
         return data_pwm, data_speed
 
+    def detect_linear_region(self, pwm_data, speed_data):
+        if not pwm_data or not speed_data or len(pwm_data) < 5:
+            return None
+
+        pwm_arr = np.array(pwm_data, dtype=float)
+        speed_arr = np.array(speed_data, dtype=float)
+
+        if len(pwm_arr) < 5:
+            return None
+
+        best_r2 = -1
+        best_start = 0
+        best_end = len(pwm_arr) - 1
+
+        for start in range(len(pwm_arr)):
+            for end in range(start + 4, len(pwm_arr)):
+                x = pwm_arr[start:end+1]
+                y = speed_arr[start:end+1]
+
+                n = len(x)
+                sum_x = np.sum(x)
+                sum_y = np.sum(y)
+                sum_xy = np.sum(x * y)
+                sum_x2 = np.sum(x * x)
+
+                denom = n * sum_x2 - sum_x * sum_x
+                if denom == 0:
+                    continue
+
+                slope = (n * sum_xy - sum_x * sum_y) / denom
+                intercept = (sum_y - slope * sum_x) / n
+
+                y_pred = slope * x + intercept
+                ss_res = np.sum((y - y_pred) ** 2)
+                ss_tot = np.sum((y - np.mean(y)) ** 2)
+
+                if ss_tot == 0:
+                    continue
+
+                r2 = 1 - (ss_res / ss_tot)
+
+                if r2 > best_r2:
+                    best_r2 = r2
+                    best_start = start
+                    best_end = end
+
+        if best_r2 < 0.95:
+            return None
+
+        return {
+            'min_pwm': int(pwm_arr[best_start]),
+            'max_pwm': int(pwm_arr[best_end]),
+            'min_rpm': float(speed_arr[best_start]),
+            'max_rpm': float(speed_arr[best_end]),
+            'r2': best_r2
+        }
+
+    def apply_linear_region(self, pwm_data, speed_data):
+        result = self.detect_linear_region(pwm_data, speed_data)
+        if result is None:
+            print("Could not detect linear region (R² < 0.95 or insufficient data)")
+            return
+
+        print(f"Auto-detected linear region: PWM {result['min_pwm']}-{result['max_pwm']}, "
+              f"RPM {result['min_rpm']:.1f}-{result['max_rpm']:.1f}, R²={result['r2']:.4f}")
+
+        if self.main_window:
+            self.main_window.lrc_min_pwm = result['min_pwm']
+            self.main_window.lrc_max_pwm = result['max_pwm']
+            self.main_window.lrc_min_rpm = result['min_rpm']
+            self.main_window.lrc_max_rpm = result['max_rpm']
+
+        if self.serial_conn and self.serial_conn.is_open:
+            try:
+                self.serial_conn.write(f"LRC_MIN_PWM,{result['min_pwm']}\n".encode())
+                self.serial_conn.write(f"LRC_MAX_PWM,{result['max_pwm']}\n".encode())
+                self.serial_conn.write(f"LRC_MIN_RPM,{result['min_rpm']}\n".encode())
+                self.serial_conn.write(f"LRC_MAX_RPM,{result['max_rpm']}\n".encode())
+                self.serial_conn.write(b"LRC_SAVE\n")
+                self.serial_conn.flush()
+            except Exception as e:
+                print(f"Error sending LRC to firmware: {e}")
+
+        self.highlight_linear_region(result['min_pwm'], result['max_pwm'])
+
+    def highlight_linear_region(self, min_pwm, max_pwm):
+        if not hasattr(self, 'linRegionMin'):
+            self.linRegionMin = QtChart.QLineSeries()
+            self.linRegionMax = QtChart.QLineSeries()
+            pen = QtGui.QPen(QtGui.QColor(0, 200, 0, 180))
+            pen.setWidth(2)
+            pen.setStyle(QtCore.Qt.DashLine)
+            self.linRegionMin.setPen(pen)
+            self.linRegionMax.setPen(pen)
+
+            self.linRegionMin.setName(f"Linear Min (PWM={min_pwm})")
+            self.linRegionMax.setName(f"Linear Max (PWM={max_pwm})")
+
+            self.chart.addSeries(self.linRegionMin)
+            self.chart.addSeries(self.linRegionMax)
+            self.chart.setAxisX(self.chart.axisX(), self.linRegionMin)
+            self.chart.setAxisX(self.chart.axisX(), self.linRegionMax)
+            self.chart.setAxisY(self.chart.axisY(), self.linRegionMin)
+            self.chart.setAxisY(self.chart.axisY(), self.linRegionMax)
+        else:
+            self.linRegionMin.clear()
+            self.linRegionMax.clear()
+
+        y_min, y_max = self.chart.axisY().min(), self.chart.axisY().max()
+        self.linRegionMin.append(min_pwm, y_min)
+        self.linRegionMin.append(min_pwm, y_max)
+        self.linRegionMax.append(max_pwm, y_min)
+        self.linRegionMax.append(max_pwm, y_max)
+
     def on_hover(self, point, state):
         """Show tooltip when hovering points"""
         if state:
@@ -603,7 +722,7 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
     def newGraphClicked(self):
         if self.serial_conn and self.serial_conn.is_open:
             # Tell ESP32 to start logging
-            self.serial_conn.write(b"1")
+            self.serial_conn.write(b"1\n")
 
             # Show modal progress bar
             self.progressDialog = ProgressBar(self)
@@ -665,7 +784,7 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
     def closeEvent(self, event):
         try:
             if self.serial_conn and self.serial_conn.is_open:
-                self.serial_conn.write(b"4")
+                self.serial_conn.write(b"4\n")
                 self.serial_conn.flush()
                 self.clear_serial_buffers()
                 
@@ -755,7 +874,16 @@ class LRC(QtWidgets.QMainWindow, Ui_lrc):
                 self.main_window.lrc_max_pwm = valueMax
                 self.main_window.lrc_min_rpm = valueRPMMin
                 self.main_window.lrc_max_rpm = valueRPMMax
-            QtWidgets.QMessageBox.information(self, "Info", "Linear region stored locally. Firmware doesn't support LRC storage.")
+
+            if self.serial_conn and self.serial_conn.is_open:
+                self.serial_conn.write(f"LRC_MIN_PWM,{valueMin}\n".encode())
+                self.serial_conn.write(f"LRC_MAX_PWM,{valueMax}\n".encode())
+                self.serial_conn.write(f"LRC_MIN_RPM,{valueRPMMin}\n".encode())
+                self.serial_conn.write(f"LRC_MAX_RPM,{valueRPMMax}\n".encode())
+                self.serial_conn.write(b"LRC_SAVE\n")
+                self.serial_conn.flush()
+
+            QtWidgets.QMessageBox.information(self, "Info", "Linear region saved successfully.")
             self.readLinearInfo()
         except ValueError:
             QtWidgets.QMessageBox.warning(self, "Invalid Input", "Please enter valid numbers.")
@@ -765,7 +893,7 @@ class LRC(QtWidgets.QMainWindow, Ui_lrc):
     def closeEvent(self, event):
         try:
             if self.serial_conn and self.serial_conn.is_open:
-                self.serial_conn.write(b"4")
+                self.serial_conn.write(b"4\n")
                 self.serial_conn.flush()
                 self.clear_serial_buffers()
 
@@ -1038,26 +1166,11 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
         input_pwm = self.controller_data[-1] if hasattr(self, 'controller_data') and self.controller_data else 0
 
         t,y = ctrl.step_response(G, T=real_time)
-        # Define delay (1 second)
-        delay = 1.0  # seconds
+        
+        self.fopdt_output = y * input_pwm
 
-        # Find how many samples correspond to the delay
-        dt = t[1] - t[0]  # time step
-        n_delay = int(delay / dt)
-
-        # Create delayed response with same length
-        y_delayed = np.zeros_like(y)
-
-        if n_delay < len(y):
-            y_delayed[n_delay:] = y[:-n_delay]  # shift right and cut the tail
-
-        t_delayed = t  # time vector remains the same
-        # Now scale by input PWM
-        self.fopdt_output = y_delayed * input_pwm
-
-        # Append to your data series (convert seconds → ms)
-        for i in range(len(t_delayed)):
-            self.fopdtSeries.append(t_delayed[i] * 1000, y_delayed[i] * input_pwm)        
+        for i in range(len(t)):
+            self.fopdtSeries.append(t[i] * 1000, y[i] * input_pwm)        
         
 
     def on_hover(self, point, state):
@@ -1148,7 +1261,7 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
         try:
             # Send command to ESP32 asking for motor info
             # (assuming '2' gets info based on your ESP32 code)
-            self.safe_write(b"2")
+            self.safe_write(b"2\n")
             self.serial_conn.flush()
             
             # Now wait a moment and read the response
@@ -1319,6 +1432,8 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
             
             self.safe_write(Esp32Protocol.encode_cmd("START"))
 
+            if hasattr(self, 'responseTimer') and self.responseTimer is not None:
+                self.responseTimer.stop()
             # Start timer to poll for data
             self.responseTimer = QtCore.QTimer(self)
             self.responseTimer.timeout.connect(self.updateTransientPlot)
@@ -1361,7 +1476,7 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
                         self.chart2.axisX().setRange(0, max(self.time_data) + 100)
                         
                         max_y = max(max(self.rpm_data, default=0), target_rpm) * 1.1
-                        min_y = min(self.rpm_data, default=-1) * 1.1
+                        min_y = 0
                         self.chart.axisY().setRange(min_y, max_y)
 
                         max_y2 = max(max(self.controller_data, default=0), max(self.error_data, default=0)) * 1.1
@@ -1566,8 +1681,8 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
             #sampling_time_olc = 10  # ms
             self.main_window.true_fopdt_K = fv / self.controller_data[-1] if self.controller_data and self.controller_data[-1] != 0 else 0
             self.main_window.true_fopdt_tau = 1.5 * (t_63_2 - t_28_3) / 1000.0  # convert to seconds
-            self.main_window.true_fopdt_L = 0  # convert to seconds
-            L_test = dead_time / 1000.0 if dead_time else self.main_window.true_fopdt_L
+            self.main_window.true_fopdt_L = dead_time / 1000.0 if dead_time and dead_time > 0 else 0.0
+            L_test = self.main_window.true_fopdt_L
             #print(f"Calculated FOPDT Parameters: K={self.main_window.true_fopdt_K}, Tau={self.main_window.true_fopdt_tau}, L={self.main_window.true_fopdt_L}, L_test={L_test}, gradient_at_tau={gradient_at_tau}")
         except Exception as e:
             print(f"Error calculating FOPDT parameters: {e}")
@@ -1577,7 +1692,7 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
     def closeEvent(self, event):
         try:
             if self.serial_conn and self.serial_conn.is_open:
-                self.serial_conn.write(b"4")
+                self.serial_conn.write(b"4\n")
                 self.serial_conn.flush()
                 self.clear_serial_buffers()
 
@@ -1859,8 +1974,15 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
             elif targetRPM <= 0.0:
                 QtWidgets.QMessageBox.warning(self, "Invalid Input", "Target RPM must be positive.")
                 return
-            elif targetRPM > float(self.main_window.maxRPM.text()):
-                QtWidgets.QMessageBox.warning(self, "Invalid Input", f"Target RPM cannot exceed maximum RPM ({self.main_window.maxRPM.text()}).")
+            
+            max_rpm_text = self.main_window.maxRPM.text()
+            try:
+                max_rpm = float(max_rpm_text)
+            except ValueError:
+                max_rpm = float('inf')
+            
+            if targetRPM > max_rpm:
+                QtWidgets.QMessageBox.warning(self, "Invalid Input", f"Target RPM cannot exceed maximum RPM ({max_rpm_text}).")
                 return
             
             # If we get here, targetRPM is valid, send it to ESP32
@@ -1985,6 +2107,8 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
             
             self.safe_write(Esp32Protocol.encode_cmd("START"))
 
+            if hasattr(self, 'responseTimer') and self.responseTimer is not None:
+                self.responseTimer.stop()
             # Start timer to poll for data
             self.responseTimer = QtCore.QTimer(self)
             self.responseTimer.timeout.connect(self.updateTransientPlot)
@@ -2027,7 +2151,7 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
                         self.chart2.axisX().setRange(0, max(self.time_data) + 100)
                         
                         max_y = max(max(self.rpm_data, default=0), target_rpm) * 1.1
-                        min_y = min(min(self.rpm_data, default=-1), -1) * 1.1
+                        min_y = 0
                         self.chart.axisY().setRange(min_y, max_y)
 
                         max_y2 = max(max(self.controller_data, default=0), max(self.error_data, default=0)) * 1.1
@@ -2241,7 +2365,7 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
     def closeEvent(self, event):
         try:
             if self.serial_conn and self.serial_conn.is_open:
-                self.serial_conn.write(b"4")
+                self.serial_conn.write(b"4\n")
                 self.serial_conn.flush()
                 self.clear_serial_buffers()
         except Exception:
@@ -2364,37 +2488,39 @@ class sa(QtWidgets.QMainWindow, Ui_sa):
             #print(f"Control Score: {control_score*10:.2f}/100")
             #print(f"Final Score: {final_score:.2f}/100")
 
-            # Upload submission to Firebase
-            if self.main_window and self.main_window.firebase_manager:
-                submission_data = {
-                    'K_fopdt': submit_K_fopdt,
-                    'tau_fopdt': submit_tau_fopdt,
-                    'L_fopdt': submit_L_fopdt,
-                    'K1': submit_K1,
-                    'K2': submit_K2,
-                    'K3': submit_K3,
-                    'true_K_fopdt': self.main_window.true_fopdt_K,
-                    'true_tau_fopdt': self.main_window.true_fopdt_tau,
-                    'true_L_fopdt': self.main_window.true_fopdt_L,
-                    'true_k1': true_k1,
-                    'true_k2': true_k2,
-                    'true_k3': true_k3,
-                    'model_score': model_score,
-                    'control_score': control_score,
-                    'final_score': final_score,
-                    'K_fopdt_error_percent': K_fopdt_error * 100,
-                    'tau_fopdt_error_percent': tau_fopdt_error * 100,
-                    'L_fopdt_error_percent': L_fopdt_error * 100,
-                    'k1_error_percent': k1_error * 100,
-                    'k2_error_percent': k2_error * 100,
-                    'k3_error_percent': k3_error * 100,
-                    'controller_type': 'PID' if submit_K3 != 0 else ('PI' if submit_K2 != 0 else 'P')
-                }
-                
-                for student_info in self.main_window.current_students:
-                    student_npm = student_info['NPM']
-                    student_name = student_info['Name']
-                    self.main_window.firebase_manager.upload_student_submission(student_npm, student_name, submission_data)
+            try:
+                if self.main_window and self.main_window.firebase_manager:
+                    submission_data = {
+                        'K_fopdt': submit_K_fopdt,
+                        'tau_fopdt': submit_tau_fopdt,
+                        'L_fopdt': submit_L_fopdt,
+                        'K1': submit_K1,
+                        'K2': submit_K2,
+                        'K3': submit_K3,
+                        'true_K_fopdt': self.main_window.true_fopdt_K,
+                        'true_tau_fopdt': self.main_window.true_fopdt_tau,
+                        'true_L_fopdt': self.main_window.true_fopdt_L,
+                        'true_k1': true_k1,
+                        'true_k2': true_k2,
+                        'true_k3': true_k3,
+                        'model_score': model_score,
+                        'control_score': control_score,
+                        'final_score': final_score,
+                        'K_fopdt_error_percent': K_fopdt_error * 100,
+                        'tau_fopdt_error_percent': tau_fopdt_error * 100,
+                        'L_fopdt_error_percent': L_fopdt_error * 100,
+                        'k1_error_percent': k1_error * 100,
+                        'k2_error_percent': k2_error * 100,
+                        'k3_error_percent': k3_error * 100,
+                        'controller_type': 'PID' if submit_K3 != 0 else ('PI' if submit_K2 != 0 else 'P')
+                    }
+                    
+                    for student_info in self.main_window.current_students:
+                        student_npm = student_info['NPM']
+                        student_name = student_info['Name']
+                        self.main_window.firebase_manager.upload_student_submission(student_npm, student_name, submission_data)
+            except AttributeError:
+                print("Firebase not configured, skipping upload")
 
             # Upload score to Firebase
             #if self.main_window and self.main_window.firebase_manager:
