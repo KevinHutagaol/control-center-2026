@@ -10,6 +10,7 @@ import pandas as pd
 
 import pages.Modul910.asset.resources # noqa
 
+from pages.Modul910.esp32_protocol import Esp32Protocol
 from pages.Modul910.ui_910.ui_main import Ui_MainWindow as Ui_main
 from pages.Modul910.ui_910.ui_sa import Ui_MainWindow as Ui_sa
 from pages.Modul910.ui_910.ui_clc import Ui_MainWindow as Ui_clc
@@ -147,6 +148,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
 
         self.ports.currentTextChanged.connect(self.on_port_selected)
 
+        self.lrc_min_pwm = None
+        self.lrc_max_pwm = None
+        self.lrc_min_rpm = None
+        self.lrc_max_rpm = None
+
     # Setup recursive function that will retry until data is available
     def try_read_motor_info(self, retry_count=0):
         if retry_count >= 10:  # Limit retries to avoid infinite loop
@@ -159,7 +165,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
             self.clear_serial_buffers()
         else:
             # No data yet, resend request and try again
-            self.serial_conn.write(b"i\n")
+            self.serial_conn.write(Esp32Protocol.encode_cmd("STATUS"))
             QtCore.QTimer.singleShot(200, lambda: self.try_read_motor_info(retry_count + 1))
 
     def clear_serial_buffers(self):
@@ -187,7 +193,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
             print(f"Opening {real_port} at 115200 baud")
             self.serial_conn = serial.Serial(port=real_port, baudrate=115200, timeout=1)
             # Send initial request
-            self.serial_conn.write(b"i\n")
+            self.serial_conn.write(Esp32Protocol.encode_cmd("STATUS"))
             
             # First attempt after 200ms
             QtCore.QTimer.singleShot(200, lambda: self.try_read_motor_info(0))
@@ -204,38 +210,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
             if not self.serial_conn or not self.serial_conn.in_waiting:
                 return
 
-            # Read the first line (status code: 0, 1, or 2)
-            while True:
-                status_line = self.serial_conn.readline().decode().strip()
-                print(f"Status line: '{status_line}'")
-                if not status_line:
-                    return
-                try:
-                    status = int(status_line)
-                    break  # Got a valid status, exit loop
-                except ValueError:
-                    continue  # Not a number, skip this line
+            lines = []
+            while self.serial_conn.in_waiting > 0:
+                line = self.serial_conn.readline().decode().strip()
+                if line:
+                    lines.append(line)
+                    print(f"Status line: '{line}'")
 
-            if status == 2:
-                # Both calibration + motor char exist
-                data_line = self.serial_conn.readline().decode().strip()
-                print(f"Data line: '{data_line}'")
-                ppr, maxRPM = data_line.split()
-                self.ppr.setText(f"{ppr}")
-                self.maxRPM.setText(f"{float(maxRPM):.2f}")
+            if not lines:
+                return
 
-            elif status == 1:
-                # Only calibration exists
-                data_line = self.serial_conn.readline().decode().strip()
-                print(f"Data line: '{data_line}'")
-                ppr = data_line
-                self.ppr.setText(f"{ppr}")
-                self.maxRPM.setText("--")
-
-            elif status == 0:
-                # Nothing stored
+            parsed = Esp32Protocol.parse_status_response(lines)
+            if parsed['speed_constant'] is not None:
+                self.ppr.setText(f"{parsed['speed_constant']:.0f}")
+            else:
                 self.ppr.setText("--")
-                self.maxRPM.setText("--")
+            self.maxRPM.setText("--")
 
         except Exception as e:
             print("Motor info read error:", e)
@@ -359,11 +349,10 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
         while not self.cmd_queue.empty():
             if self.serial_lock.tryLock():
                 try:
-                    data = self.cmd_queue.get()
-                except Exception as e:
-                    break
-
-                try:
+                    try:
+                        data = self.cmd_queue.get_nowait()
+                    except queue.Empty:
+                        break
                     self.serial_conn.write(data)            
                 except Exception as e:
                     QtWidgets.QMessageBox.critical(self, "Serial Error", f"Serial error: {e}")
@@ -373,19 +362,17 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
 
     def plsPressed(self):
         self.timer.stop()  
-        self.safe_write(b"1")
-        self.serial_conn.flush()
+        QtWidgets.QMessageBox.information(self, "Info", "Use ESP32's built-in calibration. The motor will auto-calibrate when you click Done.")
         self.timer.start(200)
 
     def minPressed(self):
         self.timer.stop()
-        self.safe_write(b"-1")
-        self.serial_conn.flush()
+        QtWidgets.QMessageBox.information(self, "Info", "Use ESP32's built-in calibration. The motor will auto-calibrate when you click Done.")
         self.timer.start(200)
 
     def stopMotor(self):
         self.timer.stop()
-        self.safe_write(b"0")
+        self.safe_write(Esp32Protocol.encode_cmd("STOP"))
         self.serial_conn.flush()
         self.timer.start(200)
 
@@ -393,20 +380,17 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
         self.timer.stop()
         try:
             value = float(self.rotation.text())
-            # Validate the input
             if value <= 0:
                 QtWidgets.QMessageBox.warning(self, "Invalid Input", "Rotation value must be positive.")
                 return
-            #QtWidgets.QMessageBox.information(self, "Info", f"Storing PPR = {value} to flash.")
-            self.serial_conn.write(f"3 {value}".encode())
-            self.serial_conn.flush()
+            self.safe_write(Esp32Protocol.encode_cmd("CALIBRATE"))
             if self.main_window:
-                QtCore.QTimer.singleShot(200, self.main_window.try_read_motor_info)
+                QtCore.QTimer.singleShot(500, self.main_window.try_read_motor_info)
             self.close()
-        except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Serial Error", f"Serial error: {e}")
         except ValueError:
             QtWidgets.QMessageBox.warning(self, "Invalid Input", "Please enter a valid number for rotation.")
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Serial Error", f"Serial error: {e}")
 
     # In Encoder class
     def closeEvent(self, event):
@@ -444,11 +428,12 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
                 if line:
                     try:
                         ticks = int(line)
-                        self.pulse.display(ticks)  # update LCD
+                        self.pulse.display(ticks)
                     except ValueError:
-                        pass  # ignore garbage/debug lines
-        except Exception as e:
+                        pass
+        except OSError as e:
             print("Serial read error:", e)
+            self.close()
 
 class ProgressBar(QtWidgets.QDialog, Ui_progressbar):
     def __init__(self, parent=None):
@@ -717,46 +702,26 @@ class LRC(QtWidgets.QMainWindow, Ui_lrc):
         self.done.clicked.connect(self.doneClicked)
 
     def readLinearInfo(self, retry_count=0):
-        if retry_count >= 10:  # Limit retries to avoid infinite loop
-            QtWidgets.QMessageBox.information(self, "Info", "No linear region data found.")
-            return
-
-        if self.serial_conn and self.serial_conn.in_waiting > 0:
-            # Read the first line (status code: 0 or 1)
-            while True:
-                status_line = self.serial_conn.readline().decode().strip()
-                if not status_line:
-                    return
-                try:
-                    status = int(status_line)
-                    break  # Got a valid status, exit loop
-                except ValueError:
-                    continue  # Not a number, skip this line
-
-            if status == 1:
-                # Both calibration + motor char exist
-                data_line = self.serial_conn.readline().decode().strip()
-                minLinPWM, maxLinPWM, minLinRPM, maxLinRPM = data_line.split()
-                self.minLinDisp.setText(f"{minLinPWM}")
-                self.maxLinDisp.setText(f"{maxLinPWM}")
-                self.MinRPMDisp.setText(f"{float(minLinRPM):.2f}")
-                self.MaxRPMDisp.setText(f"{float(maxLinRPM):.2f}")
-
-            elif status == 0:
-                # Nothing stored
+        if self.main_window:
+            if self.main_window.lrc_min_pwm is not None:
+                self.minLinDisp.setText(f"{self.main_window.lrc_min_pwm}")
+            else:
                 self.minLinDisp.setText("--")
+            
+            if self.main_window.lrc_max_pwm is not None:
+                self.maxLinDisp.setText(f"{self.main_window.lrc_max_pwm}")
+            else:
                 self.maxLinDisp.setText("--")
+            
+            if self.main_window.lrc_min_rpm is not None:
+                self.MinRPMDisp.setText(f"{self.main_window.lrc_min_rpm:.2f}")
+            else:
                 self.MinRPMDisp.setText("--")
+            
+            if self.main_window.lrc_max_rpm is not None:
+                self.MaxRPMDisp.setText(f"{self.main_window.lrc_max_rpm:.2f}")
+            else:
                 self.MaxRPMDisp.setText("--")
-
-            elif status == 2:
-                # No data yet, resend request and try again
-                self.serial_conn.write(b"2")
-                QtCore.QTimer.singleShot(200, lambda: self.readLinearInfo(retry_count + 1))
-        else:
-            # No data yet, resend request and try again
-            self.serial_conn.write(b"2")
-            QtCore.QTimer.singleShot(200, lambda: self.readLinearInfo(retry_count + 1))
 
     def safe_write(self, data):
         try:
@@ -775,11 +740,9 @@ class LRC(QtWidgets.QMainWindow, Ui_lrc):
             valueMax = int(self.maxLinPWM.text())
             valueRPMMin = float(self.minLinRPM.text())
             valueRPMMax = float(self.maxLinRPM.text())
-            # Check for negative values
             if valueMin < 0 or valueMax < 0 or valueRPMMin < 0.0 or valueRPMMax < 0.0:
                 QtWidgets.QMessageBox.warning(self, "Invalid Input", "Negative values are not allowed.")
                 return
-            # Check if min > max
             if valueMin >= valueMax:
                 QtWidgets.QMessageBox.warning(self, "Invalid Input", "Minimum PWM must be less than maximum PWM.")
                 return
@@ -787,15 +750,17 @@ class LRC(QtWidgets.QMainWindow, Ui_lrc):
             if valueRPMMin >= valueRPMMax:
                 QtWidgets.QMessageBox.warning(self, "Invalid Input", "Minimum RPM must be less than maximum RPM.")
                 return
-            self.safe_write(f"3 {valueMin} {valueMax} {valueRPMMin} {valueRPMMax}".encode())  # Save LRC
-            self.serial_conn.flush()
-            self.serial_conn.reset_input_buffer()
-            self.serial_conn.reset_output_buffer()
-            self.readLinearInfo()  # Refresh display
-        except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Serial Error", f"Serial error: {e}")
+            if self.main_window:
+                self.main_window.lrc_min_pwm = valueMin
+                self.main_window.lrc_max_pwm = valueMax
+                self.main_window.lrc_min_rpm = valueRPMMin
+                self.main_window.lrc_max_rpm = valueRPMMax
+            QtWidgets.QMessageBox.information(self, "Info", "Linear region stored locally. Firmware doesn't support LRC storage.")
+            self.readLinearInfo()
         except ValueError:
             QtWidgets.QMessageBox.warning(self, "Invalid Input", "Please enter valid numbers.")
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Serial Error", f"Serial error: {e}")
 
     def closeEvent(self, event):
         try:
@@ -1343,8 +1308,16 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
             self.controllerSeries.clear()
             self.errorSeries.clear()
 
-            self.safe_write(f"1 {targetRPM}".encode())
+            self.targetRPM = targetRPM
+
+            self.safe_write(Esp32Protocol.encode_cmd("STOP"))
             self.serial_conn.flush()
+            
+            self.safe_write(Esp32Protocol.encode_cmd(f"SETPOINT,{targetRPM}"))
+            self.safe_write(Esp32Protocol.encode_cmd("DURATION,10000"))
+            self.serial_conn.flush()
+            
+            self.safe_write(Esp32Protocol.encode_cmd("START"))
 
             # Start timer to poll for data
             self.responseTimer = QtCore.QTimer(self)
@@ -1360,45 +1333,34 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
             if self.serial_conn.in_waiting > 0:
                 line = self.serial_conn.readline().decode("utf-8").strip()
                 
-                # Check if data collection is complete
                 if line == "DONE":
                     self.responseTimer.stop()
                     return
 
-                 # Skip the header line
-                if line == "time_ms,rpm,targetrpm,pwm,error":
-                    print("Received header, starting data collection...")
-                    return
-                    
                 try:
-                    # Parse the CSV format: timestamp,actual_speed,target_speed
                     parts = line.split(',')
-                    if len(parts) == 5:
-                        timestamp = int(parts[0])  # milliseconds
-                        actual_speed = float(parts[1])
-                        target_speed = float(parts[2])
-                        controller_output = float(parts[3])  # PWM value
-                        error = float(parts[4])
+                    if parts[0] == 'DATA' and len(parts) == 5:
+                        timestamp = int(parts[1])
+                        rpm = float(parts[2])
+                        error = float(parts[3])
+                        pwm = float(parts[4])
+                        target_rpm = getattr(self, 'targetRPM', 0)
                         
-                        # Store data
                         self.time_data.append(timestamp)
-                        self.rpm_data.append(actual_speed)
-                        self.target_data.append(target_speed)
-                        self.controller_data.append(controller_output)
+                        self.rpm_data.append(rpm)
+                        self.target_data.append(target_rpm)
+                        self.controller_data.append(pwm)
                         self.error_data.append(error)
                         
-                        # Add to chart series
-                        self.speedSeries.append(timestamp, actual_speed)
-                        self.targetSeries.append(timestamp, target_speed)
-                        self.controllerSeries.append(timestamp, controller_output)
+                        self.speedSeries.append(timestamp, rpm)
+                        self.targetSeries.append(timestamp, target_rpm)
+                        self.controllerSeries.append(timestamp, pwm)
                         self.errorSeries.append(timestamp, error)
                         
-                        # Update chart axes to fit data
                         self.chart.axisX().setRange(0, max(self.time_data) + 100)
                         self.chart2.axisX().setRange(0, max(self.time_data) + 100)
                         
-                        # Calculate y-axis range to fit data with some margin
-                        max_y = max(max(self.rpm_data, default=0), target_speed) * 1.1
+                        max_y = max(max(self.rpm_data, default=0), target_rpm) * 1.1
                         min_y = min(self.rpm_data, default=-1) * 1.1
                         self.chart.axisY().setRange(min_y, max_y)
 
@@ -1408,102 +1370,11 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
                         
                 except (ValueError, IndexError) as e:
                     print(f"Error parsing data: {e}")
-                    # Skip invalid lines
                     pass
                     
         except Exception as e:
             print(f"Error in updateTransientPlot: {e}")
             self.responseTimer.stop()
-
-    def popupClicked(self):
-        if hasattr(self, 'time_data') and hasattr(self, 'rpm_data') and hasattr(self, 'target_data') and self.time_data:
-            # Create figure with side-by-side layout
-            fig = plt.figure(figsize=(15, 6))
-            gs = fig.add_gridspec(1, 2, width_ratios=[2.5, 1])  # Plot gets 2.5x more space than text
-            
-            ax1 = fig.add_subplot(gs[0])  # Plot area
-            ax2 = fig.add_subplot(gs[1])  # Text area
-            ax2.axis('off')
-            
-            # Left plot - Step Response
-            ax1.plot(self.time_data, self.rpm_data, '-', color='blue', linewidth=2, label='Actual Speed')
-            ax1.plot(self.time_data, self.target_data, 'r--', linewidth=2, label='Target Speed')
-            
-            # Add FOPDT model if available
-            # FIXED: Proper check for FOPDT model data
-            if hasattr(self, 'fopdt_output') and self.fopdt_output is not None and len(self.fopdt_output) > 0:
-                ax1.plot(self.time_data, self.fopdt_output, 'g-.', linewidth=2, label='FOPDT Model')
-            
-            # Add reference lines
-            final_value = self.rpm_data[-1] if self.rpm_data else 0
-            if final_value > 0:
-                ax1.axhline(y=final_value, color='gray', linestyle=':', alpha=0.7)
-                ax1.axhline(y=final_value * 0.632, color='green', linestyle=':', alpha=0.5)
-                
-                # Add annotations for final value
-                ax1.text(max(self.time_data) * 0.1, final_value + final_value * 0.05, 
-                        f"Final: {final_value:.1f} RPM", fontsize=9,
-                        bbox=dict(boxstyle="round,pad=0.3", facecolor="lightblue", alpha=0.8))
-            
-            ax1.grid(True, alpha=0.3)
-            ax1.set_title("Motor Step Response Analysis", fontsize=14, fontweight='bold')
-            ax1.set_xlabel("Time (ms)", fontsize=12)
-            ax1.set_ylabel("Speed (RPM)", fontsize=12)
-            ax1.legend()
-            
-            # Right panel - Analysis Text (same style as your training history)
-            ax2.axis('off')
-            
-            # Get current analysis values from UI
-            rise_time_text = self.Tr.text().replace(" ms", "") if self.Tr.text() != "--" else "N/A"
-            t28_text = self.t28.text().replace(" ms", "") if self.t28.text() != "--" else "N/A"
-            t63_text = self.t63.text().replace(" ms", "") if self.t63.text() != "--" else "N/A"
-            settling_time_text = self.Ts.text().replace(" ms", "") if self.Ts.text() != "--" else "N/A"
-            fv_text = self.fv.text().replace(" RPM", "") if self.fv.text() != "--" else "N/A"
-            tau_text = self.tau.text().replace(" ms", "") if self.tau.text() != "--" else "N/A"
-            
-            # Get FOPDT parameters from input fields
-            try:
-                K_fopdt_text = self.k_fopdt.text() if self.k_fopdt.text().strip() else "N/A"
-                tau_fopdt_text = self.tau_fopdt.text() if self.tau_fopdt.text().strip() else "N/A"
-                l_fopdt_text = self.l_fopdt.text() if self.l_fopdt.text().strip() else "N/A"
-            except:
-                K_fopdt_text = "N/A"
-                tau_fopdt_text = "N/A"
-                l_fopdt_text = "N/A"
-            
-            # Get target RPM
-            target_rpm = self.targetRPM.text() if self.targetRPM.text().strip() else "N/A"
-            
-            # Create formatted analysis text using the same style
-            analysis_text = (
-                f"{'Target RPM'.ljust(20)}{str(target_rpm).rjust(15)}{' RPM'}\n"
-                f"{'Final Value'.ljust(20)}{str(fv_text).rjust(15)}{' RPM'}\n"
-                f"{'Rise Time (Tr)'.ljust(20)}{str(rise_time_text).rjust(15)}{' ms'}\n"
-                f"{'Time to 28.3%'.ljust(20)}{str(t28_text).rjust(15)}{' ms'}\n"
-                f"{'Time to 63.2%'.ljust(20)}{str(t63_text).rjust(15)}{' ms'}\n"
-                f"{'Settling Time (Ts)'.ljust(20)}{str(settling_time_text).rjust(15)}{' ms'}\n"
-                f"{'Time Constant'.ljust(20)}{str(tau_text).rjust(15)}{' ms'}\n"
-                f"\n"
-                f"{'FOPDT PARAMETERS'.ljust(35)}\n"
-                f"{'K (RPM/PWM)'.ljust(20)}{str(K_fopdt_text).rjust(15)}\n"
-                f"{'τ (seconds)'.ljust(20)}{str(tau_fopdt_text).rjust(15)}\n"
-                f"{'L (seconds)'.ljust(20)}{str(l_fopdt_text).rjust(15)}\n"
-                f"\n"
-            )
-            
-            # Add text to right panel with same formatting as your example
-            ax2.text(
-                x=0.1, y=0.1,
-                s=analysis_text,
-                fontsize=10, color="black", ha='left', family='monospace',
-                transform=ax2.transAxes, verticalalignment='bottom'
-            )
-            
-            plt.tight_layout()
-            plt.show()
-        else:
-            QtWidgets.QMessageBox.information(self, "No Data", "No transient response data available to display.")
 
     def popupClicked(self):
         if hasattr(self, 'time_data') and hasattr(self, 'rpm_data') and hasattr(self, 'target_data') and self.time_data:
@@ -1703,39 +1574,6 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
             QtWidgets.QMessageBox.warning(self, "Calculation Error", f"Error calculating FOPDT parameters: {e}")
             return
 
-        #Calculate Control Parameters
-        #try:
-            #Kp_PID = (1.2 * self.main_window.true_fopdt_tau) / (self.main_window.true_fopdt_K * self.main_window.true_fopdt_L) if self.main_window.true_fopdt_K != 0 and self.main_window.true_fopdt_L != 0 else 0
-            #Ti_PID = 2 * self.main_window.true_fopdt_L if self.main_window.true_fopdt_L != 0 else 0
-            #Td_PID = 0.5 * self.main_window.true_fopdt_L if self.main_window.true_fopdt_L != 0 else 0
-            #Kp_PI = (0.9 * self.main_window.true_fopdt_tau) / (self.main_window.true_fopdt_K * self.main_window.true_fopdt_L) if self.main_window.true_fopdt_K != 0 and self.main_window.true_fopdt_L != 0 else 0
-            #Ti_PI = self.main_window.true_fopdt_L / 0.3 if self.main_window.true_fopdt_L != 0 else 0
-            #Kp_P = (self.main_window.true_fopdt_tau) / (self.main_window.true_fopdt_K * self.main_window.true_fopdt_L) if self.main_window.true_fopdt_K != 0 and self.main_window.true_fopdt_L != 0 else 0
-        
-            #print(f"Calculated Control Parameters: Kp_PID={Kp_PID}, Ti_PID={Ti_PID}, Td_PID={Td_PID}, Kp_PI={Kp_PI}, Ti_PI={Ti_PI}, Kp_P={Kp_P}")
-        #except Exception as e:
-            #print(f"Error calculating control parameters with {e} ")
-            #QtWidgets.QMessageBox.warning(self, "Calculation Error", f"Error calculating control parameters: {e}")
-            #return
-        
-        #try:
-            #sampling_rate = 0.01  # s   
-            #k1_PID = Kp_PID * (1 + sampling_rate / (2 * Ti_PID) + 2 * Td_PID / sampling_rate) if Ti_PID != 0 and Kp_PID != 0 else 0
-            #k2_PID = Kp_PID * (-1 + sampling_rate / (2 * Ti_PID) - 4 * Td_PID / sampling_rate) if Ti_PID != 0 and Kp_PID != 0 else 0
-            #k3_PID = Kp_PID * (2 * Td_PID / sampling_rate) if Td_PID != 0 and Kp_PID != 0 else 0
-            #k1_PI = Kp_PI * (1 + sampling_rate / (2 * Ti_PI)) if Ti_PI != 0 and Kp_PI != 0 else 0
-            #k2_PI = Kp_PI * (-1 + sampling_rate / (2 * Ti_PI)) if Ti_PI != 0 and Kp_PI != 0 else 0
-            #k3_PI = 0
-            #k1_P = Kp_P if Kp_P != 0 else 0
-            #k2_P = 0
-            #k3_P = 0
-            #print(f"Discrete Control Gains: k1_PID={k1_PID}, k2_PID={k2_PID}, k3_PID={k3_PID}, k1_PI={k1_PI}, k2_PI={k2_PI}, k3_PI={k3_PI}, k1_P={k1_P}")
-        #except Exception as e:
-            #print(f"Error calculating discrete control gains: {e}")
-            #QtWidgets.QMessageBox.warning(self, "Calculation Error", f"Error calculating discrete control gains: {e}")
-            #return
-
-
     def closeEvent(self, event):
         try:
             if self.serial_conn and self.serial_conn.is_open:
@@ -1835,22 +1673,17 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
         #Add a second graph
         self.chart2 = QtChart.QChart()
         self.controllerSeries = QtChart.QLineSeries()  # Controller output series
-        self.rawControlSeries = QtChart.QLineSeries()  # Raw control output series
         self.errorSeries = QtChart.QLineSeries()  # Error series
         self.controllerSeries.setPointsVisible(True)  # Show actual data points
-        self.rawControlSeries.setPointsVisible(True)  # Show actual data points
         self.errorSeries.setPointsVisible(True)  # Show actual data points
         self.chart2.addSeries(self.controllerSeries)
-        self.chart2.addSeries(self.rawControlSeries)
         self.chart2.addSeries(self.errorSeries)
         self.controllerSeries.setColor(QtGui.QColor("green"))
-        self.rawControlSeries.setColor(QtGui.QColor("orange"))
         self.errorSeries.setColor(QtGui.QColor("red"))
         self.chart2.legend().setVisible(True)
         self.chart2.legend().setAlignment(QtCore.Qt.AlignTop)
         self.chart2.legend().setFont(QtGui.QFont("Arial", 10))
         self.controllerSeries.setName("Controller Output (PWM)")
-        self.rawControlSeries.setName("Raw Control Output (PWM)")
         self.errorSeries.setName("Error (RPM)")
 
         # Create axes
@@ -1882,7 +1715,7 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
     def saveDataToCSV(self):
         """Save collected data to CSV file - only if all data series are available"""
         # Check if we have ALL required data series for CLC
-        required_data = ['time_data', 'rpm_data', 'target_data', 'error_data', 'controller_data', 'rawController_data']
+        required_data = ['time_data', 'rpm_data', 'target_data', 'error_data', 'controller_data']
         missing_data = []
         
         for data_name in required_data:
@@ -1905,8 +1738,7 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
             'Speed': len(self.rpm_data),
             'Target': len(self.target_data),
             'Error': len(self.error_data),
-            'Controller': len(self.controller_data),
-            'Raw Controller': len(self.rawController_data)
+            'Controller': len(self.controller_data)
         }
         
         if len(set(data_lengths.values())) > 1:
@@ -1937,8 +1769,7 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
                 'Target_Speed_RPM': self.target_data,
                 'Actual_Speed_RPM': self.rpm_data,
                 'Error_RPM': self.error_data,
-                'Controller_Output_PWM': self.controller_data,
-                'Raw_Control_Output_PWM': self.rawController_data
+                'Controller_Output_PWM': self.controller_data
             }
             
             # Create DataFrame
@@ -2096,11 +1927,10 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
                 # Get the actual values from our dataset
                 actual_time = self.time_data[closest_index]
                 actual_pwm = self.controller_data[closest_index]
-                actual_control = self.rawController_data[closest_index]
                 actual_error = self.error_data[closest_index]
 
                 # Use actual data values in tooltip
-                self.tooltip2.setText(f"Time: {actual_time:.1f} ms\nPWM: {actual_pwm:.1f}\nRaw Control: {actual_control:.1f}\nError: {actual_error:.1f} RPM")
+                self.tooltip2.setText(f"Time: {actual_time:.1f} ms\nPWM: {actual_pwm:.1f}\nError: {actual_error:.1f} RPM")
             else:
                 # Fallback to chart coordinates if data not available
                 self.tooltip2.setText(f"Time: {point.x():.1f} ms\nPWM: {point.y():.1f}")
@@ -2135,17 +1965,25 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
             self.rpm_data = []
             self.target_data = []
             self.controller_data = []
-            self.rawController_data = []
             self.error_data = []
 
             self.speedSeries.clear()
             self.targetSeries.clear()
             self.controllerSeries.clear()
-            self.rawControlSeries.clear()
             self.errorSeries.clear()
 
-            self.safe_write(f"1 {targetRPM} {sampling_rate} {k1} {k2} {k3}".encode())
+            self.safe_write(Esp32Protocol.encode_cmd("STOP"))
             self.serial_conn.flush()
+            self.serial_conn.reset_input_buffer()
+            
+            self.safe_write(Esp32Protocol.encode_cmd(f"SETPOINT,{targetRPM}"))
+            self.safe_write(Esp32Protocol.encode_cmd(f"SAMPLING,{sampling_rate}"))
+            self.safe_write(Esp32Protocol.encode_cmd(f"KP,{k1}"))
+            self.safe_write(Esp32Protocol.encode_cmd(f"KI,{k2}"))
+            self.safe_write(Esp32Protocol.encode_cmd(f"KD,{k3}"))
+            self.serial_conn.flush()
+            
+            self.safe_write(Esp32Protocol.encode_cmd("START"))
 
             # Start timer to poll for data
             self.responseTimer = QtCore.QTimer(self)
@@ -2161,58 +1999,43 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
             if self.serial_conn.in_waiting > 0:
                 line = self.serial_conn.readline().decode("utf-8").strip()
                 
-                # Check if data collection is complete
                 if line == "DONE":
                     self.responseTimer.stop()
                     return
 
-                 # Skip the header line
-                if line == "time_ms,rpm,targetrpm,pwm,control,error":
-                    print("Received header, starting data collection...")
-                    return
-                    
                 try:
-                    # Parse the CSV format: timestamp,actual_speed,target_speed
                     parts = line.split(',')
-                    if len(parts) == 6:
-                        timestamp = int(parts[0])  # milliseconds
-                        actual_speed = float(parts[1])
-                        target_speed = float(parts[2])
-                        controller_output = float(parts[3])
-                        raw_control_output = float(parts[4])  # Raw control output (before saturation)
-                        error = float(parts[5])
+                    if parts[0] == 'DATA' and len(parts) == 5:
+                        timestamp = int(parts[1])
+                        rpm = float(parts[2])
+                        error = float(parts[3])
+                        pwm = float(parts[4])
+                        target_rpm = float(self.targetRPM.text()) if self.targetRPM.text() else 0
                         
-                        # Store data
                         self.time_data.append(timestamp)
-                        self.rpm_data.append(actual_speed)
-                        self.target_data.append(target_speed)
-                        self.controller_data.append(controller_output)
-                        self.rawController_data.append(raw_control_output)
+                        self.rpm_data.append(rpm)
+                        self.target_data.append(target_rpm)
+                        self.controller_data.append(pwm)
                         self.error_data.append(error)
 
-                        # Add to chart series
-                        self.speedSeries.append(timestamp, actual_speed)
-                        self.targetSeries.append(timestamp, target_speed)
-                        self.controllerSeries.append(timestamp, controller_output)
-                        self.rawControlSeries.append(timestamp, raw_control_output)
+                        self.speedSeries.append(timestamp, rpm)
+                        self.targetSeries.append(timestamp, target_rpm)
+                        self.controllerSeries.append(timestamp, pwm)
                         self.errorSeries.append(timestamp, error)
 
-                        # Update chart axes to fit data
                         self.chart.axisX().setRange(0, max(self.time_data) + 100)
                         self.chart2.axisX().setRange(0, max(self.time_data) + 100)
                         
-                        # Calculate y-axis range to fit data with some margin
-                        max_y = max(max(self.rpm_data, default=0), target_speed) * 1.1
+                        max_y = max(max(self.rpm_data, default=0), target_rpm) * 1.1
                         min_y = min(min(self.rpm_data, default=-1), -1) * 1.1
                         self.chart.axisY().setRange(min_y, max_y)
 
-                        max_y2 = max(max(max(self.controller_data, default=0), max(self.rawController_data, default=0)), max(self.error_data, default=0)) * 1.1
-                        min_y2 = min(min(min(self.controller_data, default=-1), min(self.rawController_data, default=-1)), min(self.error_data, default=-1)) * 1.1
+                        max_y2 = max(max(self.controller_data, default=0), max(self.error_data, default=0)) * 1.1
+                        min_y2 = min(min(self.controller_data, default=-1), min(self.error_data, default=-1)) * 1.1
                         self.chart2.axisY().setRange(min_y2, max_y2)
 
                 except (ValueError, IndexError) as e:
                     print(f"Error parsing data: {e}")
-                    # Skip invalid lines
                     pass
                     
         except Exception as e:
@@ -2312,7 +2135,6 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
         if hasattr(self, 'time_data') and hasattr(self, 'controller_data') and self.time_data and self.controller_data:
             plt.figure(figsize=(10, 6))
             plt.plot(self.time_data, self.controller_data, 'o-', color='green', linewidth=2, label='Controller Output (PWM)')
-            plt.plot(self.time_data, self.rawController_data, '--', color='orange', label='Raw Control Output (PWM)')
             plt.plot(self.time_data, self.error_data, '--', color='red', label='Error (RPM)')
             plt.grid(True)
             plt.xlabel('Time (ms)')
