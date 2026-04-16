@@ -1706,7 +1706,7 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
             self.controllerSeries.clear()
             self.errorSeries.clear()
 
-            self.targetRPM = targetRPM
+            self._targetRPM_value = targetRPM
 
             self.safe_write(Esp32Protocol.encode_cmd("STOP"))
             self.serial_conn.flush()
@@ -1744,7 +1744,7 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
                         rpm = float(parts[2])
                         error = float(parts[3])
                         pwm = float(parts[4])
-                        target_rpm = getattr(self, 'targetRPM', 0)
+                        target_rpm = getattr(self, '_targetRPM_value', 0)
                         
                         self.time_data.append(timestamp)
                         self.rpm_data.append(rpm)
