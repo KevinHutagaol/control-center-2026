@@ -1,4 +1,5 @@
 import sys
+import time
 from datetime import datetime
 from PyQt5 import QtWidgets, QtChart, QtCore, QtGui
 import numpy as np
@@ -152,20 +153,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
         self.lrc_max_pwm = None
         self.lrc_min_rpm = None
         self.lrc_max_rpm = None
+        self.speed_constant = None
+        self.max_rpm = None
+        self.char_pwm = []
+        self.char_speed = []
+        self.calibrating = False
 
     # Setup recursive function that will retry until data is available
     def try_read_motor_info(self, retry_count=0):
-        if retry_count >= 10:  # Limit retries to avoid infinite loop
+        if retry_count >= 10:
             QtWidgets.QMessageBox.information(self, "Info", "No motor info data found.")
             self.clear_serial_buffers()
             return
-            
+
         if self.serial_conn and self.serial_conn.in_waiting > 0:
             self.readMotorInfo()
             self.clear_serial_buffers()
         else:
-            # No data yet, resend request and try again
-            self.serial_conn.write(Esp32Protocol.encode_cmd("STATUS"))
+            self.serial_conn.write(Esp32Protocol.encode_cmd("2"))
             QtCore.QTimer.singleShot(200, lambda: self.try_read_motor_info(retry_count + 1))
 
     def clear_serial_buffers(self):
@@ -179,31 +184,66 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
     def on_port_selected(self, port_name):
         if (not port_name 
             or port_name in ["No ports available", "Select a port…"]):
-            # Ignore invalid/default options
             return
 
-        # Close existing connection if open
         if self.serial_conn and self.serial_conn.is_open:
             print(f"Closing {self.serial_conn.port}")
             self.serial_conn.close()
 
         try:
-            # Try to open new connection
-            real_port = port_name.split(" ")[0]  # Extract actual port name
+            real_port = port_name.split(" ")[0]
             print(f"Opening {real_port} at 115200 baud")
             self.serial_conn = serial.Serial(port=real_port, baudrate=115200, timeout=1)
-            # Send initial request
-            self.serial_conn.write(Esp32Protocol.encode_cmd("STATUS"))
-            
-            # First attempt after 200ms
-            QtCore.QTimer.singleShot(200, lambda: self.try_read_motor_info(0))
-            
-            # print(f"Opened {port_name} at 115200 baud")
-            self.set_status("green")   
+            self.serial_conn.write(Esp32Protocol.encode_cmd("CALIBRATE"))
+            self.calibrating = True
+            self.set_status("green")
+            QtCore.QTimer.singleShot(4000, self.read_calibration_result)
         except serial.SerialException as e:
             print(f"Failed to open {port_name}: {e}")
             self.serial_conn = None
-            self.set_status("red")  
+            self.set_status("red")
+
+    def read_calibration_result(self, retry_count=0):
+        if not self.serial_conn or not self.serial_conn.is_open:
+            self.calibrating = False
+            return
+
+        if retry_count >= 15:
+            self.calibrating = False
+            self.clear_serial_buffers()
+            QtWidgets.QMessageBox.warning(self, "Calibration", "Auto-calibration timed out.")
+            return
+
+        try:
+            if self.serial_conn.in_waiting > 0:
+                lines = []
+                while self.serial_conn.in_waiting > 0:
+                    line = self.serial_conn.readline().decode().strip()
+                    if line:
+                        lines.append(line)
+                        print(f"Calib line: '{line}'")
+
+                for line in lines:
+                    parsed = Esp32Protocol.parse_calib_done(line)
+                    if parsed is not None:
+                        if parsed['speed_constant'] is not None:
+                            self.speed_constant = parsed['speed_constant']
+                            self.ppr.setText(f"{self.speed_constant:.0f}")
+                        if parsed['max_rpm'] is not None:
+                            self.max_rpm = parsed['max_rpm']
+                            self.maxRPM.setText(f"{self.max_rpm:.0f}")
+                        self.calibrating = False
+                        self.clear_serial_buffers()
+                        self.serial_conn.write(Esp32Protocol.encode_cmd("2"))
+                        QtCore.QTimer.singleShot(200, lambda: self.try_read_motor_info(0))
+                        return
+
+            self.clear_serial_buffers()
+            if self.calibrating:
+                QtCore.QTimer.singleShot(300, lambda: self.read_calibration_result(retry_count + 1))
+        except Exception as e:
+            print(f"Calibration read error: {e}")
+            self.calibrating = False
 
     def readMotorInfo(self):
         try:
@@ -222,16 +262,77 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
 
             parsed = Esp32Protocol.parse_status_response(lines)
             if parsed['speed_constant'] is not None:
+                self.speed_constant = parsed['speed_constant']
                 self.ppr.setText(f"{parsed['speed_constant']:.0f}")
-            else:
-                self.ppr.setText("--")
             if parsed.get('max_rpm') is not None:
+                self.max_rpm = parsed['max_rpm']
                 self.maxRPM.setText(f"{parsed['max_rpm']:.0f}")
-            else:
-                self.maxRPM.setText("--")
+
+            for i, line in enumerate(lines):
+                stripped = line.strip()
+                try:
+                    val = int(stripped)
+                    if val in (0, 1, 2):
+                        remaining = lines[i + 1:]
+                        self._parse_motor_info_response(val, remaining)
+                        break
+                except ValueError:
+                    continue
 
         except Exception as e:
             print("Motor info read error:", e)
+
+    def _parse_motor_info_response(self, status, data_lines):
+        if status == 2:
+            for line in data_lines:
+                line = line.strip()
+                if line.startswith('SC,'):
+                    parsed = Esp32Protocol.parse_status_response([line])
+                    if parsed['speed_constant'] is not None:
+                        self.speed_constant = parsed['speed_constant']
+                        self.ppr.setText(f"{self.speed_constant:.0f}")
+                    if parsed.get('max_rpm') is not None:
+                        self.max_rpm = parsed['max_rpm']
+                        self.maxRPM.setText(f"{self.max_rpm:.0f}")
+                    continue
+                parts = line.split()
+                if len(parts) >= 3:
+                    try:
+                        self.lrc_min_rpm = float(parts[0])
+                        self.lrc_max_rpm = float(parts[1])
+                        if float(parts[2]) > 0:
+                            self.max_rpm = float(parts[2])
+                            self.maxRPM.setText(f"{self.max_rpm:.0f}")
+                        break
+                    except ValueError:
+                        pass
+                elif len(parts) == 1 and not line.startswith('SC,'):
+                    try:
+                        self.max_rpm = float(parts[0])
+                        self.maxRPM.setText(f"{self.max_rpm:.0f}")
+                    except ValueError:
+                        pass
+                    break
+        elif status == 1:
+            for line in data_lines:
+                line = line.strip()
+                if line.startswith('SC,'):
+                    parsed = Esp32Protocol.parse_status_response([line])
+                    if parsed['speed_constant'] is not None:
+                        self.speed_constant = parsed['speed_constant']
+                        self.ppr.setText(f"{self.speed_constant:.0f}")
+                    if parsed.get('max_rpm') is not None:
+                        self.max_rpm = parsed['max_rpm']
+                        self.maxRPM.setText(f"{self.max_rpm:.0f}")
+                    continue
+                parts = line.split()
+                if len(parts) == 1:
+                    try:
+                        self.max_rpm = float(parts[0])
+                        self.maxRPM.setText(f"{self.max_rpm:.0f}")
+                        break
+                    except ValueError:
+                        pass
 
     def set_status(self, status):
         """Update QLabel statusIndicator with a given status string."""
@@ -386,14 +487,38 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
             if value <= 0:
                 QtWidgets.QMessageBox.warning(self, "Invalid Input", "Rotation value must be positive.")
                 return
+            self.serial_conn.reset_input_buffer()
             self.safe_write(Esp32Protocol.encode_cmd("CALIBRATE"))
-            if self.main_window:
-                QtCore.QTimer.singleShot(500, self.main_window.try_read_motor_info)
-            self.close()
+            QtCore.QTimer.singleShot(4000, self._read_calib_result)
         except ValueError:
             QtWidgets.QMessageBox.warning(self, "Invalid Input", "Please enter a valid number for rotation.")
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Serial Error", f"Serial error: {e}")
+
+    def _read_calib_result(self):
+        try:
+            if not self.serial_conn or not self.serial_conn.is_open:
+                return
+            while self.serial_conn.in_waiting > 0:
+                line = self.serial_conn.readline().decode().strip()
+                if line:
+                    parsed = Esp32Protocol.parse_calib_done(line)
+                    if parsed is not None:
+                        if parsed['speed_constant'] is not None:
+                            self.main_window.speed_constant = parsed['speed_constant']
+                            self.main_window.ppr.setText(f"{parsed['speed_constant']:.0f}")
+                        if parsed['max_rpm'] is not None:
+                            self.main_window.max_rpm = parsed['max_rpm']
+                            self.main_window.maxRPM.setText(f"{parsed['max_rpm']:.0f}")
+                        break
+            self.clear_serial_buffers()
+            if self.main_window:
+                self.serial_conn.write(Esp32Protocol.encode_cmd("2"))
+                QtCore.QTimer.singleShot(200, self.main_window.try_read_motor_info)
+            self.close()
+        except Exception as e:
+            print(f"Calibration read error: {e}")
+            self.close()
 
     # In Encoder class
     def closeEvent(self, event):
@@ -542,41 +667,61 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
     def read_motor_characteristic(self):
         data_pwm, data_speed = [], []
         try:
-            # Read until we get valid data or a status code
             while True:
                 line = self.serial_conn.readline().decode("utf-8", errors='replace').strip()
                 if not line:
                     continue
-                    
-                # Check if this is a status line (single digit: 0 or 1)
-                if line == "0":
-                    return None, None
-                elif line == "1":
-                    # Status 1 means data follows, but we may have already started reading it
-                    continue
-                else:
-                    # Try to parse as data (PWM and Speed)
-                    try:
-                        parts = line.split()
-                        if len(parts) == 2:
-                            pwm, speed = map(float, parts)
-                            data_pwm.append(pwm)
-                            data_speed.append(speed)
-                            break  # Successfully read first data line
-                    except ValueError:
-                        # Not a valid data line, skip it
+
+                try:
+                    val = int(line.strip())
+                    if val in (0, 1, 2):
+                        if val == 0:
+                            return None, None
                         continue
-            
-            # Now read remaining data lines
+                except ValueError:
+                    pass
+
+                if line.startswith('SC,') or line.startswith('MX,') or line.startswith('ACK,'):
+                    continue
+
+                if line.strip() == '2':
+                    continue
+
+                parts = line.split()
+                if len(parts) >= 3:
+                    try:
+                        float(parts[0])
+                        float(parts[1])
+                        lrc_line = line
+                        continue
+                    except ValueError:
+                        pass
+
+                try:
+                    parts = line.split()
+                    if len(parts) == 2:
+                        pwm, speed = map(float, parts)
+                        data_pwm.append(pwm)
+                        data_speed.append(speed)
+                        break
+                except ValueError:
+                    continue
+
             while True:
                 line = self.serial_conn.readline().decode("utf-8", errors='replace').strip()
                 if not line:
                     continue
-                    
-                # Check if we've reached end of data (status code or command text)
-                if line == "0" or line == "1" or "command" in line.lower() or "available" in line.lower():
-                    break
-                    
+
+                try:
+                    val = int(line.strip())
+                    if val in (0, 1, 2):
+                        break
+                except ValueError:
+                    pass
+
+                if line.startswith('SC,') or line.startswith('MX,') or line.startswith('ACK,'):
+                    continue
+
                 try:
                     parts = line.split()
                     if len(parts) == 2:
@@ -584,9 +729,8 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
                         data_pwm.append(pwm)
                         data_speed.append(speed)
                 except ValueError:
-                    # Skip invalid lines
                     continue
-                    
+
         except Exception as e:
             print(f"Error reading motor characteristic: {e}")
         return data_pwm, data_speed
@@ -662,9 +806,18 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
             self.main_window.lrc_max_pwm = result['max_pwm']
             self.main_window.lrc_min_rpm = result['min_rpm']
             self.main_window.lrc_max_rpm = result['max_rpm']
+            self.main_window.char_pwm = list(pwm_data)
+            self.main_window.char_speed = list(speed_data)
 
         if self.serial_conn and self.serial_conn.is_open:
             try:
+                self.serial_conn.write(Esp32Protocol.encode_cmd("CHAR_CLEAR"))
+                self.serial_conn.flush()
+                QtCore.QThread.msleep(50)
+                for pwm, spd in zip(pwm_data, speed_data):
+                    self.serial_conn.write(Esp32Protocol.encode_char_data(int(pwm), float(spd)))
+                self.serial_conn.flush()
+                QtCore.QThread.msleep(50)
                 self.serial_conn.write(f"LRC_MIN_PWM,{result['min_pwm']}\n".encode())
                 self.serial_conn.write(f"LRC_MAX_PWM,{result['max_pwm']}\n".encode())
                 self.serial_conn.write(f"LRC_MIN_RPM,{result['min_rpm']}\n".encode())
@@ -922,7 +1075,11 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
 
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
-        QtCore.QTimer.singleShot(200, self.try_read_motor_characteristic)  # wait 200 ms then read
+
+        if self.main_window:
+            self._push_cached_data_to_esp32()
+
+        QtCore.QTimer.singleShot(200, self.try_read_motor_characteristic)
 
         # Connect buttons
         self.start.clicked.connect(self.startClicked)
@@ -1022,6 +1179,35 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
         self.save_action.setShortcut(QtGui.QKeySequence.Save)  # Ctrl+S
         self.save_action.triggered.connect(self.saveDataToCSV)
         self.addAction(self.save_action)
+
+    def _push_cached_data_to_esp32(self):
+        if not self.serial_conn or not self.serial_conn.is_open:
+            return
+        if not self.main_window:
+            return
+        try:
+            mw = self.main_window
+            if mw.lrc_min_pwm is not None:
+                self.serial_conn.write(f"LRC_MIN_PWM,{mw.lrc_min_pwm}\n".encode())
+            if mw.lrc_max_pwm is not None:
+                self.serial_conn.write(f"LRC_MAX_PWM,{mw.lrc_max_pwm}\n".encode())
+            if mw.lrc_min_rpm is not None:
+                self.serial_conn.write(f"LRC_MIN_RPM,{mw.lrc_min_rpm}\n".encode())
+            if mw.lrc_max_rpm is not None:
+                self.serial_conn.write(f"LRC_MAX_RPM,{mw.lrc_max_rpm}\n".encode())
+            if mw.lrc_min_pwm is not None and mw.lrc_max_pwm is not None:
+                self.serial_conn.write(b"LRC_SAVE\n")
+            if mw.char_pwm and mw.char_speed:
+                self.serial_conn.write(Esp32Protocol.encode_cmd("CHAR_CLEAR"))
+                self.serial_conn.flush()
+                time.sleep(0.05)
+                for pwm, spd in zip(mw.char_pwm, mw.char_speed):
+                    self.serial_conn.write(Esp32Protocol.encode_char_data(int(pwm), float(spd)))
+                self.serial_conn.flush()
+                time.sleep(0.05)
+            self.serial_conn.flush()
+        except Exception as e:
+            print(f"Error pushing cached data to ESP32: {e}")
 
     def saveDataToCSV(self):
         """Save collected data to CSV file - only if all data series are available"""
@@ -1275,48 +1461,141 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
             if not self.serial_conn or not self.serial_conn.in_waiting:
                 return
 
-            # Read the first line (status code: 0, 1, or 2)
-            while True:
-                status_line = self.serial_conn.readline().decode().strip()
-                if not status_line:
-                    return
+            all_lines = []
+            while self.serial_conn.in_waiting > 0:
+                line = self.serial_conn.readline().decode().strip()
+                if line:
+                    all_lines.append(line)
+
+            if not all_lines:
+                return
+
+            status = None
+            status_idx = -1
+            for i, line in enumerate(all_lines):
                 try:
-                    status = int(status_line)
-                    break  # Got a valid status, exit loop
+                    val = int(line.strip())
+                    if val in (0, 1, 2):
+                        status = val
+                        status_idx = i
+                        break
                 except ValueError:
-                    continue  # Not a number, skip this line
+                    continue
+
+            if status is None:
+                return
+
+            remaining_lines = all_lines[status_idx + 1:]
+
+            sc_value = None
+            mx_value = None
+            data_lines = []
+            for line in remaining_lines:
+                line = line.strip()
+                if line.startswith('SC,'):
+                    try:
+                        sc_value = float(line.split(',')[1])
+                    except (ValueError, IndexError):
+                        pass
+                    continue
+                if line.startswith('MX,'):
+                    try:
+                        mx_value = float(line.split(',')[1])
+                    except (ValueError, IndexError):
+                        pass
+                    continue
+                parts = line.split()
+                if len(parts) == 2:
+                    try:
+                        float(parts[0])
+                        float(parts[1])
+                        data_lines.append(line)
+                        continue
+                    except ValueError:
+                        pass
+                data_lines.append(line)
+
+            if sc_value is not None:
+                if self.main_window:
+                    self.main_window.speed_constant = sc_value
+                    self.main_window.ppr.setText(f"{sc_value:.0f}")
+            if mx_value is not None:
+                if self.main_window:
+                    self.main_window.max_rpm = mx_value
+                    self.main_window.maxRPM.setText(f"{mx_value:.0f}")
 
             if status == 2:
-                # Both calibration + motor char exist
-                data_line = self.serial_conn.readline().decode().strip()
-                min_rpm_str, max_rpm_str, max_rpm_val_str = data_line.split()
-                
-                # Convert to float when storing
-                self.minLinRPM = float(min_rpm_str)
-                self.maxLinRPM = float(max_rpm_str)
-                self.maxRPM = float(max_rpm_val_str)
-                
-                # Display values
-                self.MinLinRPMDisp.setText(f"{self.minLinRPM:.2f}")
-                self.MaxLinRPMDisp.setText(f"{self.maxLinRPM:.2f}")
-                self.MaxRPMDisp.setText(f"{self.maxRPM:.2f}")
-
+                for line in data_lines:
+                    parts = line.split()
+                    if len(parts) >= 3:
+                        try:
+                            self.minLinRPM = float(parts[0])
+                            self.maxLinRPM = float(parts[1])
+                            self.maxRPM = float(parts[2])
+                            self.MinLinRPMDisp.setText(f"{self.minLinRPM:.2f}")
+                            self.MaxLinRPMDisp.setText(f"{self.maxLinRPM:.2f}")
+                            self.MaxRPMDisp.setText(f"{self.maxRPM:.2f}")
+                            if self.main_window:
+                                self.main_window.lrc_min_rpm = self.minLinRPM
+                                self.main_window.lrc_max_rpm = self.maxLinRPM
+                                if mx_value is None:
+                                    self.main_window.max_rpm = self.maxRPM
+                                    self.main_window.maxRPM.setText(f"{self.maxRPM:.2f}")
+                            break
+                        except ValueError:
+                            continue
+                    elif len(parts) == 1:
+                        try:
+                            val = float(parts[0])
+                            self.maxRPM = val
+                            self.MaxRPMDisp.setText(f"{self.maxRPM:.2f}")
+                            self.MinLinRPMDisp.setText("--")
+                            self.MaxLinRPMDisp.setText("--")
+                            if self.main_window and mx_value is None:
+                                self.main_window.max_rpm = val
+                                self.main_window.maxRPM.setText(f"{val:.2f}")
+                        except ValueError:
+                            pass
+                        break
             elif status == 1:
-                # Only calibration exists
-                data_line = self.serial_conn.readline().decode().strip()
-                self.maxRPM = float(data_line)
-                self.MinLinRPMDisp.setText("--")
-                self.MaxLinRPMDisp.setText("--")
-                self.MaxRPMDisp.setText(f"{float(self.maxRPM):.2f}")
+                for line in data_lines:
+                    parts = line.split()
+                    if len(parts) == 1:
+                        try:
+                            val = float(parts[0])
+                            self.maxRPM = val
+                            self.MaxRPMDisp.setText(f"{self.maxRPM:.2f}")
+                            self.MinLinRPMDisp.setText("--")
+                            self.MaxLinRPMDisp.setText("--")
+                            if self.main_window and mx_value is None:
+                                self.main_window.max_rpm = val
+                                self.main_window.maxRPM.setText(f"{val:.2f}")
+                        except ValueError:
+                            pass
+                        break
+
+                if self.main_window and self.main_window.lrc_min_rpm is not None:
+                    self.minLinRPM = self.main_window.lrc_min_rpm
+                    self.maxLinRPM = self.main_window.lrc_max_rpm
+                    self.MinLinRPMDisp.setText(f"{self.minLinRPM:.2f}")
+                    self.MaxLinRPMDisp.setText(f"{self.maxLinRPM:.2f}")
 
             elif status == 0:
-                # Nothing stored
                 self.MinLinRPMDisp.setText("--")
                 self.MaxLinRPMDisp.setText("--")
                 self.MaxRPMDisp.setText("--")
+
+                if self.main_window and self.main_window.lrc_min_rpm is not None:
+                    self.minLinRPM = self.main_window.lrc_min_rpm
+                    self.maxLinRPM = self.main_window.lrc_max_rpm
+                    self.MinLinRPMDisp.setText(f"{self.minLinRPM:.2f}")
+                    self.MaxLinRPMDisp.setText(f"{self.maxLinRPM:.2f}")
+                if self.main_window and self.main_window.max_rpm is not None:
+                    self.maxRPM = self.main_window.max_rpm
+                    self.MaxRPMDisp.setText(f"{self.maxRPM:.2f}")
+
         except Exception as e:
             print("Serial read error olc:", e)
-            print(self.serial_conn.readline())
 
     def startClicked(self):
         if self.serial_conn and self.serial_conn.is_open:
@@ -1337,55 +1616,61 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
                 return
             # Check if target RPM is within valid ranges
             try:
-                # Check which data is available
-                print(f"MinLinRPM: {self.minLinRPM}, MaxLinRPM: {self.maxLinRPM}, MaxRPM: {self.maxRPM}")
-                has_linear_range = hasattr(self, 'minLinRPM') and hasattr(self, 'maxLinRPM')
-                has_max_rpm = hasattr(self, 'maxRPM')
-                
-                if has_linear_range and has_max_rpm:
-                    # Both linear range and max RPM are available
+                min_lin_rpm = None
+                max_lin_rpm = None
+                max_rpm = None
+
+                if hasattr(self, 'minLinRPM') and self.minLinRPM is not None:
                     min_lin_rpm = float(self.minLinRPM)
+                elif self.main_window and self.main_window.lrc_min_rpm is not None:
+                    min_lin_rpm = self.main_window.lrc_min_rpm
+
+                if hasattr(self, 'maxLinRPM') and self.maxLinRPM is not None:
                     max_lin_rpm = float(self.maxLinRPM)
+                elif self.main_window and self.main_window.lrc_max_rpm is not None:
+                    max_lin_rpm = self.main_window.lrc_max_rpm
+
+                if hasattr(self, 'maxRPM') and self.maxRPM is not None:
                     max_rpm = float(self.maxRPM)
-                    
-                    # Check if target is between min and max linear RPM OR equals max RPM
+                elif self.main_window and self.main_window.max_rpm is not None:
+                    max_rpm = self.main_window.max_rpm
+
+                print(f"MinLinRPM: {min_lin_rpm}, MaxLinRPM: {max_lin_rpm}, MaxRPM: {max_rpm}")
+
+                if min_lin_rpm is not None and max_lin_rpm is not None and max_rpm is not None:
                     is_in_linear_range = min_lin_rpm <= targetRPM <= max_lin_rpm
-                    is_at_max = abs(targetRPM - max_rpm) < 0.01  # Small epsilon for float comparison
-                    
+                    is_at_max = abs(targetRPM - max_rpm) < 0.01
+
                     if not (is_in_linear_range or is_at_max):
                         QtWidgets.QMessageBox.warning(
-                            self, 
-                            "Invalid Input", 
+                            self,
+                            "Invalid Input",
                             f"Target RPM must be either between {min_lin_rpm:.2f} and {max_lin_rpm:.2f}, or equal to {max_rpm:.2f}."
                         )
                         return
-                    
-                elif has_max_rpm:
-                    # Only max RPM is available
-                    max_rpm = float(self.maxRPM)
-                    
+
+                elif max_rpm is not None:
                     if targetRPM > max_rpm:
                         QtWidgets.QMessageBox.warning(
-                            self, 
-                            "Invalid Input", 
+                            self,
+                            "Invalid Input",
                             f"Target RPM cannot exceed maximum RPM ({max_rpm:.2f})."
                         )
                         return
-                    
+
                 else:
-                    # No motor data available
                     QtWidgets.QMessageBox.warning(
-                        self, 
-                        "Missing Data", 
+                        self,
+                        "Missing Data",
                         "Motor characterization data not available. Run analysis first."
                     )
                     return
-            except (ValueError, AttributeError):
-                # Handle case where values aren't set yet or are invalid
+            except (ValueError, AttributeError) as e:
+                print(f"Validation error: {e}")
                 QtWidgets.QMessageBox.warning(
-                    self, 
-                    "Missing Data", 
-                    "Motor characterization file not available. Run analysis first."
+                    self,
+                    "Missing Data",
+                    "Motor characterization data not available. Run analysis first."
                 )
                 return
                 
@@ -1733,6 +2018,9 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
         self.serial_conn = serial_conn
         self.main_window = main_window  # Store reference to main window
 
+        if self.main_window:
+            self._push_cached_data_to_esp32()
+
         # Connect buttons
         self.start.clicked.connect(self.startClicked)
         self.analyze.clicked.connect(self.analyzeClicked)
@@ -2066,6 +2354,35 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
             self.tooltip2.show()
         else:
             self.tooltip2.hide()
+
+    def _push_cached_data_to_esp32(self):
+        if not self.serial_conn or not self.serial_conn.is_open:
+            return
+        if not self.main_window:
+            return
+        try:
+            mw = self.main_window
+            if mw.lrc_min_pwm is not None:
+                self.serial_conn.write(f"LRC_MIN_PWM,{mw.lrc_min_pwm}\n".encode())
+            if mw.lrc_max_pwm is not None:
+                self.serial_conn.write(f"LRC_MAX_PWM,{mw.lrc_max_pwm}\n".encode())
+            if mw.lrc_min_rpm is not None:
+                self.serial_conn.write(f"LRC_MIN_RPM,{mw.lrc_min_rpm}\n".encode())
+            if mw.lrc_max_rpm is not None:
+                self.serial_conn.write(f"LRC_MAX_RPM,{mw.lrc_max_rpm}\n".encode())
+            if mw.lrc_min_pwm is not None and mw.lrc_max_pwm is not None:
+                self.serial_conn.write(b"LRC_SAVE\n")
+            if mw.char_pwm and mw.char_speed:
+                self.serial_conn.write(Esp32Protocol.encode_cmd("CHAR_CLEAR"))
+                self.serial_conn.flush()
+                time.sleep(0.05)
+                for pwm, spd in zip(mw.char_pwm, mw.char_speed):
+                    self.serial_conn.write(Esp32Protocol.encode_char_data(int(pwm), float(spd)))
+                self.serial_conn.flush()
+                time.sleep(0.05)
+            self.serial_conn.flush()
+        except Exception as e:
+            print(f"Error pushing cached data to ESP32: {e}")
 
     def safe_write(self, data):
         try:

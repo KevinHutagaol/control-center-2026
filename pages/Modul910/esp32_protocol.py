@@ -1,16 +1,10 @@
 class Esp32Protocol:
     @staticmethod
     def encode_cmd(cmd: str) -> bytes:
-        """Encode command with newline suffix: "SETPOINT,100" -> b"SETPOINT,100\n" """
         return f"{cmd}\n".encode()
 
     @staticmethod
     def parse_status_response(lines: list) -> dict:
-        """Parse STATUS response lines into dict.
-        Looks for 'SC,<value>' to get speedConstant (PPR calibration).
-        Looks for 'MX,<value>' to get max RPM.
-        Returns: {'speed_constant': float, 'max_rpm': float}
-        """
         result = {'speed_constant': None, 'max_rpm': None}
         for line in lines:
             line = line.strip()
@@ -28,9 +22,6 @@ class Esp32Protocol:
 
     @staticmethod
     def parse_data_line(line: str) -> tuple:
-        """Parse DATA,<time>,<rpm>,<error>,<pwm> format.
-        Returns: (elapsed_ms, rpm, error, pwm) or None if invalid.
-        """
         line = line.strip()
         if not line.startswith('DATA,'):
             return None
@@ -45,3 +36,27 @@ class Esp32Protocol:
             return (elapsed_ms, rpm, error, pwm)
         except (ValueError, IndexError):
             return None
+
+    @staticmethod
+    def parse_calib_done(line: str) -> dict:
+        line = line.strip()
+        if line.startswith('CALIB_DONE'):
+            parts = line.split(',')
+            try:
+                speed_constant = float(parts[1]) if len(parts) > 1 else None
+                max_rpm = float(parts[2]) if len(parts) > 2 else None
+                return {
+                    'speed_constant': speed_constant,
+                    'max_rpm': max_rpm
+                }
+            except (ValueError, IndexError):
+                return {'speed_constant': None, 'max_rpm': None}
+        return None
+
+    @staticmethod
+    def encode_char_data(pwm: int, speed: float) -> bytes:
+        return f"CHAR_DATA,{pwm},{speed:.2f}\n".encode()
+
+    @staticmethod
+    def encode_char_clear() -> bytes:
+        return b"CHAR_CLEAR\n"

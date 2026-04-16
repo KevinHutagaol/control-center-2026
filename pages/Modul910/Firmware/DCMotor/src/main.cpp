@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <LittleFS.h>
 
 #define VERSION "3.0-FOPDT"
 
@@ -15,11 +14,6 @@
 #define PWM_RESOLUTION 8
 
 #define MAX_DURATION 15000
-
-#define CALIB_FILE "/calib.bin"
-#define PID_FILE "/pid.bin"
-#define LRC_FILE "/lrc.bin"
-#define MCHAR_FILE "/mchar.bin"
 
 #define MAX_CHAR_POINTS 52
 #define SWEEP_STEP 5
@@ -130,15 +124,6 @@ float computePID(float error, float dt) {
     }
 }
 
-bool saveCalibration() {
-    File file = LittleFS.open(CALIB_FILE, "w");
-    if (!file) return false;
-    file.write((uint8_t*)&speedConstant, sizeof(speedConstant));
-    file.write((uint8_t*)&maxRPM, sizeof(maxRPM));
-    file.close();
-    return true;
-}
-
 void autoCalibrate() {
     Serial.println("CALIB_START");
 
@@ -163,118 +148,7 @@ void autoCalibrate() {
 
     maxRPM = calculateRPM(ticks, 2000.0) * (255.0 / 128.0);
 
-    saveCalibration();
-
-    Serial.printf("CALIB_DONE,%.2f\n", speedConstant);
-}
-
-bool loadCalibration() {
-    if (!LittleFS.exists(CALIB_FILE)) return false;
-    File file = LittleFS.open(CALIB_FILE, "r");
-    if (!file) return false;
-    file.read((uint8_t*)&speedConstant, sizeof(speedConstant));
-    if (file.available()) {
-        file.read((uint8_t*)&maxRPM, sizeof(maxRPM));
-    } else {
-        maxRPM = 0;
-    }
-    file.close();
-    return speedConstant > 1.0;
-}
-
-bool savePID() {
-    File file = LittleFS.open(PID_FILE, "w");
-    if (!file) return false;
-    file.write((uint8_t*)&Kp, sizeof(Kp));
-    file.write((uint8_t*)&Ki, sizeof(Ki));
-    file.write((uint8_t*)&Kd, sizeof(Kd));
-    file.write((uint8_t*)&controlMode, sizeof(controlMode));
-    file.close();
-    return true;
-}
-
-bool loadPID() {
-    if (!LittleFS.exists(PID_FILE)) return false;
-    File file = LittleFS.open(PID_FILE, "r");
-    if (!file) return false;
-    file.read((uint8_t*)&Kp, sizeof(Kp));
-    file.read((uint8_t*)&Ki, sizeof(Ki));
-    file.read((uint8_t*)&Kd, sizeof(Kd));
-    file.read((uint8_t*)&controlMode, sizeof(controlMode));
-    file.close();
-    return true;
-}
-
-bool saveLinearRegion() {
-    File file = LittleFS.open(LRC_FILE, "w");
-    if (!file) return false;
-    file.write((uint8_t*)&lrcMinPWM, sizeof(lrcMinPWM));
-    file.write((uint8_t*)&lrcMaxPWM, sizeof(lrcMaxPWM));
-    file.write((uint8_t*)&lrcMinRPM, sizeof(lrcMinRPM));
-    file.write((uint8_t*)&lrcMaxRPM, sizeof(lrcMaxRPM));
-    file.write((uint8_t*)&hasLinearRegion, sizeof(hasLinearRegion));
-    file.close();
-    return true;
-}
-
-bool loadLinearRegion() {
-    if (!LittleFS.exists(LRC_FILE)) return false;
-    File file = LittleFS.open(LRC_FILE, "r");
-    if (!file) return false;
-    size_t expectedSize = sizeof(lrcMinPWM) + sizeof(lrcMaxPWM) +
-                          sizeof(lrcMinRPM) + sizeof(lrcMaxRPM) +
-                          sizeof(hasLinearRegion);
-    if (file.size() < (int)expectedSize) {
-        file.close();
-        return false;
-    }
-    file.read((uint8_t*)&lrcMinPWM, sizeof(lrcMinPWM));
-    file.read((uint8_t*)&lrcMaxPWM, sizeof(lrcMaxPWM));
-    file.read((uint8_t*)&lrcMinRPM, sizeof(lrcMinRPM));
-    file.read((uint8_t*)&lrcMaxRPM, sizeof(lrcMaxRPM));
-    file.read((uint8_t*)&hasLinearRegion, sizeof(hasLinearRegion));
-    file.close();
-    return true;
-}
-
-bool saveMotorChar() {
-    File file = LittleFS.open(MCHAR_FILE, "w");
-    if (!file) return false;
-    file.write((uint8_t*)&charCount, sizeof(charCount));
-    if (charCount > 0) {
-        file.write((uint8_t*)charPWMValues, sizeof(int) * charCount);
-        file.write((uint8_t*)charSpeedValues, sizeof(float) * charCount);
-    }
-    file.close();
-    return true;
-}
-
-bool loadMotorChar() {
-    if (!LittleFS.exists(MCHAR_FILE)) return false;
-    File file = LittleFS.open(MCHAR_FILE, "r");
-    if (!file) return false;
-    file.read((uint8_t*)&charCount, sizeof(charCount));
-    if (charCount < 0 || charCount > MAX_CHAR_POINTS) {
-        charCount = 0;
-        file.close();
-        return false;
-    }
-    if (charCount > 0) {
-        file.read((uint8_t*)charPWMValues, sizeof(int) * charCount);
-        file.read((uint8_t*)charSpeedValues, sizeof(float) * charCount);
-    }
-    file.close();
-    return charCount > 0;
-}
-
-void initFileSystem() {
-    if (!LittleFS.begin(true)) {
-        Serial.println("ERR,LITTLEFS_INIT_FAILED");
-        return;
-    }
-    if (!LittleFS.exists("/")) {
-        LittleFS.mkdir("/");
-    }
+    Serial.printf("CALIB_DONE,%.2f,%.2f\n", speedConstant, maxRPM);
 }
 
 void resetController() {
@@ -344,6 +218,8 @@ void sendMotorInfo() {
     } else if (status == 1) {
         Serial.printf("%.2f\n", maxRPM);
     }
+
+    Serial.printf("SC,%.2f\n", speedConstant);
 
     for (int i = 0; i < charCount; i++) {
         Serial.printf("%d %.2f\n", charPWMValues[i], charSpeedValues[i]);
@@ -551,8 +427,24 @@ void parseCommand(String cmd) {
     }
     else if (cmd == "LRC_SAVE") {
         hasLinearRegion = true;
-        saveLinearRegion();
         Serial.println("ACK,LRC_SAVE");
+    }
+    else if (cmd.startsWith("CHAR_DATA,")) {
+        int comma = cmd.indexOf(',', 10);
+        if (comma > 0 && charCount < MAX_CHAR_POINTS) {
+            int pwm = cmd.substring(10, comma).toInt();
+            float speed = cmd.substring(comma + 1).toFloat();
+            charPWMValues[charCount] = pwm;
+            charSpeedValues[charCount] = speed;
+            charCount++;
+            Serial.printf("ACK,CHAR_DATA,%d\n", charCount - 1);
+        } else {
+            Serial.println("ERR,CHAR_DATA_INVALID");
+        }
+    }
+    else if (cmd == "CHAR_CLEAR") {
+        charCount = 0;
+        Serial.println("ACK,CHAR_CLEAR");
     }
     else if (cmd == "START") {
         if (runState != STATE_IDLE) {
@@ -578,17 +470,6 @@ void parseCommand(String cmd) {
     else if (cmd == "STATUS") {
         printStatus();
     }
-    else if (cmd == "SAVE") {
-        savePID();
-        Serial.println("ACK,SAVE");
-    }
-    else if (cmd == "LOAD") {
-        if (loadPID()) {
-            Serial.println("ACK,LOAD");
-        } else {
-            Serial.println("ERR,NO_SAVED_PID");
-        }
-    }
     else if (cmd == "CALIBRATE") {
         if (runState == STATE_IDLE) {
             autoCalibrate();
@@ -604,12 +485,13 @@ void parseCommand(String cmd) {
         Serial.println("KP,<val> | KI,<val> | KD,<val>");
         Serial.println("MODE,<P|PI|PD|PID>");
         Serial.println("DIRECTION,<1|-1>");
-        Serial.println("START|STOP|RESET|STATUS|SAVE|LOAD|CALIBRATE|HELP");
+        Serial.println("START|STOP|RESET|STATUS|CALIBRATE|HELP");
         Serial.println("o|c|e|s|l - Mode (open|closed|encoder|speedlog|lrc)");
         Serial.println("1 - Start sweep | 2 - Request data | 4 - Idle");
         Serial.println("LRC_MIN_PWM,<v> | LRC_MAX_PWM,<v>");
         Serial.println("LRC_MIN_RPM,<v> | LRC_MAX_RPM,<v>");
         Serial.println("LRC_SAVE");
+        Serial.println("CHAR_DATA,<pwm>,<rpm> | CHAR_CLEAR");
     }
     else {
         Serial.printf("ERR,UNKNOWN_COMMAND [%s]\n", cmd.c_str());
@@ -637,15 +519,7 @@ void setup() {
     delay(500);
     Serial.setTimeout(50);
 
-    initFileSystem();
-
-    loadLinearRegion();
-    loadMotorChar();
-    loadPID();
-
     Serial.printf("READY,%s\n", VERSION);
-
-    autoCalibrate();
 }
 
 void loop() {
@@ -684,10 +558,8 @@ void loop() {
                 }
                 if (maxSpeed > maxRPM) {
                     maxRPM = maxSpeed;
-                    saveCalibration();
                 }
 
-                saveMotorChar();
                 Serial.println("100.00");
                 return;
             }
