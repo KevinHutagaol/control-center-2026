@@ -1,79 +1,53 @@
 #include <Arduino.h>
+#include <LittleFS.h>
 
-#define VERSION "3.0-FOPDT"
+// Motor Pins
+#define enB 14
+#define in3 26
+#define in4 27
 
-#define MOTOR_EN 14
-#define MOTOR_IN3 26
-#define MOTOR_IN4 27
+// Encoder Pins
+#define encoderA 33
+#define encoderB 32
 
-#define ENCODER_A 33
-#define ENCODER_B 32
+volatile long encoderTicks = 0;
+volatile int lastEncoded = 0;
+int pwm_value = 0;
+int pulsesPerRevolution = 1; // Default value, can be calibrated
+float pwmLogging[256];
+float speedLogging[256]; // Array to store speed characteristics
+
+float rpm = 0;
+float maxRPM = 1;
+float minLinRPM = 1;
+float maxLinRPM = 1;
+int minLinPWM = 0;
+int maxLinPWM = 255;
+
+// PID Controller variables
+float integral = 0;
+float lastError = 0;
+unsigned long lastPidTime = 0;
 
 #define PWM_CHANNEL 0
 #define PWM_FREQ 5000
 #define PWM_RESOLUTION 8
 
-#define MAX_DURATION 15000
-
-#define MAX_CHAR_POINTS 52
-#define SWEEP_STEP 5
-#define SWEEP_SETTLE_MS 500
-
-volatile long encoderTicks = 0;
-volatile int lastEncoded = 0;
-
-float speedConstant = 1.0;
-float maxRPM = 0.0;
-
-int lrcMinPWM = 0;
-int lrcMaxPWM = 255;
-float lrcMinRPM = 0.0;
-float lrcMaxRPM = 0.0;
-bool hasLinearRegion = false;
-
-int charPWMValues[MAX_CHAR_POINTS];
-float charSpeedValues[MAX_CHAR_POINTS];
-int charCount = 0;
-
-float Kp = 0.0;
-float Ki = 0.0;
-float Kd = 0.0;
-
-enum ControlMode { P_ONLY, PI_CTRL, PD, PID };
-ControlMode controlMode = PID;
-
-enum OpMode {
-    MODE_IDLE,
-    MODE_OPEN_LOOP,
-    MODE_CLOSED_LOOP,
-    MODE_ENCODER,
-    MODE_SPEED_LOG,
-    MODE_LINEAR_REGION
+struct LogEntryCLC {
+    unsigned long time_ms;
+    float rpm;
+    float targetrpm;
+    int pwm;
+    float control;
+    float error;
 };
-OpMode opMode = MODE_IDLE;
 
-enum RunState { STATE_IDLE, STATE_RUNNING, STATE_SWEEP };
-RunState runState = STATE_IDLE;
-
-int direction = 1;
-float setpoint = 0.0;
-int samplingMs = 100;
-int durationMs = 5000;
-
-unsigned long lastSampleTime = 0;
-unsigned long startTime = 0;
-
-float integral = 0.0;
-float prevError = 0.0;
-
-int openLoopPWM = 0;
-
-int sweepCurrentPWM = 0;
-unsigned long sweepStepStart = 0;
+#define MAX_LOG_ENTRIES 1500
+LogEntryCLC logBuffer[MAX_LOG_ENTRIES];
 
 void IRAM_ATTR updateEncoder() {
-    int MSB = digitalRead(ENCODER_A);
-    int LSB = digitalRead(ENCODER_B);
+    int MSB = digitalRead(encoderA);
+    int LSB = digitalRead(encoderB);
     int encoded = (MSB << 1) | LSB;
     int sum = (lastEncoded << 2) | encoded;
 
@@ -85,532 +59,863 @@ void IRAM_ATTR updateEncoder() {
     lastEncoded = encoded;
 }
 
-void moveMotor(int pwm, int dir) {
-    if (dir == 1) {
-        digitalWrite(MOTOR_IN3, HIGH);
-        digitalWrite(MOTOR_IN4, LOW);
-    } else if (dir == -1) {
-        digitalWrite(MOTOR_IN3, LOW);
-        digitalWrite(MOTOR_IN4, HIGH);
+//File handling functions
+#define CALIBRATION_FILE "/motor/ppr.bin"
+#define MOTOR_CHAR_FILE "/motor/speedLogging.bin"
+#define MOTOR_LIN_CHAR "/motor/linearCharacteristics.bin"
+
+// Save integer PPR
+bool savePPR() {
+    File file = LittleFS.open(CALIBRATION_FILE, "w");
+    if (!file) {
+        Serial.println("Failed to open ppr.bin for writing");
+        return false;
+    }
+    file.write((uint8_t*)&pulsesPerRevolution, sizeof(pulsesPerRevolution));
+    file.close();
+    Serial.println("PPR saved.");
+    return true;
+}
+
+// Load integer PPR
+bool loadPPR() {
+    File file = LittleFS.open(CALIBRATION_FILE);
+    if (!file || file.isDirectory()) {
+        Serial.println("Failed to open file for reading");
+        return false;
+    }
+    file.read((uint8_t*)&pulsesPerRevolution, sizeof(pulsesPerRevolution));
+    file.close();
+    return true;
+}
+
+// Save float array
+bool saveSpeedLogging() {
+    File file = LittleFS.open(MOTOR_CHAR_FILE, FILE_WRITE);
+    int len = sizeof(speedLogging) / sizeof(speedLogging[0]);
+    if (!file) {
+        Serial.println("Failed to open file for writing");
+        return false;
+    }
+    file.write((uint8_t*)pwmLogging, sizeof(float) * len);
+    file.write((uint8_t*)speedLogging, sizeof(float) * len);
+    file.close();
+    return true;
+}
+
+// Load float array
+bool loadSpeedLogging() {
+    File file = LittleFS.open(MOTOR_CHAR_FILE);
+    int len = sizeof(speedLogging) / sizeof(speedLogging[0]);
+    if (!file) {
+        Serial.println("Failed to open file for reading");
+        return false;
+    }
+    file.read((uint8_t*)pwmLogging, sizeof(float) * len);
+    file.read((uint8_t*)speedLogging, sizeof(float) * len);
+    file.close();
+    maxRPM = speedLogging[len - 1];
+    Serial.println("Float array loaded");
+    return true;
+}
+
+//Save float linear confguration
+bool saveLinChar() {
+    File file = LittleFS.open(MOTOR_LIN_CHAR, "w");
+    if (!file) {
+        Serial.println("Failed to open file for reading");
+        return false;
+    }
+
+    file.write((uint8_t*)&minLinPWM, sizeof(minLinPWM));
+    file.write((uint8_t*)&maxLinPWM, sizeof(maxLinPWM));
+    file.write((uint8_t*)&minLinRPM, sizeof(minLinRPM));
+    file.write((uint8_t*)&maxLinRPM, sizeof(maxLinRPM));
+
+    file.close();
+    Serial.println("Linear characteristics saved");
+    return true;
+}
+
+//Load float linear configuration
+bool loadLinChar() {
+    File file = LittleFS.open(MOTOR_LIN_CHAR);
+    if (!file) {
+        Serial.println("Failed to open file for reading");
+        return false;
+    }
+
+    file.read((uint8_t*)&minLinPWM, sizeof(minLinPWM));
+    file.read((uint8_t*)&maxLinPWM, sizeof(maxLinPWM));
+    file.read((uint8_t*)&minLinRPM, sizeof(minLinRPM));
+    file.read((uint8_t*)&maxLinRPM, sizeof(maxLinRPM));
+
+    file.close();
+    Serial.println("Linear characteristics loaded");
+    return true;
+}
+
+void initFileSystem() {
+    Serial.println("=== Initializing LittleFS ===");
+
+    if (!LittleFS.begin(true)) {
+        Serial.println("LittleFS Mount Failed");
+        return;
+    }
+
+    // Create motor directory if it doesn't exist
+    if (!LittleFS.exists("/motor")) {
+        LittleFS.mkdir("/motor");
+        Serial.println("Created /motor directory");
+    }
+
+    if (LittleFS.exists(CALIBRATION_FILE)) {
+        loadPPR();
+    }
+
+    if (LittleFS.exists(MOTOR_CHAR_FILE)) {
+        loadSpeedLogging();
+    }
+
+    if (LittleFS.exists(MOTOR_LIN_CHAR)) {
+        loadLinChar();
+    }
+}
+
+void listLittleFS(const char * dirname = "/", uint8_t levels = 2) {
+    Serial.printf("Listing directory: %s\n", dirname);
+
+    File root = LittleFS.open(dirname);
+    if (!root) {
+        Serial.println("Failed to open directory");
+        return;
+    }
+    if (!root.isDirectory()) {
+        Serial.println("Not a directory");
+        return;
+    }
+
+    File file = root.openNextFile();
+    while (file) {
+        if (file.isDirectory()) {
+            Serial.print("  DIR : ");
+            Serial.println(file.name());
+            if (levels) {
+                String subdir = String(dirname);
+                if (!subdir.endsWith("/")) subdir += "/";
+                subdir += file.name();
+                subdir.replace("//", "/");
+                listLittleFS(subdir.c_str(), levels - 1);
+            }
+        } else {
+            Serial.print("  FILE: ");
+            Serial.print(file.name());
+            Serial.print("\tSIZE: ");
+            Serial.println(file.size());
+        }
+        file = root.openNextFile();
+    }
+}
+
+void eraseLittleFS() {
+    if (LittleFS.begin()) {
+        Serial.println("Formatting LittleFS...");
+        if (LittleFS.format()) {
+            Serial.println("LittleFS formatted successfully!");
+        } else {
+            Serial.println("LittleFS format failed!");
+        }
     } else {
-        digitalWrite(MOTOR_IN3, LOW);
-        digitalWrite(MOTOR_IN4, LOW);
-    }
-    ledcWrite(PWM_CHANNEL, constrain(pwm, 0, 255));
-}
-
-float calculateRPM(long ticks, float sampleTimeMs) {
-    if (sampleTimeMs <= 0 || speedConstant <= 0) return 0.0;
-    float revolutions = (float)abs(ticks) / speedConstant;
-    float rpm = revolutions / (sampleTimeMs / 60000.0);
-    return rpm;
-}
-
-float computePID(float error, float dt) {
-    if (controlMode == P_ONLY) {
-        return Kp * error;
-    } else if (controlMode == PI_CTRL) {
-        integral += error * dt;
-        integral = constrain(integral, -255, 255);
-        return Kp * error + Ki * integral;
-    } else if (controlMode == PD) {
-        float derivative = (error - prevError) / dt;
-        return Kp * error + Kd * derivative;
-    } else {
-        integral += error * dt;
-        integral = constrain(integral, -255, 255);
-        float derivative = (error - prevError) / dt;
-        return Kp * error + Ki * integral + Kd * derivative;
-    }
-}
-
-void autoCalibrate() {
-    Serial.println("CALIB_START");
-
-    moveMotor(128, 1);
-    delay(1000);
-
-    noInterrupts();
-    encoderTicks = 0;
-    interrupts();
-
-    delay(2000);
-
-    noInterrupts();
-    long ticks = encoderTicks;
-    encoderTicks = 0;
-    interrupts();
-
-    moveMotor(0, 0);
-
-    speedConstant = (float)abs(ticks) / 2.0;
-    if (speedConstant < 1.0) speedConstant = 1.0;
-
-    maxRPM = calculateRPM(ticks, 2000.0) * (255.0 / 128.0);
-
-    Serial.printf("CALIB_DONE,%.2f,%.2f\n", speedConstant, maxRPM);
-}
-
-void resetController() {
-    integral = 0.0;
-    prevError = 0.0;
-    moveMotor(0, 0);
-    runState = STATE_IDLE;
-    Serial.println("ACK,RESET");
-}
-
-void printStatus() {
-    Serial.println("ACK,STATUS");
-    Serial.printf("SP,%.2f\n", setpoint);
-    Serial.printf("SM,%d\n", samplingMs);
-    Serial.printf("DUR,%d\n", durationMs);
-    Serial.printf("KP,%.4f\n", Kp);
-    Serial.printf("KI,%.4f\n", Ki);
-    Serial.printf("KD,%.4f\n", Kd);
-    Serial.printf("MODE,%s\n",
-        controlMode == P_ONLY ? "P" :
-        controlMode == PI_CTRL ? "PI" :
-        controlMode == PD ? "PD" : "PID");
-    Serial.printf("DIR,%d\n", direction);
-    Serial.printf("SC,%.2f\n", speedConstant);
-    Serial.printf("MX,%.2f\n", maxRPM);
-}
-
-int getInfoStatus() {
-    bool hasCalib = (speedConstant > 1.0);
-    bool hasChar = (charCount > 0) && hasLinearRegion;
-    if (hasChar) return 2;
-    if (hasCalib) return 1;
-    return 0;
-}
-
-int calculateOpenLoopPWM(float targetRPM) {
-    if (hasLinearRegion && (lrcMaxRPM - lrcMinRPM) > 0) {
-        float pwm = lrcMinPWM + (targetRPM - lrcMinRPM) / (lrcMaxRPM - lrcMinRPM) * (lrcMaxPWM - lrcMinPWM);
-        return constrain((int)pwm, 0, 255);
-    }
-    if (charCount > 1) {
-        if (targetRPM <= charSpeedValues[0]) {
-            return constrain(charPWMValues[0], 0, 255);
-        }
-        if (targetRPM >= charSpeedValues[charCount - 1]) {
-            return constrain(charPWMValues[charCount - 1], 0, 255);
-        }
-        for (int i = 0; i < charCount - 1; i++) {
-            if (targetRPM >= charSpeedValues[i] && targetRPM <= charSpeedValues[i + 1]) {
-                float ratio = (targetRPM - charSpeedValues[i]) / (charSpeedValues[i + 1] - charSpeedValues[i]);
-                return constrain((int)(charPWMValues[i] + ratio * (charPWMValues[i + 1] - charPWMValues[i])), 0, 255);
-            }
-        }
-    }
-    if (maxRPM > 0 && targetRPM <= maxRPM) {
-        return constrain((int)(targetRPM / maxRPM * 255.0), 0, 255);
-    }
-    return 128;
-}
-
-void sendMotorInfo() {
-    int status = getInfoStatus();
-    Serial.println(status);
-
-    if (status == 2) {
-        Serial.printf("%.2f %.2f %.2f\n", lrcMinRPM, lrcMaxRPM, maxRPM);
-    } else if (status == 1) {
-        Serial.printf("%.2f\n", maxRPM);
-    }
-
-    Serial.printf("SC,%.2f\n", speedConstant);
-
-    for (int i = 0; i < charCount; i++) {
-        Serial.printf("%d %.2f\n", charPWMValues[i], charSpeedValues[i]);
-    }
-}
-
-void handleDataRequest() {
-    switch (opMode) {
-        case MODE_ENCODER: {
-            noInterrupts();
-            long ticks = encoderTicks;
-            interrupts();
-            Serial.println(ticks);
-            break;
-        }
-        case MODE_SPEED_LOG:
-            if (charCount > 0) {
-                for (int i = 0; i < charCount; i++) {
-                    Serial.printf("%d %.2f\n", charPWMValues[i], charSpeedValues[i]);
-                }
-            } else {
-                Serial.println("0");
-            }
-            break;
-        case MODE_OPEN_LOOP:
-        case MODE_CLOSED_LOOP:
-            sendMotorInfo();
-            break;
-        default:
-            Serial.println(getInfoStatus());
-            break;
-    }
-}
-
-void startOpenLoop() {
-    runState = STATE_RUNNING;
-    integral = 0.0;
-    prevError = 0.0;
-    startTime = millis();
-    lastSampleTime = startTime;
-
-    openLoopPWM = calculateOpenLoopPWM(setpoint);
-    moveMotor(openLoopPWM, direction);
-
-    noInterrupts();
-    encoderTicks = 0;
-    interrupts();
-
-    Serial.println("ACK,START");
-}
-
-void startClosedLoop() {
-    runState = STATE_RUNNING;
-    integral = 0.0;
-    prevError = 0.0;
-    startTime = millis();
-    lastSampleTime = startTime;
-
-    noInterrupts();
-    encoderTicks = 0;
-    interrupts();
-
-    Serial.println("ACK,START");
-}
-
-void startSweep() {
-    runState = STATE_SWEEP;
-    sweepCurrentPWM = 0;
-    charCount = 0;
-    sweepStepStart = millis();
-
-    moveMotor(sweepCurrentPWM, direction);
-
-    noInterrupts();
-    encoderTicks = 0;
-    interrupts();
-
-    Serial.println("0.00");
-}
-
-void parseCommand(String cmd) {
-    cmd.trim();
-    if (cmd.length() == 0) return;
-
-    if (cmd.length() == 1) {
-        char c = cmd.charAt(0);
-        switch (c) {
-            case 'o':
-                moveMotor(0, 0);
-                runState = STATE_IDLE;
-                opMode = MODE_OPEN_LOOP;
-                Serial.println("ACK,MODE,OPEN_LOOP");
-                return;
-            case 'c':
-                moveMotor(0, 0);
-                runState = STATE_IDLE;
-                opMode = MODE_CLOSED_LOOP;
-                Serial.println("ACK,MODE,CLOSED_LOOP");
-                return;
-            case 'e':
-                moveMotor(0, 0);
-                runState = STATE_IDLE;
-                opMode = MODE_ENCODER;
-                Serial.println("ACK,MODE,ENCODER");
-                return;
-            case 's':
-                moveMotor(0, 0);
-                runState = STATE_IDLE;
-                opMode = MODE_SPEED_LOG;
-                Serial.println("ACK,MODE,SPEED_LOG");
-                return;
-            case 'l':
-                moveMotor(0, 0);
-                runState = STATE_IDLE;
-                opMode = MODE_LINEAR_REGION;
-                Serial.println("ACK,MODE,LINEAR_REGION");
-                return;
-            case '1':
-                if (opMode == MODE_SPEED_LOG && runState == STATE_IDLE) {
-                    startSweep();
-                }
-                return;
-            case '2':
-                handleDataRequest();
-                return;
-            case '4':
-                moveMotor(0, 0);
-                runState = STATE_IDLE;
-                opMode = MODE_IDLE;
-                integral = 0.0;
-                prevError = 0.0;
-                Serial.println("ACK,IDLE");
-                return;
-            default:
-                break;
-        }
-    }
-
-    if (cmd.startsWith("SETPOINT,")) {
-        setpoint = cmd.substring(9).toFloat();
-        Serial.printf("ACK,SETPOINT,%.2f\n", setpoint);
-    }
-    else if (cmd.startsWith("SAMPLING,")) {
-        int val = cmd.substring(9).toInt();
-        if (val >= 10 && val <= 1000) {
-            samplingMs = val;
-            Serial.printf("ACK,SAMPLING,%d\n", samplingMs);
-        } else {
-            Serial.println("ERR,SAMPLING_OUT_OF_RANGE [10-1000]");
-        }
-    }
-    else if (cmd.startsWith("DURATION,")) {
-        int val = cmd.substring(9).toInt();
-        if (val > 0 && val <= MAX_DURATION) {
-            durationMs = val;
-            Serial.printf("ACK,DURATION,%d\n", durationMs);
-        } else {
-            Serial.printf("ERR,DURATION_OUT_OF_RANGE [1-%d]\n", MAX_DURATION);
-        }
-    }
-    else if (cmd.startsWith("KP,")) {
-        Kp = cmd.substring(3).toFloat();
-        Serial.printf("ACK,KP,%.4f\n", Kp);
-    }
-    else if (cmd.startsWith("KI,")) {
-        Ki = cmd.substring(3).toFloat();
-        Serial.printf("ACK,KI,%.4f\n", Ki);
-    }
-    else if (cmd.startsWith("KD,")) {
-        Kd = cmd.substring(3).toFloat();
-        Serial.printf("ACK,KD,%.4f\n", Kd);
-    }
-    else if (cmd.startsWith("MODE,")) {
-        String mode = cmd.substring(5);
-        if (mode == "P") { controlMode = P_ONLY; Serial.println("ACK,MODE,P"); }
-        else if (mode == "PI") { controlMode = PI_CTRL; Serial.println("ACK,MODE,PI"); }
-        else if (mode == "PD") { controlMode = PD; Serial.println("ACK,MODE,PD"); }
-        else if (mode == "PID") { controlMode = PID; Serial.println("ACK,MODE,PID"); }
-        else { Serial.println("ERR,INVALID_MODE [P|PI|PD|PID]"); }
-    }
-    else if (cmd.startsWith("DIRECTION,")) {
-        int val = cmd.substring(10).toInt();
-        if (val == 1 || val == -1) {
-            direction = val;
-            Serial.printf("ACK,DIRECTION,%d\n", direction);
-        } else {
-            Serial.println("ERR,INVALID_DIRECTION [1|-1]");
-        }
-    }
-    else if (cmd.startsWith("LRC_MIN_PWM,")) {
-        lrcMinPWM = cmd.substring(12).toInt();
-        Serial.printf("ACK,LRC_MIN_PWM,%d\n", lrcMinPWM);
-    }
-    else if (cmd.startsWith("LRC_MAX_PWM,")) {
-        lrcMaxPWM = cmd.substring(12).toInt();
-        Serial.printf("ACK,LRC_MAX_PWM,%d\n", lrcMaxPWM);
-    }
-    else if (cmd.startsWith("LRC_MIN_RPM,")) {
-        lrcMinRPM = cmd.substring(12).toFloat();
-        Serial.printf("ACK,LRC_MIN_RPM,%.2f\n", lrcMinRPM);
-    }
-    else if (cmd.startsWith("LRC_MAX_RPM,")) {
-        lrcMaxRPM = cmd.substring(12).toFloat();
-        Serial.printf("ACK,LRC_MAX_RPM,%.2f\n", lrcMaxRPM);
-    }
-    else if (cmd == "LRC_SAVE") {
-        hasLinearRegion = true;
-        Serial.println("ACK,LRC_SAVE");
-    }
-    else if (cmd.startsWith("CHAR_DATA,")) {
-        int comma = cmd.indexOf(',', 10);
-        if (comma > 0 && charCount < MAX_CHAR_POINTS) {
-            int pwm = cmd.substring(10, comma).toInt();
-            float speed = cmd.substring(comma + 1).toFloat();
-            charPWMValues[charCount] = pwm;
-            charSpeedValues[charCount] = speed;
-            charCount++;
-            Serial.printf("ACK,CHAR_DATA,%d\n", charCount - 1);
-        } else {
-            Serial.println("ERR,CHAR_DATA_INVALID");
-        }
-    }
-    else if (cmd == "CHAR_CLEAR") {
-        charCount = 0;
-        Serial.println("ACK,CHAR_CLEAR");
-    }
-    else if (cmd == "START") {
-        if (runState != STATE_IDLE) {
-            Serial.println("ERR,ALREADY_RUNNING");
-            return;
-        }
-        if (opMode == MODE_OPEN_LOOP) {
-            startOpenLoop();
-        } else {
-            if (opMode != MODE_CLOSED_LOOP) {
-                opMode = MODE_CLOSED_LOOP;
-            }
-            startClosedLoop();
-        }
-    }
-    else if (cmd == "STOP") {
-        resetController();
-        Serial.println("ACK,STOP");
-    }
-    else if (cmd == "RESET") {
-        resetController();
-    }
-    else if (cmd == "STATUS") {
-        printStatus();
-    }
-    else if (cmd == "CALIBRATE") {
-        if (runState == STATE_IDLE) {
-            autoCalibrate();
-        } else {
-            Serial.println("ERR,CALIBRATE_WHILE_RUNNING");
-        }
-    }
-    else if (cmd == "HELP") {
-        Serial.println("ACK,HELP");
-        Serial.println("SETPOINT,<rpm>");
-        Serial.println("SAMPLING,<ms> [10-1000]");
-        Serial.println("DURATION,<ms> [1-15000]");
-        Serial.println("KP,<val> | KI,<val> | KD,<val>");
-        Serial.println("MODE,<P|PI|PD|PID>");
-        Serial.println("DIRECTION,<1|-1>");
-        Serial.println("START|STOP|RESET|STATUS|CALIBRATE|HELP");
-        Serial.println("o|c|e|s|l - Mode (open|closed|encoder|speedlog|lrc)");
-        Serial.println("1 - Start sweep | 2 - Request data | 4 - Idle");
-        Serial.println("LRC_MIN_PWM,<v> | LRC_MAX_PWM,<v>");
-        Serial.println("LRC_MIN_RPM,<v> | LRC_MAX_RPM,<v>");
-        Serial.println("LRC_SAVE");
-        Serial.println("CHAR_DATA,<pwm>,<rpm> | CHAR_CLEAR");
-    }
-    else {
-        Serial.printf("ERR,UNKNOWN_COMMAND [%s]\n", cmd.c_str());
+        Serial.println("LittleFS mount failed!");
     }
 }
 
 void setup() {
-    pinMode(ENCODER_A, INPUT_PULLUP);
-    pinMode(ENCODER_B, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(ENCODER_A), updateEncoder, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ENCODER_B), updateEncoder, CHANGE);
+    // Initialize encoder pins
+    pinMode(encoderA, INPUT_PULLUP);
+    pinMode(encoderB, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(encoderA), updateEncoder, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(encoderB), updateEncoder, CHANGE);
 
-    pinMode(MOTOR_EN, OUTPUT);
-    pinMode(MOTOR_IN3, OUTPUT);
-    pinMode(MOTOR_IN4, OUTPUT);
-
+    // Initialize motor pins
+    pinMode(enB, OUTPUT);
+    pinMode(in3, OUTPUT);
+    pinMode(in4, OUTPUT);
     ledcSetup(PWM_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
-    ledcAttachPin(MOTOR_EN, PWM_CHANNEL);
-    ledcWrite(PWM_CHANNEL, 0);
-
-    digitalWrite(MOTOR_IN3, HIGH);
-    digitalWrite(MOTOR_IN4, LOW);
+    ledcAttachPin(enB, PWM_CHANNEL);
+    ledcWrite(PWM_CHANNEL, 0); // Start with motor off
+    digitalWrite(in3, HIGH); //Motor forward
+    digitalWrite(in4, LOW);
 
     Serial.begin(115200);
-    delay(500);
+    delay(1000); // Wait for Serial to initialize
     Serial.setTimeout(50);
 
-    Serial.printf("READY,%s\n", VERSION);
+    // Initialize file system
+    initFileSystem();
+
+    Serial.println("Motor Control System Ready");
+    Serial.println("Commands: 'c' for closed loop, 'o' for open loop, 's' for speed test, 'e' for calibrate");
+}
+
+//Motor control functions
+void moveMotor(int PWM, int direction) {
+    if (direction == 1) {
+        digitalWrite(in3, HIGH);
+        digitalWrite(in4, LOW);
+    } else if (direction == -1) {
+        digitalWrite(in3, LOW);
+        digitalWrite(in4, HIGH);
+    } else {
+        digitalWrite(in3, LOW);
+        digitalWrite(in4, LOW); // Stop motor
+    }
+    ledcWrite(PWM_CHANNEL, PWM);
+}
+
+void calibrateEncoder() {
+    int calibrationSpeed = 127; // Default calibration speed in PWM
+    int revolutions = 0;
+    Serial.println("Calibrating encoder...");
+    noInterrupts();
+    encoderTicks = 0;
+    interrupts();
+
+    // Wait input
+    while (true) {
+        if (Serial.available()) {
+            int command = Serial.parseInt();
+            switch (command) {
+                case -1:
+                case 1:
+                    moveMotor(calibrationSpeed, command);
+                    break;
+                case 0:
+                    moveMotor(0, 0);
+                    break;
+                case 2:
+                    Serial.println(encoderTicks);
+                    break;
+                case 3:
+                    revolutions = Serial.parseFloat();
+                    if (revolutions > 0) {
+                        pulsesPerRevolution = abs(encoderTicks) / revolutions;
+                        Serial.println(2);
+                        Serial.printf("%d %f\n", pulsesPerRevolution, maxRPM);
+                        savePPR();
+                    } else {
+                        Serial.println("Calibration failed.");
+                    }
+                    break;
+                case 4:
+                    Serial.println(2);
+                    Serial.printf("%d %f\n", pulsesPerRevolution, maxRPM);
+                    return;
+                default:
+                    Serial.println("Invalid command. Use -1 for reverse, 1 for forward, or 0 to stop.");
+                    break;
+            }
+        }
+    }
+}
+
+float readMotorSpeed(float samplingTimeMillis) {
+    if (samplingTimeMillis <= 0) return 0.0;
+    float totalRevolutions = (float)abs(encoderTicks) / pulsesPerRevolution;
+    float speedRPM = totalRevolutions / (samplingTimeMillis / 60000.0);
+    return speedRPM;
+}
+
+float medianFilter(float* array, int size) {
+    float temp;
+    float arrcpy[size];
+    memcpy(arrcpy, array, size * sizeof(float));
+    // Sort the array
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = i + 1; j < size; j++) {
+            if (arrcpy[j] < arrcpy[i]) {
+                temp = arrcpy[i];
+                arrcpy[i] = arrcpy[j];
+                arrcpy[j] = temp;
+            }
+        }
+    }
+    // Return the median
+    if (size % 2 == 0) {
+        return (arrcpy[size / 2 - 1] + arrcpy[size / 2]) / 2.0;
+    } else {
+        return arrcpy[size / 2];
+    }
+}
+
+float MAFilter(float* array, int size) {
+    float sum = 0.0;
+    for (int i = 0; i < size; i++) {
+        sum += array[i];
+    }
+    return sum / size;
+}
+
+float findMax(float* array, int size) {
+    float max = array[0];
+    for (int i = 1; i < size; i++) {
+        if (array[i] > max) {
+            max = array[i];
+        }
+    }
+    return max;
+}
+
+float findMin(float* array, int size) {
+    float min = array[0];
+    for (int i = 1; i < size; i++) {
+        if (array[i] < min) {
+            min = array[i];
+        }
+    }
+    return min;
+}
+
+void readMotorCharacteristic() {
+    if (!LittleFS.exists(MOTOR_CHAR_FILE)) {
+        Serial.println(0);
+    } else {
+        Serial.println(1);
+        int lenInit = sizeof(speedLogging) / sizeof(speedLogging[0]);
+        for (int i = 0; i < lenInit; i++) {
+            Serial.printf("%f %f\n", pwmLogging[i], speedLogging[i]);
+        }
+    }
+
+    while (true) {
+        if (Serial.available()) {
+            int command = Serial.parseInt();
+
+            // Clear buffer
+            while (Serial.available()) {
+                Serial.read();
+            }
+
+            switch (command) {
+                case 1: {
+                    int PWM = 0;
+                    int PWM_STEP = 1;
+                    float progress = 0.0;
+
+                    unsigned long startTime, currentTime;
+                    unsigned long SETTLE_TIME = 1000;
+                    unsigned long LOGGING_TIME = 8000;
+                    unsigned long SAMPLING_TIME = 100;
+
+                    moveMotor(0, 0);
+                    delay(SETTLE_TIME);
+
+                    for (PWM; PWM <= 255; PWM += PWM_STEP) {
+                        pwmLogging[PWM / PWM_STEP] = PWM;
+                        float medBuff[3] = {0};
+                        float MABuff[5] = {0};
+                        float speedHistory[30] = {0};
+                        int medLen = sizeof(medBuff) / sizeof(medBuff[0]);
+                        int MALen = sizeof(MABuff) / sizeof(MABuff[0]);
+                        int speedLen = sizeof(speedHistory) / sizeof(speedHistory[0]);
+                        int i;
+
+                        moveMotor(PWM, 1);
+                        delay(SETTLE_TIME);
+
+                        noInterrupts();
+                        encoderTicks = 0;
+                        interrupts();
+
+                        startTime = millis();
+                        currentTime = millis();
+                        int counter = 0;
+
+                        while (millis() - startTime <= LOGGING_TIME) {
+                            if (millis() - currentTime >= SAMPLING_TIME) {
+                                float speed = readMotorSpeed(float(millis() - currentTime));
+                                noInterrupts();
+                                encoderTicks = 0;
+                                interrupts();
+                                currentTime = millis();
+
+                                for (i = medLen - 1; i > 0; i--) {
+                                    medBuff[i] = medBuff[i - 1];
+                                }
+
+                                for (i = MALen - 1; i > 0; i--) {
+                                    MABuff[i] = MABuff[i - 1];
+                                }
+
+                                for (i = speedLen - 1; i > 0; i--) {
+                                    speedHistory[i] = speedHistory[i - 1];
+                                }
+
+                                medBuff[0] = speed;
+                                MABuff[0] = medianFilter(medBuff, medLen);
+                                speedHistory[0] = MAFilter(MABuff, MALen);
+
+                                //Check convergence
+                                if (counter >= speedLen) {
+                                    float maxSpeed = findMax(speedHistory, speedLen);
+                                    float minSpeed = findMin(speedHistory, speedLen);
+                                    float tolerance = 0.0;
+                                    if (maxSpeed < 20.0) {
+                                        tolerance = maxSpeed * 0.10;
+                                        tolerance = max(tolerance, 0.5f);
+                                    } else if (maxSpeed < 100.0) {
+                                        tolerance = maxSpeed * 0.05;
+                                    } else {
+                                        tolerance = maxSpeed * 0.02;
+                                        tolerance = min(tolerance, 3.0f);
+                                    }
+
+                                    if (maxSpeed > 0.0 && abs(maxSpeed - minSpeed) <= tolerance) {
+                                        speedLogging[PWM / PWM_STEP] = speedHistory[0];
+                                        break;
+                                    }
+
+                                } else if (counter >= 5 &&
+                                           speedHistory[0] == 0.0 && speedHistory[1] == 0.0 &&
+                                           speedHistory[2] == 0.0) {
+                                    speedLogging[PWM / PWM_STEP] = 0.0;
+                                    break;
+                                }
+                                counter++;
+                            }
+                        }
+
+                        if (speedLogging[PWM / PWM_STEP] != 0.0) {
+                            moveMotor(0, 0);
+                            delay(SETTLE_TIME);
+                        }
+
+                        progress = (PWM / 255.0) * 100.0;
+                        Serial.println(progress);
+                    }
+
+                    moveMotor(0, 0);
+                    int len = sizeof(speedLogging) / sizeof(speedLogging[0]);
+                    maxRPM = speedLogging[len - 1];
+                    saveSpeedLogging();
+                    Serial.println(1);
+                    len = sizeof(speedLogging) / sizeof(speedLogging[0]);
+                    for (int i = 0; i < len; i++) {
+                        Serial.printf("%f %f\n", pwmLogging[i], speedLogging[i]);
+                    }
+                    break;
+                }
+                case 2: {
+                    if (!LittleFS.exists(MOTOR_CHAR_FILE)) {
+                        Serial.println(0);
+                    } else {
+                        Serial.println(1);
+                        int lenInit = sizeof(speedLogging) / sizeof(speedLogging[0]);
+                        for (int i = 0; i < lenInit; i++) {
+                            Serial.printf("%f %f\n", pwmLogging[i], speedLogging[i]);
+                        }
+                    }
+                    break;
+                }
+                case 4:
+                    Serial.println(2);
+                    Serial.printf("%d %f\n", pulsesPerRevolution, maxRPM);
+                    return;
+                default:
+                    Serial.println("Invalid command. Use 1 to start the test or 4 to exit.");
+                    break;
+            }
+        }
+    }
+}
+
+void defineLinearPWMSpeedRelation() {
+    if (LittleFS.exists(CALIBRATION_FILE) && LittleFS.exists(MOTOR_CHAR_FILE)) {
+        Serial.println(2);
+        Serial.printf("%d %f\n", pulsesPerRevolution, maxRPM);
+    } else if (LittleFS.exists(CALIBRATION_FILE)) {
+        Serial.println(1);
+        Serial.printf("%d\n", pulsesPerRevolution);
+    } else {
+        Serial.println(0);
+    }
+
+    while (true) {
+        if (Serial.available()) {
+            int command = Serial.parseInt();
+
+            switch (command) {
+                case 2:
+                    if (!LittleFS.exists(MOTOR_LIN_CHAR)) {
+                        Serial.println(0);
+                    } else {
+                        Serial.println(1);
+                        Serial.printf("%d %d %f %f\n", minLinPWM, maxLinPWM, minLinRPM, maxLinRPM);
+                    }
+                    break;
+                case 3: {
+                    minLinPWM = Serial.parseInt();
+                    maxLinPWM = Serial.parseInt();
+                    minLinRPM = Serial.parseFloat();
+                    maxLinRPM = Serial.parseFloat();
+                    saveLinChar();
+                    Serial.println(1);
+                    Serial.printf("%d %d %f %f\n", minLinPWM, maxLinPWM, minLinRPM, maxLinRPM);
+                    break;
+                }
+                case 4:
+                    return;
+                default:
+                    Serial.println("Invalid command. Use 3 to set linear relation or 4 to exit.");
+                    break;
+            }
+        }
+    }
+}
+
+float mapFloat(float value, float fromLow, float fromHigh, float toLow, float toHigh) {
+    if (value > fromHigh) return toHigh;
+    else if (value < fromLow) return toLow;
+    else return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
+}
+
+// ---------------------------------------------------------
+// OPEN LOOP CONTROL (Feedforward PWM Mapping)
+// ---------------------------------------------------------
+void motorOpenLoopControl() {
+    while (true) {
+        if (Serial.available()) {
+            int command = Serial.parseInt();
+
+            switch (command) {
+                case 1: {
+                    float targetSPEED;
+                    float setPoint;
+                    int targetPWM;
+                    int i;
+
+                    unsigned long startTime, currentTime;
+                    unsigned long SETTLE_TIME = 1000;
+                    unsigned long LOGGING_TIME = 4000;
+                    unsigned long SAMPLING_TIME = 10;
+                    int logIndex = 0; // Added missing declaration
+
+                    float medBuff[3] = {0};
+                    float MABuff[5] = {0};
+                    int medLen = sizeof(medBuff) / sizeof(medBuff[0]);
+                    int MALen = sizeof(MABuff) / sizeof(MABuff[0]);
+
+                    if (Serial.available()) {
+                        targetSPEED = Serial.parseFloat();
+                        setPoint = 0;
+                        targetPWM = 0;
+                        moveMotor(0, 0);
+                        delay(SETTLE_TIME);
+
+                        noInterrupts();
+                        encoderTicks = 0;
+                        interrupts();
+
+                        startTime = millis();
+                        currentTime = millis();
+
+                        Serial.println("time_ms,rpm,targetrpm,pwm,error");
+
+                        while (millis() - startTime <= LOGGING_TIME) {
+                            if (millis() - startTime > 1000) {
+                                setPoint = targetSPEED;
+                                if (abs(maxRPM - setPoint) < 0.1) {
+                                    targetPWM = 255;
+                                } else {
+                                    targetPWM = (int)mapFloat(setPoint, minLinRPM, maxLinRPM, minLinPWM, maxLinPWM);
+                                }
+                                moveMotor(targetPWM, 1);
+                            }
+
+                            if (millis() - currentTime >= SAMPLING_TIME) {
+                                float speed = readMotorSpeed(float(millis() - currentTime));
+                                noInterrupts();
+                                encoderTicks = 0;
+                                interrupts();
+                                currentTime = millis();
+
+                                for (i = medLen - 1; i > 0; i--) {
+                                    medBuff[i] = medBuff[i - 1];
+                                }
+                                for (i = MALen - 1; i > 0; i--) {
+                                    MABuff[i] = MABuff[i - 1];
+                                }
+
+                                medBuff[0] = speed;
+                                MABuff[0] = medianFilter(medBuff, medLen);
+                                float olSpeed = MAFilter(MABuff, MALen);
+                                float error = setPoint - olSpeed;
+
+                                if (logIndex < MAX_LOG_ENTRIES) {
+                                    logBuffer[logIndex].time_ms = millis() - startTime;
+                                    logBuffer[logIndex].rpm = olSpeed;
+                                    logBuffer[logIndex].targetrpm = setPoint;
+                                    logBuffer[logIndex].pwm = targetPWM;
+                                    logBuffer[logIndex].control = 0; // Control N/A for open loop
+                                    logBuffer[logIndex].error = error;
+                                    logIndex++;
+                                }
+
+                                if (Serial.availableForWrite() >= 60 && logIndex > 0) {
+                                    Serial.printf("%lu,%.2f,%.2f,%d,%.2f\n",
+                                                  logBuffer[0].time_ms,
+                                                  logBuffer[0].rpm,
+                                                  logBuffer[0].targetrpm,
+                                                  logBuffer[0].pwm,
+                                                  logBuffer[0].error);
+
+                                    for (i = 0; i < logIndex - 1; i++) {
+                                        logBuffer[i] = logBuffer[i + 1];
+                                    }
+                                    logIndex--;
+                                }
+                            }
+                        }
+
+                        //Send remaining log data
+                        if (logIndex > 0) {
+                            for (i = 0; i < logIndex; i++) {
+                                Serial.printf("%lu,%.2f,%.2f,%d,%.2f\n",
+                                              logBuffer[i].time_ms,
+                                              logBuffer[i].rpm,
+                                              logBuffer[i].targetrpm,
+                                              logBuffer[i].pwm,
+                                              logBuffer[i].error);
+                            }
+                        }
+
+                        moveMotor(0, 0);
+                        delay(SETTLE_TIME);
+                        Serial.println("DONE");
+                    }
+                    break;
+                }
+                case 4:
+                    return;
+
+                default:
+                    Serial.println("Invalid command. Use 1 to set speed param, or 4 to exit.");
+                    break;
+            }
+        }
+    }
+}
+
+
+// ---------------------------------------------------------
+// CLOSED LOOP CONTROL (PID Controller)
+// ---------------------------------------------------------
+void motorClosedLoopControl() {
+    while (true) {
+        if (Serial.available()) {
+            int command = Serial.parseInt();
+
+            switch (command) {
+                case 1: {
+                    float targetSPEED;
+                    float k1, k2, k3;
+                    float setPoint;
+                    int targetPWM;
+                    int i;
+
+                    unsigned long startTime, currentTime;
+                    unsigned long SETTLE_TIME = 1000;
+                    unsigned long LOGGING_TIME = 4000;
+                    unsigned long SAMPLING_TIME = 10;
+                    int logIndex = 0;
+
+                    // PID Arrays
+                    int eLen = 3;
+                    float e[3] = {0};
+                    int cLen = 2;
+                    float c[2] = {0};
+
+                    float medBuff[3] = {0};
+                    float MABuff[5] = {0};
+                    int medLen = sizeof(medBuff) / sizeof(medBuff[0]);
+                    int MALen = sizeof(MABuff) / sizeof(MABuff[0]);
+
+                    if (Serial.available()) {
+                        targetSPEED = Serial.parseFloat();
+                        k1 = Serial.parseFloat(); // Parse K1/Kp
+                        k2 = Serial.parseFloat(); // Parse K2/Ki
+                        k3 = Serial.parseFloat(); // Parse K3/Kd
+
+                        setPoint = 0;
+                        targetPWM = 0;
+                        moveMotor(0, 0);
+                        delay(SETTLE_TIME);
+
+                        noInterrupts();
+                        encoderTicks = 0;
+                        interrupts();
+
+                        startTime = millis();
+                        currentTime = millis();
+
+                        Serial.println("time_ms,rpm,targetrpm,pwm,control,error");
+
+                        while (millis() - startTime <= LOGGING_TIME) {
+                            if (millis() - startTime > 1000) {
+                                setPoint = targetSPEED;
+                            }
+
+                            if (millis() - currentTime >= SAMPLING_TIME) {
+                                float speed = readMotorSpeed(float(millis() - currentTime));
+                                noInterrupts();
+                                encoderTicks = 0;
+                                interrupts();
+                                currentTime = millis();
+
+                                for (i = medLen - 1; i > 0; i--) {
+                                    medBuff[i] = medBuff[i - 1];
+                                }
+
+                                for (i = MALen - 1; i > 0; i--) {
+                                    MABuff[i] = MABuff[i - 1];
+                                }
+
+                                medBuff[0] = speed;
+                                MABuff[0] = medianFilter(medBuff, medLen);
+                                float olSpeed = MAFilter(MABuff, MALen);
+
+                                // Control Loop Update
+                                for (i = 0; i < eLen - 1; i++) {
+                                    e[i] = e[i + 1];
+                                }
+                                e[eLen - 1] = setPoint - olSpeed;
+
+                                for (i = 0; i < cLen - 1; i++) {
+                                    c[i] = c[i + 1];
+                                }
+
+                                if (k2 == 0 && k3 == 0) {
+                                    // P only configuration
+                                    c[cLen - 1] = k1 * e[eLen - 1];
+                                } else {
+                                    // PID configuration
+                                    c[cLen - 1] = c[cLen - 2] + k1 * e[eLen - 1] + k2 * e[eLen - 2] + k3 * e[eLen - 3];
+                                }
+
+                                targetPWM = (int)constrain(c[cLen - 1], 0, 255);
+                                c[cLen - 1] = targetPWM; // Anti-windup clamping reference
+                                moveMotor(targetPWM, 1);
+
+                                if (logIndex < MAX_LOG_ENTRIES) {
+                                    logBuffer[logIndex].time_ms = millis() - startTime;
+                                    logBuffer[logIndex].rpm = olSpeed;
+                                    logBuffer[logIndex].targetrpm = setPoint;
+                                    logBuffer[logIndex].pwm = targetPWM;
+                                    logBuffer[logIndex].control = c[cLen - 1];
+                                    logBuffer[logIndex].error = e[eLen - 1];
+                                    logIndex++;
+                                }
+
+                                if (Serial.availableForWrite() >= 60 && logIndex > 0) {
+                                    Serial.printf("%lu,%.2f,%.2f,%d,%.2f,%.2f\n",
+                                                  logBuffer[0].time_ms,
+                                                  logBuffer[0].rpm,
+                                                  logBuffer[0].targetrpm,
+                                                  logBuffer[0].pwm,
+                                                  logBuffer[0].control,
+                                                  logBuffer[0].error);
+
+                                    for (i = 0; i < logIndex - 1; i++) {
+                                        logBuffer[i] = logBuffer[i + 1];
+                                    }
+                                    logIndex--;
+                                }
+                            }
+                        }
+
+                        //Send remaining log data
+                        if (logIndex > 0) {
+                            for (i = 0; i < logIndex; i++) {
+                                Serial.printf("%lu,%.2f,%.2f,%d,%.2f,%.2f\n",
+                                              logBuffer[i].time_ms,
+                                              logBuffer[i].rpm,
+                                              logBuffer[i].targetrpm,
+                                              logBuffer[i].pwm,
+                                              logBuffer[i].control,
+                                              logBuffer[i].error);
+                            }
+                        }
+
+                        moveMotor(0, 0);
+                        delay(SETTLE_TIME);
+                        Serial.println("DONE");
+                    }
+                    break;
+                }
+                case 4:
+                    return;
+
+                default:
+                    Serial.println("Invalid command. Use 1 to set PID params, or 4 to exit.");
+                    break;
+            }
+        }
+    }
 }
 
 void loop() {
-    while (Serial.available()) {
-        String cmd = Serial.readStringUntil('\n');
-        parseCommand(cmd);
-    }
+    if (Serial.available()) {
+        char command = Serial.read();
 
-    if (runState == STATE_SWEEP) {
-        unsigned long now = millis();
-        unsigned long settleElapsed = now - sweepStepStart;
-
-        if (settleElapsed >= (unsigned long)SWEEP_SETTLE_MS) {
-            noInterrupts();
-            long ticks = encoderTicks;
-            encoderTicks = 0;
-            interrupts();
-
-            float rpm = calculateRPM(ticks, (float)settleElapsed);
-
-            if (charCount < MAX_CHAR_POINTS) {
-                charPWMValues[charCount] = sweepCurrentPWM;
-                charSpeedValues[charCount] = rpm;
-                charCount++;
-            }
-
-            sweepCurrentPWM += SWEEP_STEP;
-
-            if (sweepCurrentPWM > 255) {
-                moveMotor(0, 0);
-                runState = STATE_IDLE;
-
-                float maxSpeed = 0;
-                for (int i = 0; i < charCount; i++) {
-                    if (charSpeedValues[i] > maxSpeed) maxSpeed = charSpeedValues[i];
-                }
-                if (maxSpeed > maxRPM) {
-                    maxRPM = maxSpeed;
-                }
-
-                Serial.println("100.00");
-                return;
-            }
-
-            moveMotor(sweepCurrentPWM, direction);
-            sweepStepStart = millis();
-
-            noInterrupts();
-            encoderTicks = 0;
-            interrupts();
-
-            float progress = (float)sweepCurrentPWM / 255.0 * 100.0;
-            Serial.printf("%.2f\n", progress);
-        }
-        return;
-    }
-
-    if (runState == STATE_RUNNING) {
-        unsigned long now = millis();
-        unsigned long elapsed = now - startTime;
-
-        if (elapsed >= (unsigned long)durationMs) {
-            moveMotor(0, 0);
-            runState = STATE_IDLE;
-            Serial.println("DONE");
-            return;
+        // Clear buffer
+        while (Serial.available()) {
+            Serial.read();
         }
 
-        if ((long)(now - lastSampleTime) >= samplingMs) {
-            noInterrupts();
-            long ticks = encoderTicks;
-            encoderTicks = 0;
-            interrupts();
-
-            float dt = samplingMs / 1000.0;
-            float rpm = calculateRPM(ticks, samplingMs);
-            float error = setpoint - rpm;
-            int pwm;
-
-            if (opMode == MODE_OPEN_LOOP) {
-                pwm = openLoopPWM;
-            } else {
-                float pidOutput = computePID(error, dt);
-                pwm = (int)constrain(pidOutput, 0, 255);
-                moveMotor(pwm, direction);
-                prevError = error;
-            }
-
-            Serial.printf("DATA,%lu,%.2f,%.2f,%d\n", elapsed, rpm, error, pwm);
-
-            lastSampleTime = now;
+        switch (command) {
+            case 'e':
+                calibrateEncoder();
+                break;
+            case 's':  // Speed characteristics
+                readMotorCharacteristic();
+                break;
+            case 'o':  // Open loop
+                motorOpenLoopControl();
+                break;
+            case 'c':  // PID control (educational approach)
+                motorClosedLoopControl();
+                break;
+            case 'l':  // Linear relation
+                defineLinearPWMSpeedRelation();
+                break;
+            case 'i':
+                if (LittleFS.exists(CALIBRATION_FILE) && LittleFS.exists(MOTOR_CHAR_FILE)) {
+                    Serial.println(2);
+                    Serial.printf("%d %f\n", pulsesPerRevolution, maxRPM);
+                } else if (LittleFS.exists(CALIBRATION_FILE)) {
+                    Serial.println(1);
+                    Serial.printf("%d\n", pulsesPerRevolution);
+                } else {
+                    Serial.println(0);
+                }
+                break;
+            case 'w':
+                listLittleFS();
+                break;
+            case 'd':
+                eraseLittleFS();
+                break;
+            default:
+                Serial.println("Invalid command. Available commands:");
+                Serial.println("  e = Calibrate encoder");
+                Serial.println("  s = Speed characteristics test");
+                Serial.println("  o = Open loop control");
+                Serial.println("  c = PID control (speed-based)");
+                Serial.println("  l = Define linear speed relation");
+                Serial.println("  i = Info about calibration and characteristics");
+                Serial.println("  w = List LittleFS contents");
+                Serial.println("  d = Erase LittleFS contents");
+                break;
         }
     }
 }
