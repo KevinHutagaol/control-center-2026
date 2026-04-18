@@ -322,7 +322,7 @@ font-size: 14pt;
 color: rgb(255, 255, 255);</string>
                   </property>
                   <property name="text">
-                   <string>K3                :</string>
+                   <string>Kd                :</string>
                   </property>
                  </widget>
                 </item>
@@ -340,7 +340,7 @@ font-size: 14pt;
 color: rgb(255, 255, 255);</string>
                   </property>
                   <property name="text">
-                   <string>K1                :</string>
+                   <string>Kp                :</string>
                   </property>
                  </widget>
                 </item>
@@ -358,7 +358,7 @@ font-size: 14pt;
 color: rgb(255, 255, 255);</string>
                   </property>
                   <property name="text">
-                   <string>K2                :</string>
+                   <string>Ki                :</string>
                   </property>
                  </widget>
                 </item>
