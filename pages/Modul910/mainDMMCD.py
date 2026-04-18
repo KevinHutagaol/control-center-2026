@@ -10,6 +10,8 @@ import queue
 import pandas as pd
 
 import pages.Modul910.asset.resources # noqa
+from func.sendWithEmail import sendWithEmail
+from func.UserContext import user_context
 
 from pages.Modul910.ui_910.ui_main import Ui_MainWindow as Ui_main
 from pages.Modul910.ui_910.ui_sa import Ui_MainWindow as Ui_sa
@@ -2580,153 +2582,89 @@ class sa(QtWidgets.QMainWindow, Ui_sa):
             submit_K1 = float(self.K1.text())
             submit_K2 = float(self.K2.text())
             submit_K3 = float(self.K3.text())
-
-            print(f"Submitted Parameters: FOPDT K={submit_K_fopdt}, Tau={submit_tau_fopdt}, L={submit_L_fopdt}; Control K1={submit_K1}, K2={submit_K2}, K3={submit_K3}")
         except ValueError:
             QtWidgets.QMessageBox.warning(self, "Invalid Input", "Please enter valid numbers for all fields.")
             return
         except Exception as e:
             QtWidgets.QMessageBox.warning(self, "Error", f"An error occurred: {e}")
             return
-    
-        #Calculate score
-        if (hasattr(self.main_window, 'true_fopdt_K') and hasattr(self.main_window, 'true_fopdt_tau') and 
-            hasattr(self.main_window, 'true_fopdt_L')):
 
-            # Calculate K error
-            if self.main_window.true_fopdt_K != 0:
-                K_fopdt_error = abs(submit_K_fopdt - self.main_window.true_fopdt_K) / abs(self.main_window.true_fopdt_K)
-            else:
-                # If true value is 0, use absolute error scaled to percentage (0.1 difference = 10% error)
-                K_fopdt_error = abs(submit_K_fopdt - self.main_window.true_fopdt_K)
-            
-            # Calculate Tau error
-            if self.main_window.true_fopdt_tau != 0:
-                tau_fopdt_error = abs(submit_tau_fopdt - self.main_window.true_fopdt_tau) / abs(self.main_window.true_fopdt_tau)
-            else:
-                # If true value is 0, use absolute error scaled to percentage
-                tau_fopdt_error = abs(submit_tau_fopdt - self.main_window.true_fopdt_tau)
-            
-            # Calculate L error
-            if self.main_window.true_fopdt_L != 0:
-                L_fopdt_error = abs(submit_L_fopdt - self.main_window.true_fopdt_L) / abs(self.main_window.true_fopdt_L)
-            else:
-                # If true value is 0, use absolute error scaled to percentage
-                L_fopdt_error = abs(submit_L_fopdt - self.main_window.true_fopdt_L)
+        controller_type = "PID" if submit_K3 != 0 else ("PI" if submit_K2 != 0 else "P")
 
-            #print(f"FOPDT Errors: K Error={K_fopdt_error*100:.2f}%, Tau Error={tau_fopdt_error*100:.2f}%, L Error={L_fopdt_error*100:.2f}%")
+        report_txt = self.generate_submission_report(
+            submit_K_fopdt,
+            submit_tau_fopdt,
+            submit_L_fopdt,
+            submit_K1,
+            submit_K2,
+            submit_K3,
+            controller_type,
+        )
+        formatted_report = report_txt.replace("\n", "<br>")
+        display_name = user_context.display_name if user_context.display_name else "Praktikan"
 
-            model_score = (self.error_to_score(K_fopdt_error) + self.error_to_score(tau_fopdt_error) + self.error_to_score(L_fopdt_error)) / 3.0
+        html_content = f"""
+        <html>
+        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;">
+            <div style="background-color: #081d38; color: white; padding: 20px; text-align: center;">
+                <h2>Submission Report</h2>
+                <p>Module 9&10: DC Motor Modeling and Control</p>
+            </div>
+            <div style="padding: 20px;">
+                <p>Halo {display_name},</p>
+                <p>Jawaban SA kamu sudah diterima dari aplikasi dan dikirim otomatis ke email ini.</p>
+                <hr style="border: 0; border-top: 1px solid #eee;">
+                <h3>Submission Summary</h3>
+                <div style="background-color: #f7f7f7; padding: 15px; border-left: 5px solid #081d38; font-family: monospace; font-size: 12px;">
+                    {formatted_report}
+                </div>
+                <br>
+                <p><em>Control Laboratory 2026</em></p>
+                <p>Departemen Teknik Elektro Universitas Indonesia</p>
+            </div>
+        </body>
+        </html>
+        """
 
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        try:
+            success, message = sendWithEmail(
+                subject="Lab Report: Modul 9&10 Submission",
+                html_body=html_content,
+                text_body=report_txt,
+            )
+        except Exception as e:
+            success, message = False, str(e)
+        finally:
+            QtWidgets.QApplication.restoreOverrideCursor()
+
+        if success:
+            QtWidgets.QMessageBox.information(self, "Email Sent", f"Berhasil dikirim!\n{message}")
         else:
-            QtWidgets.QMessageBox.warning(self, "Error", "True FOPDT parameters not available. Run analysis first.")
-            return
-        
-        if (hasattr(self.main_window, 'k1_PID') and hasattr(self.main_window, 'k2_PID') and 
-            hasattr(self.main_window, 'k3_PID') and hasattr(self.main_window, 'k1_PI') and 
-            hasattr(self.main_window, 'k2_PI') and hasattr(self.main_window, 'k3_PI') and 
-            hasattr(self.main_window, 'k1_P')):
+            QtWidgets.QMessageBox.critical(self, "Sending Failed", f"Gagal mengirim email.\nError: {message}")
 
-            if submit_K3 == 0:
-                #PI or P controller
-                if submit_K2 == 0:
-                    #P controller
-                    true_k1 = getattr(self.main_window, 'k1_P', None)
-                    true_k2 = 0
-                    true_k3 = 0
-                    k1_error = abs(submit_K1 - self.main_window.k1_P) / abs(self.main_window.k1_P) if self.main_window.k1_P != 0 else float('inf')
-                    k2_error = 0
-                    k3_error = 0
-                    control_score = self.error_to_score(k1_error)
-
-                    #print(f"P Controller K1 Error: {k1_error*100:.2f}%")
-                else:
-                    #PI controller
-                    true_k1 = getattr(self.main_window, 'k1_PI', None)
-                    true_k2 = getattr(self.main_window, 'k2_PI', None)
-                    true_k3 = 0
-                    k1_error = abs(submit_K1 - self.main_window.k1_PI) / abs(self.main_window.k1_PI) if self.main_window.k1_PI != 0 else float('inf')
-                    k2_error = abs(submit_K2 - self.main_window.k2_PI) / abs(self.main_window.k2_PI) if self.main_window.k2_PI != 0 else float('inf')
-                    k3_error = 0
-                    control_score = (self.error_to_score(k1_error) + self.error_to_score(k2_error)) / 2.0
-
-                    #print(f"PI Controller K1 Error: {k1_error*100:.2f}%, K2 Error: {k2_error*100:.2f}%")
-            else:
-                #PID controller
-                true_k1 = getattr(self.main_window, 'k1_PID', None)
-                true_k2 = getattr(self.main_window, 'k2_PID', None)
-                true_k3 = getattr(self.main_window, 'k3_PID', None)
-                k1_error = abs(submit_K1 - self.main_window.k1_PID) / abs(self.main_window.k1_PID) if self.main_window.k1_PID != 0 else float('inf')
-                k2_error = abs(submit_K2 - self.main_window.k2_PID) / abs(self.main_window.k2_PID) if self.main_window.k2_PID != 0 else float('inf')
-                k3_error = abs(submit_K3 - self.main_window.k3_PID) / abs(self.main_window.k3_PID) if self.main_window.k3_PID != 0 else float('inf')
-                control_score = (self.error_to_score(k1_error) + self.error_to_score(k2_error) + self.error_to_score(k3_error)) / 3.0
-
-                #print(f"PID Controller K1 Error: {k1_error*100:.2f}%, K2 Error: {k2_error*100:.2f}%, K3 Error: {k3_error*100:.2f}%")
-
-            final_score = (model_score + control_score) / 2.0 * 10.0  # Scale to 0-100
-            #print(f"Model Score: {model_score*10:.2f}/100")
-            #print(f"Control Score: {control_score*10:.2f}/100")
-            #print(f"Final Score: {final_score:.2f}/100")
-
-            # Upload submission to Firebase
-            if self.main_window and self.main_window.firebase_manager:
-                submission_data = {
-                    'K_fopdt': submit_K_fopdt,
-                    'tau_fopdt': submit_tau_fopdt,
-                    'L_fopdt': submit_L_fopdt,
-                    'K1': submit_K1,
-                    'K2': submit_K2,
-                    'K3': submit_K3,
-                    'true_K_fopdt': self.main_window.true_fopdt_K,
-                    'true_tau_fopdt': self.main_window.true_fopdt_tau,
-                    'true_L_fopdt': self.main_window.true_fopdt_L,
-                    'true_k1': true_k1,
-                    'true_k2': true_k2,
-                    'true_k3': true_k3,
-                    'model_score': model_score,
-                    'control_score': control_score,
-                    'final_score': final_score,
-                    'K_fopdt_error_percent': K_fopdt_error * 100,
-                    'tau_fopdt_error_percent': tau_fopdt_error * 100,
-                    'L_fopdt_error_percent': L_fopdt_error * 100,
-                    'k1_error_percent': k1_error * 100,
-                    'k2_error_percent': k2_error * 100,
-                    'k3_error_percent': k3_error * 100,
-                    'controller_type': 'PID' if submit_K3 != 0 else ('PI' if submit_K2 != 0 else 'P')
-                }
-                
-                for student_info in self.main_window.current_students:
-                    student_npm = student_info['NPM']
-                    student_name = student_info['Name']
-                    self.main_window.firebase_manager.upload_student_submission(student_npm, student_name, submission_data)
-
-            # Upload score to Firebase
-            #if self.main_window and self.main_window.firebase_manager:
-            #    for student_info in self.main_window.current_students:
-            #        student_npm = student_info['NPM']
-            #        self.main_window.firebase_manager.upload_student_score(student_npm, final_score)
-                
-        else:
-            QtWidgets.QMessageBox.warning(self, "Error", "True control parameters not available. Run analysis first.")
-            return
-
-        
-    
-    def error_to_score(self, error):
-        if error == float('inf'):
-            return 0
-        elif error < 0.01: # 1% error
-            return 10
-        elif error < 0.05: # 5% error
-            return 8
-        elif error < 0.1: # 10% error
-            return 6
-        elif error < 0.2: # 20% error
-            return 4
-        elif error < 0.5: # 50% error
-            return 2
-        else:
-            return 0
+    def generate_submission_report(self, submit_K_fopdt, submit_tau_fopdt, submit_L_fopdt,
+                                   submit_K1, submit_K2, submit_K3, controller_type):
+        lines = []
+        lines.append("=" * 45)
+        lines.append("  MODUL 9&10 SUBMISSION REPORT")
+        lines.append("=" * 45)
+        lines.append(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        if self.main_window:
+            lines.append(f"Group: {self.main_window.groupBox.title()}")
+        lines.append("")
+        lines.append("FOPDT Parameters")
+        lines.append(f"K      : {submit_K_fopdt}")
+        lines.append(f"tau    : {submit_tau_fopdt}")
+        lines.append(f"L      : {submit_L_fopdt}")
+        lines.append("")
+        lines.append("Controller Parameters")
+        lines.append(f"Type   : {controller_type}")
+        lines.append(f"K1     : {submit_K1}")
+        lines.append(f"K2     : {submit_K2}")
+        lines.append(f"K3     : {submit_K3}")
+        lines.append("=" * 45)
+        return "\n".join(lines)
 
 def exec_DMMCD(nama, npm, kelompok):
     app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
