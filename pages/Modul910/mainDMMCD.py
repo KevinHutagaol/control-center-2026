@@ -1,5 +1,6 @@
 import sys
 from datetime import datetime
+import io
 import time
 from PyQt5 import QtWidgets, QtChart, QtCore, QtGui
 import numpy as np
@@ -126,7 +127,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
 
         self.serial_conn = None
         self.child_windows = {}
-        group = kelompok
+        self.group_name = str(kelompok).strip() if kelompok is not None else ""
 
 
         self.olc.clicked.connect(self.olcClicked)
@@ -2600,6 +2601,7 @@ class sa(QtWidgets.QMainWindow, Ui_sa):
             submit_K3,
             controller_type,
         )
+        attachments = self.build_submission_attachments(report_txt)
         formatted_report = report_txt.replace("\n", "<br>")
         display_name = user_context.display_name if user_context.display_name else "Praktikan"
 
@@ -2632,6 +2634,7 @@ class sa(QtWidgets.QMainWindow, Ui_sa):
                 subject="Lab Report: Modul 9&10 Submission",
                 html_body=html_content,
                 text_body=report_txt,
+                attachments=attachments,
             )
         except Exception as e:
             success, message = False, str(e)
@@ -2639,9 +2642,119 @@ class sa(QtWidgets.QMainWindow, Ui_sa):
             QtWidgets.QApplication.restoreOverrideCursor()
 
         if success:
-            QtWidgets.QMessageBox.information(self, "Email Sent", f"Berhasil dikirim!\n{message}")
+            attachment_names = ", ".join([att["filename"] for att in attachments]) if attachments else "tanpa lampiran"
+            QtWidgets.QMessageBox.information(
+                self,
+                "Email Sent",
+                f"Berhasil dikirim!\n{message}\n\nLampiran: {attachment_names}",
+            )
         else:
             QtWidgets.QMessageBox.critical(self, "Sending Failed", f"Gagal mengirim email.\nError: {message}")
+
+    def build_submission_attachments(self, report_txt):
+        attachments = [
+            {
+                "filename": f"modul910_submission_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+                "content": report_txt.encode("utf-8"),
+            }
+        ]
+
+        graph_builders = [
+            self._build_olc_graph_attachment,
+            self._build_clc_graph_attachment,
+        ]
+
+        for builder in graph_builders:
+            try:
+                graph_attachment = builder()
+                if graph_attachment:
+                    attachments.append(graph_attachment)
+            except Exception as e:
+                print(f"Failed to build graph attachment: {e}")
+
+        return attachments
+
+    def _resolve_group_name(self):
+        if not self.main_window:
+            return ""
+
+        for attr_name in ("group_name", "group", "kelompok"):
+            value = getattr(self.main_window, attr_name, None)
+            if value is not None and str(value).strip():
+                return str(value).strip()
+
+        return ""
+
+    def _build_olc_graph_attachment(self):
+        if not self.main_window or not hasattr(self.main_window, "child_windows"):
+            return None
+
+        olc_window = self.main_window.child_windows.get("olc")
+        if not olc_window:
+            return None
+
+        if not hasattr(olc_window, "time_data") or not hasattr(olc_window, "rpm_data") or not olc_window.time_data:
+            return None
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.plot(olc_window.time_data, olc_window.rpm_data, "-", color="blue", linewidth=2, label="Actual Speed")
+
+        if hasattr(olc_window, "target_data") and olc_window.target_data:
+            ax.plot(olc_window.time_data, olc_window.target_data, "r--", linewidth=2, label="Target Speed")
+
+        if hasattr(olc_window, "fopdt_output") and olc_window.fopdt_output is not None and len(olc_window.fopdt_output) > 0:
+            ax.plot(olc_window.time_data, olc_window.fopdt_output, "g-.", linewidth=2, label="FOPDT Model")
+
+        ax.grid(True, alpha=0.3)
+        ax.set_title("Open Loop Response")
+        ax.set_xlabel("Time (ms)")
+        ax.set_ylabel("Speed (RPM)")
+        ax.legend()
+
+        buffer = io.BytesIO()
+        fig.tight_layout()
+        fig.savefig(buffer, format="png", dpi=160)
+        plt.close(fig)
+        buffer.seek(0)
+
+        return {
+            "filename": f"olc_graph_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png",
+            "content": buffer.getvalue(),
+        }
+
+    def _build_clc_graph_attachment(self):
+        if not self.main_window or not hasattr(self.main_window, "child_windows"):
+            return None
+
+        clc_window = self.main_window.child_windows.get("clc")
+        if not clc_window:
+            return None
+
+        if not hasattr(clc_window, "time_data") or not hasattr(clc_window, "rpm_data") or not clc_window.time_data:
+            return None
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.plot(clc_window.time_data, clc_window.rpm_data, "-", color="blue", linewidth=2, label="Actual Speed")
+
+        if hasattr(clc_window, "target_data") and clc_window.target_data:
+            ax.plot(clc_window.time_data, clc_window.target_data, "r--", linewidth=2, label="Target Speed")
+
+        ax.grid(True, alpha=0.3)
+        ax.set_title("Closed Loop Response")
+        ax.set_xlabel("Time (ms)")
+        ax.set_ylabel("Speed (RPM)")
+        ax.legend()
+
+        buffer = io.BytesIO()
+        fig.tight_layout()
+        fig.savefig(buffer, format="png", dpi=160)
+        plt.close(fig)
+        buffer.seek(0)
+
+        return {
+            "filename": f"clc_graph_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png",
+            "content": buffer.getvalue(),
+        }
 
     def generate_submission_report(self, submit_K_fopdt, submit_tau_fopdt, submit_L_fopdt,
                                    submit_K1, submit_K2, submit_K3, controller_type):
@@ -2650,8 +2763,9 @@ class sa(QtWidgets.QMainWindow, Ui_sa):
         lines.append("  MODUL 9&10 SUBMISSION REPORT")
         lines.append("=" * 45)
         lines.append(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        if self.main_window:
-            lines.append(f"Group: {self.main_window.groupBox.title()}")
+        group_name = self._resolve_group_name()
+        if group_name:
+            lines.append(f"Group: {group_name}")
         lines.append("")
         lines.append("FOPDT Parameters")
         lines.append(f"K      : {submit_K_fopdt}")
