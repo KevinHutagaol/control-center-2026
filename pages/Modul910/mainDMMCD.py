@@ -140,6 +140,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
             "olc": None,
             "clc": None,
         }
+        self.saved_analysis_values = {
+            "olc": {},
+            "clc": {},
+            "derived": {},
+        }
 
 
         self.olc.clicked.connect(self.olcClicked)
@@ -395,6 +400,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
                 "fopdt_output": list(olc_win.fopdt_output) if hasattr(olc_win, "fopdt_output") and olc_win.fopdt_output is not None else None,
             }
 
+        # Capture analyze labels from OLC window.
+        for key, widget_name in {
+            "Tr": "Tr",
+            "t28": "t28",
+            "t63": "t63",
+            "Ts": "Ts",
+            "fv": "fv",
+            "tau": "tau",
+        }.items():
+            if hasattr(olc_win, widget_name):
+                self.saved_analysis_values["olc"][key] = getattr(olc_win, widget_name).text().strip()
+
+        # Capture derived FOPDT values from main window state (set during OLC analyze).
+        self.saved_analysis_values["derived"]["true_fopdt_K"] = getattr(self, "true_fopdt_K", None)
+        self.saved_analysis_values["derived"]["true_fopdt_tau"] = getattr(self, "true_fopdt_tau", None)
+        self.saved_analysis_values["derived"]["true_fopdt_L"] = getattr(self, "true_fopdt_L", None)
+
     def capture_clc_submission_state(self, clc_window=None):
         clc_win = clc_window or self.child_windows.get("clc")
         if not clc_win:
@@ -420,6 +442,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
                 "rpm_data": list(clc_win.rpm_data),
                 "target_data": list(clc_win.target_data),
             }
+
+        # Capture analyze labels from CLC window.
+        for key, widget_name in {
+            "Tr": "Tr",
+            "Tp": "Tp",
+            "Ts": "Ts",
+            "OS": "os",
+        }.items():
+            if hasattr(clc_win, widget_name):
+                self.saved_analysis_values["clc"][key] = getattr(clc_win, widget_name).text().strip()
+
+        # Capture derived tuned controller candidates from main window state (set during CLC analyze).
+        for name in (
+            "k1_PID", "k2_PID", "k3_PID",
+            "k1_PI", "k2_PI", "k3_PI",
+            "k1_P", "k2_P", "k3_P",
+        ):
+            self.saved_analysis_values["derived"][name] = getattr(self, name, None)
 
     def _render_olc_plot_png(self):
         data = self.saved_plot_data.get("olc")
@@ -513,6 +553,47 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
         lines.append(f"K1     : {submit_K1}")
         lines.append(f"K2     : {submit_K2}")
         lines.append(f"K3     : {submit_K3}")
+
+        # Append analyzed OLC/CLC values if available.
+        olc_vals = self.saved_analysis_values.get("olc", {})
+        clc_vals = self.saved_analysis_values.get("clc", {})
+        derived = self.saved_analysis_values.get("derived", {})
+
+        if olc_vals or clc_vals or derived:
+            lines.append("")
+            lines.append("Analyze Results")
+            if olc_vals:
+                lines.append("- OLC")
+                for key in ("Tr", "t28", "t63", "Ts", "fv", "tau"):
+                    if olc_vals.get(key):
+                        lines.append(f"  {key:<6}: {olc_vals[key]}")
+
+            if clc_vals:
+                lines.append("- CLC")
+                for key in ("Tr", "Tp", "Ts", "OS"):
+                    if clc_vals.get(key):
+                        lines.append(f"  {key:<6}: {clc_vals[key]}")
+
+            if any(derived.get(k) is not None for k in ("true_fopdt_K", "true_fopdt_tau", "true_fopdt_L")):
+                lines.append("- Derived FOPDT")
+                if derived.get("true_fopdt_K") is not None:
+                    lines.append(f"  K      : {derived['true_fopdt_K']}")
+                if derived.get("true_fopdt_tau") is not None:
+                    lines.append(f"  tau    : {derived['true_fopdt_tau']}")
+                if derived.get("true_fopdt_L") is not None:
+                    lines.append(f"  L      : {derived['true_fopdt_L']}")
+
+            for mode in ("PID", "PI", "P"):
+                k1 = derived.get(f"k1_{mode}")
+                k2 = derived.get(f"k2_{mode}")
+                k3 = derived.get(f"k3_{mode}")
+                if k1 is None and k2 is None and k3 is None:
+                    continue
+                lines.append(f"- Derived {mode}")
+                lines.append(f"  K1     : {k1}")
+                lines.append(f"  K2     : {k2}")
+                lines.append(f"  K3     : {k3}")
+
         lines.append("=" * 45)
         return "\n".join(lines)
 
