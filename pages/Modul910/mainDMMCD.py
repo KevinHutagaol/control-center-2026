@@ -11,7 +11,7 @@ import queue
 import pandas as pd
 
 import pages.Modul910.asset.resources # noqa
-from func.sendWithEmail import sendWithEmail
+from func.sendWithEmail import sendWithEmail, create_zip_in_memory
 from func.UserContext import user_context
 
 from pages.Modul910.ui_910.ui_main import Ui_MainWindow as Ui_main
@@ -128,6 +128,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
         self.serial_conn = None
         self.child_windows = {}
         self.group_name = str(kelompok).strip() if kelompok is not None else ""
+        self.saved_submission_values = {
+            "K_fopdt": None,
+            "tau_fopdt": None,
+            "L_fopdt": None,
+            "K1": None,
+            "K2": None,
+            "K3": None,
+        }
+        self.saved_plot_data = {
+            "olc": None,
+            "clc": None,
+        }
 
 
         self.olc.clicked.connect(self.olcClicked)
@@ -268,9 +280,241 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
                 self.child_windows.pop(name, None)
 
     def saClicked(self):
-        # Handle the SA button click event
-        self.child_windows["sa"] = sa(self.serial_conn, self)  # Pass self as main_window
-        self.child_windows["sa"].show()
+        # Submit directly without opening SA subwindow.
+        self.capture_olc_submission_state()
+        self.capture_clc_submission_state()
+
+        required_keys = ["K_fopdt", "tau_fopdt", "L_fopdt", "K1", "K2", "K3"]
+        missing_keys = [k for k in required_keys if self.saved_submission_values.get(k) is None]
+        if missing_keys:
+            QtWidgets.QMessageBox.warning(
+                self,
+                "Data Belum Lengkap",
+                "Parameter belum lengkap untuk submit otomatis:\n"
+                + "\n".join([f"- {k}" for k in missing_keys])
+                + "\n\nSilakan jalankan OLC/CLC lalu klik Analyze agar nilai tersimpan otomatis.",
+            )
+            return
+
+        submit_K_fopdt = self.saved_submission_values["K_fopdt"]
+        submit_tau_fopdt = self.saved_submission_values["tau_fopdt"]
+        submit_L_fopdt = self.saved_submission_values["L_fopdt"]
+        submit_K1 = self.saved_submission_values["K1"]
+        submit_K2 = self.saved_submission_values["K2"]
+        submit_K3 = self.saved_submission_values["K3"]
+
+        controller_type = "PID" if submit_K3 != 0 else ("PI" if submit_K2 != 0 else "P")
+        report_txt = self._generate_auto_submission_report(
+            submit_K_fopdt,
+            submit_tau_fopdt,
+            submit_L_fopdt,
+            submit_K1,
+            submit_K2,
+            submit_K3,
+            controller_type,
+        )
+
+        attachments = self._build_auto_submission_attachments(report_txt)
+        formatted_report = report_txt.replace("\n", "<br>")
+        display_name = user_context.display_name if user_context.display_name else "Praktikan"
+
+        html_content = f"""
+        <html>
+        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;">
+            <div style="background-color: #081d38; color: white; padding: 20px; text-align: center;">
+                <h2>Submission Report</h2>
+                <p>Module 9&10: DC Motor Modeling and Control</p>
+            </div>
+            <div style="padding: 20px;">
+                <p>Halo {display_name},</p>
+                <p>Jawaban SA kamu sudah diterima dari aplikasi dan dikirim otomatis ke email ini.</p>
+                <hr style="border: 0; border-top: 1px solid #eee;">
+                <h3>Submission Summary</h3>
+                <div style="background-color: #f7f7f7; padding: 15px; border-left: 5px solid #081d38; font-family: monospace; font-size: 12px;">
+                    {formatted_report}
+                </div>
+                <br>
+                <p><em>Control Laboratory 2026</em></p>
+                <p>Departemen Teknik Elektro Universitas Indonesia</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        try:
+            success, message = sendWithEmail(
+                subject="Lab Report: Modul 9&10 Submission",
+                html_body=html_content,
+                text_body=report_txt,
+                attachments=attachments,
+            )
+        except Exception as e:
+            success, message = False, str(e)
+        finally:
+            QtWidgets.QApplication.restoreOverrideCursor()
+
+        if success:
+            QtWidgets.QMessageBox.information(self, "Email Sent", f"Berhasil dikirim!\n{message}")
+        else:
+            QtWidgets.QMessageBox.critical(self, "Sending Failed", f"Gagal mengirim email.\nError: {message}")
+
+    def _to_float_or_none(self, value):
+        try:
+            text = str(value).strip().replace(",", ".")
+            if text == "":
+                return None
+            return float(text)
+        except Exception:
+            return None
+
+    def capture_olc_submission_state(self, olc_window=None):
+        olc_win = olc_window or self.child_windows.get("olc")
+        if not olc_win:
+            return
+
+        mapping = {
+            "K_fopdt": "k_fopdt",
+            "tau_fopdt": "tau_fopdt",
+            "L_fopdt": "l_fopdt",
+        }
+        for dest_key, widget_name in mapping.items():
+            if hasattr(olc_win, widget_name):
+                val = self._to_float_or_none(getattr(olc_win, widget_name).text())
+                if val is not None:
+                    self.saved_submission_values[dest_key] = val
+
+        if (
+            hasattr(olc_win, "time_data") and hasattr(olc_win, "rpm_data") and hasattr(olc_win, "target_data")
+            and olc_win.time_data and olc_win.rpm_data and olc_win.target_data
+        ):
+            self.saved_plot_data["olc"] = {
+                "time_data": list(olc_win.time_data),
+                "rpm_data": list(olc_win.rpm_data),
+                "target_data": list(olc_win.target_data),
+                "fopdt_output": list(olc_win.fopdt_output) if hasattr(olc_win, "fopdt_output") and olc_win.fopdt_output is not None else None,
+            }
+
+    def capture_clc_submission_state(self, clc_window=None):
+        clc_win = clc_window or self.child_windows.get("clc")
+        if not clc_win:
+            return
+
+        mapping = {
+            "K1": "k1",
+            "K2": "k2",
+            "K3": "k3",
+        }
+        for dest_key, widget_name in mapping.items():
+            if hasattr(clc_win, widget_name):
+                val = self._to_float_or_none(getattr(clc_win, widget_name).text())
+                if val is not None:
+                    self.saved_submission_values[dest_key] = val
+
+        if (
+            hasattr(clc_win, "time_data") and hasattr(clc_win, "rpm_data") and hasattr(clc_win, "target_data")
+            and clc_win.time_data and clc_win.rpm_data and clc_win.target_data
+        ):
+            self.saved_plot_data["clc"] = {
+                "time_data": list(clc_win.time_data),
+                "rpm_data": list(clc_win.rpm_data),
+                "target_data": list(clc_win.target_data),
+            }
+
+    def _render_olc_plot_png(self):
+        data = self.saved_plot_data.get("olc")
+        if not data:
+            return None
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.plot(data["time_data"], data["rpm_data"], "-", color="blue", linewidth=2, label="Actual Speed")
+        ax.plot(data["time_data"], data["target_data"], "r--", linewidth=2, label="Target Speed")
+
+        if data.get("fopdt_output") is not None and len(data["fopdt_output"]) == len(data["time_data"]):
+            ax.plot(data["time_data"], data["fopdt_output"], "g-.", linewidth=2, label="FOPDT Model")
+
+        ax.grid(True, alpha=0.3)
+        ax.set_title("Open Loop Response")
+        ax.set_xlabel("Time (ms)")
+        ax.set_ylabel("Speed (RPM)")
+        ax.legend()
+
+        buffer = io.BytesIO()
+        fig.tight_layout()
+        fig.savefig(buffer, format="png", dpi=160)
+        plt.close(fig)
+        return buffer.getvalue()
+
+    def _render_clc_plot_png(self):
+        data = self.saved_plot_data.get("clc")
+        if not data:
+            return None
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.plot(data["time_data"], data["rpm_data"], "-", color="blue", linewidth=2, label="Actual Speed")
+        ax.plot(data["time_data"], data["target_data"], "r--", linewidth=2, label="Target Speed")
+        ax.grid(True, alpha=0.3)
+        ax.set_title("Closed Loop Response")
+        ax.set_xlabel("Time (ms)")
+        ax.set_ylabel("Speed (RPM)")
+        ax.legend()
+
+        buffer = io.BytesIO()
+        fig.tight_layout()
+        fig.savefig(buffer, format="png", dpi=160)
+        plt.close(fig)
+        return buffer.getvalue()
+
+    def _build_auto_submission_attachments(self, report_txt):
+        files_to_zip = [
+            {
+                "file_name": "modul910_submission_report.txt",
+                "file_data": report_txt.encode("utf-8"),
+            }
+        ]
+
+        olc_png = self._render_olc_plot_png()
+        if olc_png:
+            files_to_zip.append({
+                "file_name": "olc_graph.png",
+                "file_data": olc_png,
+            })
+
+        clc_png = self._render_clc_plot_png()
+        if clc_png:
+            files_to_zip.append({
+                "file_name": "clc_graph.png",
+                "file_data": clc_png,
+            })
+
+        zip_bytes = create_zip_in_memory(files_to_zip)
+        return [{
+            "filename": "System_Analysis_Modul910.zip",
+            "content": zip_bytes,
+        }]
+
+    def _generate_auto_submission_report(self, submit_K_fopdt, submit_tau_fopdt, submit_L_fopdt,
+                                         submit_K1, submit_K2, submit_K3, controller_type):
+        lines = []
+        lines.append("=" * 45)
+        lines.append("  MODUL 9&10 SUBMISSION REPORT")
+        lines.append("=" * 45)
+        lines.append(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        if self.group_name:
+            lines.append(f"Group: {self.group_name}")
+        lines.append("")
+        lines.append("FOPDT Parameters")
+        lines.append(f"K      : {submit_K_fopdt}")
+        lines.append(f"tau    : {submit_tau_fopdt}")
+        lines.append(f"L      : {submit_L_fopdt}")
+        lines.append("")
+        lines.append("Controller Parameters")
+        lines.append(f"Type   : {controller_type}")
+        lines.append(f"K1     : {submit_K1}")
+        lines.append(f"K2     : {submit_K2}")
+        lines.append(f"K3     : {submit_K3}")
+        lines.append("=" * 45)
+        return "\n".join(lines)
 
     def send_mode_command(self, command):
         """Safely switch ESP32 parser mode before opening a child window."""
@@ -1849,8 +2093,14 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
             #QtWidgets.QMessageBox.warning(self, "Calculation Error", f"Error calculating discrete control gains: {e}")
             #return
 
+        if self.main_window and hasattr(self.main_window, "capture_olc_submission_state"):
+            self.main_window.capture_olc_submission_state(self)
+
 
     def closeEvent(self, event):
+        if self.main_window and hasattr(self.main_window, "capture_olc_submission_state"):
+            self.main_window.capture_olc_submission_state(self)
+
         try:
             if self.serial_conn and self.serial_conn.is_open:
                 self.serial_conn.write(b"4")
@@ -2545,7 +2795,13 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
             QtWidgets.QMessageBox.warning(self, "Calculation Error", f"Error calculating k1, k2, k3 parameters: {e}")
             return
 
+        if self.main_window and hasattr(self.main_window, "capture_clc_submission_state"):
+            self.main_window.capture_clc_submission_state(self)
+
     def closeEvent(self, event):
+        if self.main_window and hasattr(self.main_window, "capture_clc_submission_state"):
+            self.main_window.capture_clc_submission_state(self)
+
         try:
             if self.serial_conn and self.serial_conn.is_open:
                 self.serial_conn.write(b"4")
