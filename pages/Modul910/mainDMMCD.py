@@ -550,16 +550,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
         lines.append("")
         lines.append("Controller Parameters")
         lines.append(f"Type   : {controller_type}")
-        lines.append(f"K1     : {submit_K1}")
-        lines.append(f"K2     : {submit_K2}")
-        lines.append(f"K3     : {submit_K3}")
+        lines.append(f"Kp     : {submit_K1}")
+        lines.append(f"Ki     : {submit_K2}")
+        lines.append(f"Kd     : {submit_K3}")
 
         # Append analyzed OLC/CLC values if available.
         olc_vals = self.saved_analysis_values.get("olc", {})
         clc_vals = self.saved_analysis_values.get("clc", {})
-        derived = self.saved_analysis_values.get("derived", {})
 
-        if olc_vals or clc_vals or derived:
+        if olc_vals or clc_vals:
             lines.append("")
             lines.append("Analyze Results")
             if olc_vals:
@@ -573,26 +572,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
                 for key in ("Tr", "Tp", "Ts", "OS"):
                     if clc_vals.get(key):
                         lines.append(f"  {key:<6}: {clc_vals[key]}")
-
-            if any(derived.get(k) is not None for k in ("true_fopdt_K", "true_fopdt_tau", "true_fopdt_L")):
-                lines.append("- Derived FOPDT")
-                if derived.get("true_fopdt_K") is not None:
-                    lines.append(f"  K      : {derived['true_fopdt_K']}")
-                if derived.get("true_fopdt_tau") is not None:
-                    lines.append(f"  tau    : {derived['true_fopdt_tau']}")
-                if derived.get("true_fopdt_L") is not None:
-                    lines.append(f"  L      : {derived['true_fopdt_L']}")
-
-            for mode in ("PID", "PI", "P"):
-                k1 = derived.get(f"k1_{mode}")
-                k2 = derived.get(f"k2_{mode}")
-                k3 = derived.get(f"k3_{mode}")
-                if k1 is None and k2 is None and k3 is None:
-                    continue
-                lines.append(f"- Derived {mode}")
-                lines.append(f"  K1     : {k1}")
-                lines.append(f"  K2     : {k2}")
-                lines.append(f"  K3     : {k3}")
 
         lines.append("=" * 45)
         return "\n".join(lines)
@@ -2951,7 +2930,7 @@ class sa(QtWidgets.QMainWindow, Ui_sa):
             </div>
             <div style="padding: 20px;">
                 <p>Halo {display_name},</p>
-                <p>Jawaban SA kamu sudah diterima dari aplikasi dan dikirim otomatis ke email ini.</p>
+                <p>Berikut rekaman hasil praktikum</p>
                 <hr style="border: 0; border-top: 1px solid #eee;">
                 <h3>Submission Summary</h3>
                 <div style="background-color: #f7f7f7; padding: 15px; border-left: 5px solid #081d38; font-family: monospace; font-size: 12px;">
