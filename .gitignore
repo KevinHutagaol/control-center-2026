@@ -7,6 +7,13 @@ __pycache__/
 venv/
 .venv/
 
+# Local VS Code files to ignore
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/settings.json
+pages/Modul910/Firmware/DCMotor/.vscode/extensions.json
+pages/Modul910/Firmware/DCMotor/.vscode/settings.json
+
 # Critical information
 .env
 

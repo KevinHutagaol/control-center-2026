@@ -1,5 +1,6 @@
 import sys
 from datetime import datetime
+import time
 from PyQt5 import QtWidgets, QtChart, QtCore, QtGui
 import numpy as np
 import serial.tools.list_ports
@@ -9,6 +10,8 @@ import queue
 import pandas as pd
 
 import pages.Modul910.asset.resources # noqa
+from func.sendWithEmail import sendWithEmail
+from func.UserContext import user_context
 
 from pages.Modul910.ui_910.ui_main import Ui_MainWindow as Ui_main
 from pages.Modul910.ui_910.ui_sa import Ui_MainWindow as Ui_sa
@@ -186,11 +189,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
             real_port = port_name.split(" ")[0]  # Extract actual port name
             print(f"Opening {real_port} at 115200 baud")
             self.serial_conn = serial.Serial(port=real_port, baudrate=115200, timeout=1)
-            # Send initial request
+
+            # Force firmware back to top-level parser, then request info.
+            # This avoids stale submenu mode responses after reconnect.
+            self.serial_conn.reset_input_buffer()
+            self.serial_conn.reset_output_buffer()
+            self.serial_conn.write(b"4\n")
+            self.serial_conn.flush()
+            QtCore.QThread.msleep(60)
+            self.serial_conn.reset_input_buffer()
             self.serial_conn.write(b"i\n")
+            self.serial_conn.flush()
             
             # First attempt after 200ms
-            QtCore.QTimer.singleShot(200, lambda: self.try_read_motor_info(0))
+            QtCore.QTimer.singleShot(250, lambda: self.try_read_motor_info(0))
             
             # print(f"Opened {port_name} at 115200 baud")
             self.set_status("green")   
@@ -259,13 +271,35 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
         self.child_windows["sa"] = sa(self.serial_conn, self)  # Pass self as main_window
         self.child_windows["sa"].show()
 
+    def send_mode_command(self, command):
+        """Safely switch ESP32 parser mode before opening a child window."""
+        if not (self.serial_conn and self.serial_conn.is_open):
+            QtWidgets.QMessageBox.warning(self, "Warning", "No serial port is open.")
+            return False
+
+        try:
+            # Ask current submenu (if any) to exit first.
+            self.serial_conn.write(b"4\n")
+            self.serial_conn.flush()
+            QtCore.QThread.msleep(50)
+
+            self.clear_serial_buffers()
+            self.serial_conn.write(command)
+            self.serial_conn.flush()
+            return True
+        except Exception as e:
+            print(f"Mode switch error: {e}")
+            QtWidgets.QMessageBox.critical(self, "Serial Error", f"Failed to switch mode: {e}")
+            self.set_status("red")
+            return False
+
     def olcClicked(self):
         # Handle the OLC button click event
         if self.serial_conn and self.serial_conn.is_open:
             self.close_other_windows(keep=["sa"])
-            self.serial_conn.write(b"o\n")
-            self.child_windows["olc"] = olc(self.serial_conn, self)  # Pass self as main_window
-            self.child_windows["olc"].show()
+            if self.send_mode_command(b"o\n"):
+                self.child_windows["olc"] = olc(self.serial_conn, self)  # Pass self as main_window
+                self.child_windows["olc"].show()
         else:
             QtWidgets.QMessageBox.warning(self, "Warning", "No serial port is open.")
 
@@ -273,27 +307,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
         # Handle the CLC button click event
         if self.serial_conn and self.serial_conn.is_open:
             self.close_other_windows(keep=["sa"])
-            self.serial_conn.write(b"c\n")
-            self.child_windows["clc"] = clc(self.serial_conn, self)  # Pass self as main_window
-            self.child_windows["clc"].show()
+            if self.send_mode_command(b"c\n"):
+                self.child_windows["clc"] = clc(self.serial_conn, self)  # Pass self as main_window
+                self.child_windows["clc"].show()
         else:
             QtWidgets.QMessageBox.warning(self, "Warning", "No serial port is open.")
 
     def encoderClicked(self):
         if self.serial_conn and self.serial_conn.is_open:
             self.close_other_windows(keep=["sa"])
-            self.serial_conn.write(b"e\n")
-            self.child_windows["encoder"] = Encoder(self.serial_conn, self)  # Pass self as main_window
-            self.child_windows["encoder"].show()
+            if self.send_mode_command(b"e\n"):
+                self.child_windows["encoder"] = Encoder(self.serial_conn, self)  # Pass self as main_window
+                self.child_windows["encoder"].show()
         else:
             QtWidgets.QMessageBox.warning(self, "Warning", "No serial port is open.")
         
     def logClicked(self):
         if self.serial_conn and self.serial_conn.is_open:
             self.close_other_windows(keep=["sa"])
-            self.serial_conn.write(b"s\n")
-            self.child_windows["logwindow"] = LogWindow(self.serial_conn, self)  # Pass self as main_window
-            self.child_windows["logwindow"].show()
+            if self.send_mode_command(b"s\n"):
+                self.child_windows["logwindow"] = LogWindow(self.serial_conn, self)  # Pass self as main_window
+                self.child_windows["logwindow"].show()
         else:
             QtWidgets.QMessageBox.warning(self, "Warning", "No serial port is open.")
 
@@ -301,15 +335,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_main):
         # Handle the LRC button click event
         if self.serial_conn and self.serial_conn.is_open:
             self.close_other_windows(keep=["sa"])
-            self.serial_conn.write(b"l\n")
-            self.child_windows["lrc"] = LRC(self.serial_conn, self)  # Pass serial_conn
-            self.child_windows["lrc"].show()
+            if self.send_mode_command(b"l\n"):
+                self.child_windows["lrc"] = LRC(self.serial_conn, self)  # Pass serial_conn
+                self.child_windows["lrc"].show()
         else:
             QtWidgets.QMessageBox.warning(self, "Warning", "No serial port is open.")
 
     def closeEvent(self, event):
         try:
-            self.serial_conn.close()
+            if self.serial_conn and self.serial_conn.is_open:
+                self.serial_conn.write(b"4\n")
+                self.serial_conn.flush()
+                self.serial_conn.close()
         except Exception as e:
             print(e)
         event.accept()
@@ -342,18 +379,22 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
         if not self.serial_conn or not self.serial_conn.is_open:
             QtWidgets.QMessageBox.critical(self, "Serial Error", "Serial connection lost.")
             self.close()
+            return False
        
         if self.serial_lock.tryLock():
             try:
-                self.serial_conn.write(data)           
+                self.serial_conn.write(data)
+                return True
             except Exception as e:
                 QtWidgets.QMessageBox.critical(self, "Serial Error", f"Serial error: {e}")
                 self.close()
+                return False
             finally:
                 self.serial_lock.unlock()
                 self.processQueue()
         else:
             self.cmd_queue.put(data)
+            return True
 
     def processQueue(self):
         while not self.cmd_queue.empty():
@@ -373,20 +414,20 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
 
     def plsPressed(self):
         self.timer.stop()  
-        self.safe_write(b"1")
-        self.serial_conn.flush()
+        if self.safe_write(b"1") and self.serial_conn and self.serial_conn.is_open:
+            self.serial_conn.flush()
         self.timer.start(200)
 
     def minPressed(self):
         self.timer.stop()
-        self.safe_write(b"-1")
-        self.serial_conn.flush()
+        if self.safe_write(b"-1") and self.serial_conn and self.serial_conn.is_open:
+            self.serial_conn.flush()
         self.timer.start(200)
 
     def stopMotor(self):
         self.timer.stop()
-        self.safe_write(b"0")
-        self.serial_conn.flush()
+        if self.safe_write(b"0") and self.serial_conn and self.serial_conn.is_open:
+            self.serial_conn.flush()
         self.timer.start(200)
 
     def doneClicked(self):
@@ -398,8 +439,8 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
                 QtWidgets.QMessageBox.warning(self, "Invalid Input", "Rotation value must be positive.")
                 return
             #QtWidgets.QMessageBox.information(self, "Info", f"Storing PPR = {value} to flash.")
-            self.serial_conn.write(f"3 {value}".encode())
-            self.serial_conn.flush()
+            if self.safe_write(f"3 {value}".encode()) and self.serial_conn and self.serial_conn.is_open:
+                self.serial_conn.flush()
             if self.main_window:
                 QtCore.QTimer.singleShot(200, self.main_window.try_read_motor_info)
             self.close()
@@ -434,8 +475,8 @@ class Encoder(QtWidgets.QMainWindow, Ui_calibration):
             print("Serial buffer clear error:", e)
 
     def requestTicks(self):
-        self.safe_write(b"2")   # Ask ESP for ticks
-        self.readSerial()
+        if self.safe_write(b"2"):   # Ask ESP for ticks
+            self.readSerial()
 
     def readSerial(self):
         try:
@@ -552,8 +593,13 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
     def read_motor_characteristic(self):
         data_pwm, data_speed = [], []
         try:
+            first_data_deadline = time.monotonic() + 3.0
             # Read until we get valid data or a status code
             while True:
+                if time.monotonic() > first_data_deadline:
+                    print("Motor characteristic read timeout waiting first data line")
+                    return None, None
+
                 line = self.serial_conn.readline().decode("utf-8", errors='replace').strip()
                 if not line:
                     continue
@@ -577,8 +623,13 @@ class LogWindow(QtWidgets.QMainWindow, Ui_linlog):
                         # Not a valid data line, skip it
                         continue
             
+            remaining_data_deadline = time.monotonic() + 8.0
             # Now read remaining data lines
             while True:
+                if time.monotonic() > remaining_data_deadline:
+                    print("Motor characteristic read timeout on remaining lines")
+                    break
+
                 line = self.serial_conn.readline().decode("utf-8", errors='replace').strip()
                 if not line:
                     continue
@@ -1175,32 +1226,51 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
     def try_read_motor_characteristic(self, retry_count=0):
         if retry_count >= 10:
             QtWidgets.QMessageBox.warning(self, "Error", "Failed to read motor data.")
+            self._set_display_fallback_from_main()
             return
-        
-        # Clear stale data first
-        self.clear_serial_buffers()
-        
+
         try:
-            # Send command to ESP32 asking for motor info
-            # (assuming '2' gets info based on your ESP32 code)
-            self.safe_write(b"2")
-            self.serial_conn.flush()
-            
-            # Now wait a moment and read the response
-            QtCore.QTimer.singleShot(100, self.readMotorData)
+            # Linear limits live under firmware 'l' mode, not 'o'.
+            if self.main_window and hasattr(self.main_window, "send_mode_command"):
+                if not self.main_window.send_mode_command(b"l\n"):
+                    self._set_display_fallback_from_main()
+                    return
+            else:
+                self.clear_serial_buffers()
+                self.safe_write(b"l\n")
+                self.serial_conn.flush()
+
+            # First read handles mode-entry status; it may not yet be linear data.
+            QtCore.QTimer.singleShot(120, lambda: self.readMotorData(0))
         except Exception as e:
             print(f"Error sending command: {e}")
             QtCore.QTimer.singleShot(200, lambda: self.try_read_motor_characteristic(retry_count + 1))
 
-    def readMotorData(self):
+    def _set_display_fallback_from_main(self):
+        """Fallback when linear info cannot be loaded; keep maxRPM visible from main panel."""
+        self.MinLinRPMDisp.setText("--")
+        self.MaxLinRPMDisp.setText("--")
         try:
+            max_rpm_text = self.main_window.maxRPM.text().strip() if self.main_window else ""
+            self.MaxRPMDisp.setText(max_rpm_text if max_rpm_text else "--")
+        except Exception:
+            self.MaxRPMDisp.setText("--")
+
+    def readMotorData(self, retry_count=0):
+        try:
+            if retry_count >= 10:
+                self._set_display_fallback_from_main()
+                return
+
             if not self.serial_conn or not self.serial_conn.in_waiting:
+                QtCore.QTimer.singleShot(120, lambda: self.readMotorData(retry_count + 1))
                 return
 
             # Read the first line (status code: 0, 1, or 2)
             while True:
                 status_line = self.serial_conn.readline().decode().strip()
                 if not status_line:
+                    QtCore.QTimer.singleShot(120, lambda: self.readMotorData(retry_count + 1))
                     return
                 try:
                     status = int(status_line)
@@ -1209,36 +1279,59 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
                     continue  # Not a number, skip this line
 
             if status == 2:
-                # Both calibration + motor char exist
+                # Entry status in linear mode: calibration + motor char exist.
                 data_line = self.serial_conn.readline().decode().strip()
-                min_rpm_str, max_rpm_str, max_rpm_val_str = data_line.split()
-                
-                # Convert to float when storing
-                self.minLinRPM = float(min_rpm_str)
-                self.maxLinRPM = float(max_rpm_str)
-                self.maxRPM = float(max_rpm_val_str)
-                
-                # Display values
-                self.MinLinRPMDisp.setText(f"{self.minLinRPM:.2f}")
-                self.MaxLinRPMDisp.setText(f"{self.maxLinRPM:.2f}")
-                self.MaxRPMDisp.setText(f"{self.maxRPM:.2f}")
+                parts = data_line.split()
+
+                # Expected from firmware: "ppr maxRPM" on entry.
+                if len(parts) >= 2:
+                    try:
+                        self.maxRPM = float(parts[-1])
+                        self.MaxRPMDisp.setText(f"{self.maxRPM:.2f}")
+                    except ValueError:
+                        self._set_display_fallback_from_main()
+
+                # Request actual linear-region data next (status 1 + 4 values).
+                self.safe_write(b"2\n")
+                self.serial_conn.flush()
+                QtCore.QTimer.singleShot(120, lambda: self.readMotorData(retry_count + 1))
+                return
 
             elif status == 1:
-                # Only calibration exists
+                # Linear data exists and follows as 4 values:
+                # minPWM maxPWM minRPM maxRPM
                 data_line = self.serial_conn.readline().decode().strip()
-                self.maxRPM = float(data_line)
-                self.MinLinRPMDisp.setText("--")
-                self.MaxLinRPMDisp.setText("--")
-                self.MaxRPMDisp.setText(f"{float(self.maxRPM):.2f}")
+                parts = data_line.split()
+                if len(parts) == 4:
+                    _, _, min_rpm_str, max_rpm_str = parts
+                    self.minLinRPM = float(min_rpm_str)
+                    self.maxLinRPM = float(max_rpm_str)
+                    self.MinLinRPMDisp.setText(f"{self.minLinRPM:.2f}")
+                    self.MaxLinRPMDisp.setText(f"{self.maxLinRPM:.2f}")
+                    if hasattr(self, "maxRPM"):
+                        self.MaxRPMDisp.setText(f"{self.maxRPM:.2f}")
+                    else:
+                        self._set_display_fallback_from_main()
+                elif len(parts) >= 1:
+                    # Some firmware variants may return only maxRPM in this branch.
+                    try:
+                        self.maxRPM = float(parts[-1])
+                        self.MinLinRPMDisp.setText("--")
+                        self.MaxLinRPMDisp.setText("--")
+                        self.MaxRPMDisp.setText(f"{self.maxRPM:.2f}")
+                    except ValueError:
+                        self._set_display_fallback_from_main()
+                else:
+                    self._set_display_fallback_from_main()
 
             elif status == 0:
                 # Nothing stored
                 self.MinLinRPMDisp.setText("--")
                 self.MaxLinRPMDisp.setText("--")
-                self.MaxRPMDisp.setText("--")
+                self._set_display_fallback_from_main()
         except Exception as e:
             print("Serial read error olc:", e)
-            print(self.serial_conn.readline())
+            self._set_display_fallback_from_main()
 
     def startClicked(self):
         if self.serial_conn and self.serial_conn.is_open:
@@ -1311,6 +1404,11 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
                 )
                 return
                 
+            # Ensure firmware is in open-loop mode before starting transient test.
+            if self.main_window and hasattr(self.main_window, "send_mode_command"):
+                if not self.main_window.send_mode_command(b"o\n"):
+                    return
+
             # If we get here, targetRPM is valid, send it to ESP32
             self.readTransientResponse(targetRPM)
         else:
@@ -1346,19 +1444,31 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
             self.safe_write(f"1 {targetRPM}".encode())
             self.serial_conn.flush()
 
+            # Hard timeout and redraw throttling state
+            self._stream_deadline = time.monotonic() + 8.0
+            self._axis_update_every = 8
+
             # Start timer to poll for data
             self.responseTimer = QtCore.QTimer(self)
             self.responseTimer.timeout.connect(self.updateTransientPlot)
-            self.responseTimer.start(10)  # Poll every 10ms for fast updates
+            self.responseTimer.start(20)  # Lower redraw pressure on UI thread
 
     def updateTransientPlot(self):
         try:
             if not self.serial_conn or not self.serial_conn.is_open:
                 self.responseTimer.stop()
                 return
+
+            if hasattr(self, "_stream_deadline") and time.monotonic() > self._stream_deadline:
+                self.responseTimer.stop()
+                QtWidgets.QMessageBox.warning(self, "Timeout", "Serial read timeout while collecting OLC data.")
+                return
                 
-            if self.serial_conn.in_waiting > 0:
+            lines_processed = 0
+            max_lines_per_tick = 25
+            while self.serial_conn.in_waiting > 0 and lines_processed < max_lines_per_tick:
                 line = self.serial_conn.readline().decode("utf-8").strip()
+                lines_processed += 1
                 
                 # Check if data collection is complete
                 if line == "DONE":
@@ -1386,25 +1496,28 @@ class olc(QtWidgets.QMainWindow, Ui_olc):
                         self.target_data.append(target_speed)
                         self.controller_data.append(controller_output)
                         self.error_data.append(error)
+
+                        # Refresh timeout watchdog whenever valid data arrives
+                        self._stream_deadline = time.monotonic() + 3.0
                         
                         # Add to chart series
                         self.speedSeries.append(timestamp, actual_speed)
                         self.targetSeries.append(timestamp, target_speed)
                         self.controllerSeries.append(timestamp, controller_output)
                         self.errorSeries.append(timestamp, error)
-                        
-                        # Update chart axes to fit data
-                        self.chart.axisX().setRange(0, max(self.time_data) + 100)
-                        self.chart2.axisX().setRange(0, max(self.time_data) + 100)
-                        
-                        # Calculate y-axis range to fit data with some margin
-                        max_y = max(max(self.rpm_data, default=0), target_speed) * 1.1
-                        min_y = min(self.rpm_data, default=-1) * 1.1
-                        self.chart.axisY().setRange(min_y, max_y)
 
-                        max_y2 = max(max(self.controller_data, default=0), max(self.error_data, default=0)) * 1.1
-                        min_y2 = min(min(self.controller_data, default=-1), min(self.error_data, default=-1)) * 1.1
-                        self.chart2.axisY().setRange(min_y2, max_y2)
+                        # Throttle axis redraw to reduce UI load.
+                        if len(self.time_data) % self._axis_update_every == 0:
+                            self.chart.axisX().setRange(0, max(self.time_data) + 100)
+                            self.chart2.axisX().setRange(0, max(self.time_data) + 100)
+
+                            max_y = max(max(self.rpm_data, default=0), target_speed) * 1.1
+                            min_y = min(self.rpm_data, default=-1) * 1.1
+                            self.chart.axisY().setRange(min_y, max_y)
+
+                            max_y2 = max(max(self.controller_data, default=0), max(self.error_data, default=0)) * 1.1
+                            min_y2 = min(min(self.controller_data, default=-1), min(self.error_data, default=-1)) * 1.1
+                            self.chart2.axisY().setRange(min_y2, max_y2)
                         
                 except (ValueError, IndexError) as e:
                     print(f"Error parsing data: {e}")
@@ -2147,19 +2260,31 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
             self.safe_write(f"1 {targetRPM} {sampling_rate} {k1} {k2} {k3}".encode())
             self.serial_conn.flush()
 
+            # Hard timeout and redraw throttling state
+            self._stream_deadline = time.monotonic() + 8.0
+            self._axis_update_every = 8
+
             # Start timer to poll for data
             self.responseTimer = QtCore.QTimer(self)
             self.responseTimer.timeout.connect(self.updateTransientPlot)
-            self.responseTimer.start(sampling_rate)  # Poll every X ms for fast updates
+            self.responseTimer.start(max(20, sampling_rate))  # Reduce redraw pressure
 
     def updateTransientPlot(self):
         try:
             if not self.serial_conn or not self.serial_conn.is_open:
                 self.responseTimer.stop()
                 return
+
+            if hasattr(self, "_stream_deadline") and time.monotonic() > self._stream_deadline:
+                self.responseTimer.stop()
+                QtWidgets.QMessageBox.warning(self, "Timeout", "Serial read timeout while collecting CLC data.")
+                return
                 
-            if self.serial_conn.in_waiting > 0:
+            lines_processed = 0
+            max_lines_per_tick = 25
+            while self.serial_conn.in_waiting > 0 and lines_processed < max_lines_per_tick:
                 line = self.serial_conn.readline().decode("utf-8").strip()
+                lines_processed += 1
                 
                 # Check if data collection is complete
                 if line == "DONE":
@@ -2190,6 +2315,9 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
                         self.rawController_data.append(raw_control_output)
                         self.error_data.append(error)
 
+                        # Refresh timeout watchdog whenever valid data arrives
+                        self._stream_deadline = time.monotonic() + 3.0
+
                         # Add to chart series
                         self.speedSeries.append(timestamp, actual_speed)
                         self.targetSeries.append(timestamp, target_speed)
@@ -2197,18 +2325,18 @@ class clc(QtWidgets.QMainWindow, Ui_clc):
                         self.rawControlSeries.append(timestamp, raw_control_output)
                         self.errorSeries.append(timestamp, error)
 
-                        # Update chart axes to fit data
-                        self.chart.axisX().setRange(0, max(self.time_data) + 100)
-                        self.chart2.axisX().setRange(0, max(self.time_data) + 100)
-                        
-                        # Calculate y-axis range to fit data with some margin
-                        max_y = max(max(self.rpm_data, default=0), target_speed) * 1.1
-                        min_y = min(min(self.rpm_data, default=-1), -1) * 1.1
-                        self.chart.axisY().setRange(min_y, max_y)
+                        # Throttle axis redraw to reduce UI load.
+                        if len(self.time_data) % self._axis_update_every == 0:
+                            self.chart.axisX().setRange(0, max(self.time_data) + 100)
+                            self.chart2.axisX().setRange(0, max(self.time_data) + 100)
 
-                        max_y2 = max(max(max(self.controller_data, default=0), max(self.rawController_data, default=0)), max(self.error_data, default=0)) * 1.1
-                        min_y2 = min(min(min(self.controller_data, default=-1), min(self.rawController_data, default=-1)), min(self.error_data, default=-1)) * 1.1
-                        self.chart2.axisY().setRange(min_y2, max_y2)
+                            max_y = max(max(self.rpm_data, default=0), target_speed) * 1.1
+                            min_y = min(min(self.rpm_data, default=-1), -1) * 1.1
+                            self.chart.axisY().setRange(min_y, max_y)
+
+                            max_y2 = max(max(max(self.controller_data, default=0), max(self.rawController_data, default=0)), max(self.error_data, default=0)) * 1.1
+                            min_y2 = min(min(min(self.controller_data, default=-1), min(self.rawController_data, default=-1)), min(self.error_data, default=-1)) * 1.1
+                            self.chart2.axisY().setRange(min_y2, max_y2)
 
                 except (ValueError, IndexError) as e:
                     print(f"Error parsing data: {e}")
@@ -2454,153 +2582,89 @@ class sa(QtWidgets.QMainWindow, Ui_sa):
             submit_K1 = float(self.K1.text())
             submit_K2 = float(self.K2.text())
             submit_K3 = float(self.K3.text())
-
-            print(f"Submitted Parameters: FOPDT K={submit_K_fopdt}, Tau={submit_tau_fopdt}, L={submit_L_fopdt}; Control K1={submit_K1}, K2={submit_K2}, K3={submit_K3}")
         except ValueError:
             QtWidgets.QMessageBox.warning(self, "Invalid Input", "Please enter valid numbers for all fields.")
             return
         except Exception as e:
             QtWidgets.QMessageBox.warning(self, "Error", f"An error occurred: {e}")
             return
-    
-        #Calculate score
-        if (hasattr(self.main_window, 'true_fopdt_K') and hasattr(self.main_window, 'true_fopdt_tau') and 
-            hasattr(self.main_window, 'true_fopdt_L')):
 
-            # Calculate K error
-            if self.main_window.true_fopdt_K != 0:
-                K_fopdt_error = abs(submit_K_fopdt - self.main_window.true_fopdt_K) / abs(self.main_window.true_fopdt_K)
-            else:
-                # If true value is 0, use absolute error scaled to percentage (0.1 difference = 10% error)
-                K_fopdt_error = abs(submit_K_fopdt - self.main_window.true_fopdt_K)
-            
-            # Calculate Tau error
-            if self.main_window.true_fopdt_tau != 0:
-                tau_fopdt_error = abs(submit_tau_fopdt - self.main_window.true_fopdt_tau) / abs(self.main_window.true_fopdt_tau)
-            else:
-                # If true value is 0, use absolute error scaled to percentage
-                tau_fopdt_error = abs(submit_tau_fopdt - self.main_window.true_fopdt_tau)
-            
-            # Calculate L error
-            if self.main_window.true_fopdt_L != 0:
-                L_fopdt_error = abs(submit_L_fopdt - self.main_window.true_fopdt_L) / abs(self.main_window.true_fopdt_L)
-            else:
-                # If true value is 0, use absolute error scaled to percentage
-                L_fopdt_error = abs(submit_L_fopdt - self.main_window.true_fopdt_L)
+        controller_type = "PID" if submit_K3 != 0 else ("PI" if submit_K2 != 0 else "P")
 
-            #print(f"FOPDT Errors: K Error={K_fopdt_error*100:.2f}%, Tau Error={tau_fopdt_error*100:.2f}%, L Error={L_fopdt_error*100:.2f}%")
+        report_txt = self.generate_submission_report(
+            submit_K_fopdt,
+            submit_tau_fopdt,
+            submit_L_fopdt,
+            submit_K1,
+            submit_K2,
+            submit_K3,
+            controller_type,
+        )
+        formatted_report = report_txt.replace("\n", "<br>")
+        display_name = user_context.display_name if user_context.display_name else "Praktikan"
 
-            model_score = (self.error_to_score(K_fopdt_error) + self.error_to_score(tau_fopdt_error) + self.error_to_score(L_fopdt_error)) / 3.0
+        html_content = f"""
+        <html>
+        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;">
+            <div style="background-color: #081d38; color: white; padding: 20px; text-align: center;">
+                <h2>Submission Report</h2>
+                <p>Module 9&10: DC Motor Modeling and Control</p>
+            </div>
+            <div style="padding: 20px;">
+                <p>Halo {display_name},</p>
+                <p>Jawaban SA kamu sudah diterima dari aplikasi dan dikirim otomatis ke email ini.</p>
+                <hr style="border: 0; border-top: 1px solid #eee;">
+                <h3>Submission Summary</h3>
+                <div style="background-color: #f7f7f7; padding: 15px; border-left: 5px solid #081d38; font-family: monospace; font-size: 12px;">
+                    {formatted_report}
+                </div>
+                <br>
+                <p><em>Control Laboratory 2026</em></p>
+                <p>Departemen Teknik Elektro Universitas Indonesia</p>
+            </div>
+        </body>
+        </html>
+        """
 
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        try:
+            success, message = sendWithEmail(
+                subject="Lab Report: Modul 9&10 Submission",
+                html_body=html_content,
+                text_body=report_txt,
+            )
+        except Exception as e:
+            success, message = False, str(e)
+        finally:
+            QtWidgets.QApplication.restoreOverrideCursor()
+
+        if success:
+            QtWidgets.QMessageBox.information(self, "Email Sent", f"Berhasil dikirim!\n{message}")
         else:
-            QtWidgets.QMessageBox.warning(self, "Error", "True FOPDT parameters not available. Run analysis first.")
-            return
-        
-        if (hasattr(self.main_window, 'k1_PID') and hasattr(self.main_window, 'k2_PID') and 
-            hasattr(self.main_window, 'k3_PID') and hasattr(self.main_window, 'k1_PI') and 
-            hasattr(self.main_window, 'k2_PI') and hasattr(self.main_window, 'k3_PI') and 
-            hasattr(self.main_window, 'k1_P')):
+            QtWidgets.QMessageBox.critical(self, "Sending Failed", f"Gagal mengirim email.\nError: {message}")
 
-            if submit_K3 == 0:
-                #PI or P controller
-                if submit_K2 == 0:
-                    #P controller
-                    true_k1 = getattr(self.main_window, 'k1_P', None)
-                    true_k2 = 0
-                    true_k3 = 0
-                    k1_error = abs(submit_K1 - self.main_window.k1_P) / abs(self.main_window.k1_P) if self.main_window.k1_P != 0 else float('inf')
-                    k2_error = 0
-                    k3_error = 0
-                    control_score = self.error_to_score(k1_error)
-
-                    #print(f"P Controller K1 Error: {k1_error*100:.2f}%")
-                else:
-                    #PI controller
-                    true_k1 = getattr(self.main_window, 'k1_PI', None)
-                    true_k2 = getattr(self.main_window, 'k2_PI', None)
-                    true_k3 = 0
-                    k1_error = abs(submit_K1 - self.main_window.k1_PI) / abs(self.main_window.k1_PI) if self.main_window.k1_PI != 0 else float('inf')
-                    k2_error = abs(submit_K2 - self.main_window.k2_PI) / abs(self.main_window.k2_PI) if self.main_window.k2_PI != 0 else float('inf')
-                    k3_error = 0
-                    control_score = (self.error_to_score(k1_error) + self.error_to_score(k2_error)) / 2.0
-
-                    #print(f"PI Controller K1 Error: {k1_error*100:.2f}%, K2 Error: {k2_error*100:.2f}%")
-            else:
-                #PID controller
-                true_k1 = getattr(self.main_window, 'k1_PID', None)
-                true_k2 = getattr(self.main_window, 'k2_PID', None)
-                true_k3 = getattr(self.main_window, 'k3_PID', None)
-                k1_error = abs(submit_K1 - self.main_window.k1_PID) / abs(self.main_window.k1_PID) if self.main_window.k1_PID != 0 else float('inf')
-                k2_error = abs(submit_K2 - self.main_window.k2_PID) / abs(self.main_window.k2_PID) if self.main_window.k2_PID != 0 else float('inf')
-                k3_error = abs(submit_K3 - self.main_window.k3_PID) / abs(self.main_window.k3_PID) if self.main_window.k3_PID != 0 else float('inf')
-                control_score = (self.error_to_score(k1_error) + self.error_to_score(k2_error) + self.error_to_score(k3_error)) / 3.0
-
-                #print(f"PID Controller K1 Error: {k1_error*100:.2f}%, K2 Error: {k2_error*100:.2f}%, K3 Error: {k3_error*100:.2f}%")
-
-            final_score = (model_score + control_score) / 2.0 * 10.0  # Scale to 0-100
-            #print(f"Model Score: {model_score*10:.2f}/100")
-            #print(f"Control Score: {control_score*10:.2f}/100")
-            #print(f"Final Score: {final_score:.2f}/100")
-
-            # Upload submission to Firebase
-            if self.main_window and self.main_window.firebase_manager:
-                submission_data = {
-                    'K_fopdt': submit_K_fopdt,
-                    'tau_fopdt': submit_tau_fopdt,
-                    'L_fopdt': submit_L_fopdt,
-                    'K1': submit_K1,
-                    'K2': submit_K2,
-                    'K3': submit_K3,
-                    'true_K_fopdt': self.main_window.true_fopdt_K,
-                    'true_tau_fopdt': self.main_window.true_fopdt_tau,
-                    'true_L_fopdt': self.main_window.true_fopdt_L,
-                    'true_k1': true_k1,
-                    'true_k2': true_k2,
-                    'true_k3': true_k3,
-                    'model_score': model_score,
-                    'control_score': control_score,
-                    'final_score': final_score,
-                    'K_fopdt_error_percent': K_fopdt_error * 100,
-                    'tau_fopdt_error_percent': tau_fopdt_error * 100,
-                    'L_fopdt_error_percent': L_fopdt_error * 100,
-                    'k1_error_percent': k1_error * 100,
-                    'k2_error_percent': k2_error * 100,
-                    'k3_error_percent': k3_error * 100,
-                    'controller_type': 'PID' if submit_K3 != 0 else ('PI' if submit_K2 != 0 else 'P')
-                }
-                
-                for student_info in self.main_window.current_students:
-                    student_npm = student_info['NPM']
-                    student_name = student_info['Name']
-                    self.main_window.firebase_manager.upload_student_submission(student_npm, student_name, submission_data)
-
-            # Upload score to Firebase
-            #if self.main_window and self.main_window.firebase_manager:
-            #    for student_info in self.main_window.current_students:
-            #        student_npm = student_info['NPM']
-            #        self.main_window.firebase_manager.upload_student_score(student_npm, final_score)
-                
-        else:
-            QtWidgets.QMessageBox.warning(self, "Error", "True control parameters not available. Run analysis first.")
-            return
-
-        
-    
-    def error_to_score(self, error):
-        if error == float('inf'):
-            return 0
-        elif error < 0.01: # 1% error
-            return 10
-        elif error < 0.05: # 5% error
-            return 8
-        elif error < 0.1: # 10% error
-            return 6
-        elif error < 0.2: # 20% error
-            return 4
-        elif error < 0.5: # 50% error
-            return 2
-        else:
-            return 0
+    def generate_submission_report(self, submit_K_fopdt, submit_tau_fopdt, submit_L_fopdt,
+                                   submit_K1, submit_K2, submit_K3, controller_type):
+        lines = []
+        lines.append("=" * 45)
+        lines.append("  MODUL 9&10 SUBMISSION REPORT")
+        lines.append("=" * 45)
+        lines.append(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        if self.main_window:
+            lines.append(f"Group: {self.main_window.groupBox.title()}")
+        lines.append("")
+        lines.append("FOPDT Parameters")
+        lines.append(f"K      : {submit_K_fopdt}")
+        lines.append(f"tau    : {submit_tau_fopdt}")
+        lines.append(f"L      : {submit_L_fopdt}")
+        lines.append("")
+        lines.append("Controller Parameters")
+        lines.append(f"Type   : {controller_type}")
+        lines.append(f"K1     : {submit_K1}")
+        lines.append(f"K2     : {submit_K2}")
+        lines.append(f"K3     : {submit_K3}")
+        lines.append("=" * 45)
+        return "\n".join(lines)
 
 def exec_DMMCD(nama, npm, kelompok):
     app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
